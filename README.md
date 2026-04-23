@@ -47,6 +47,22 @@ go build -o hsanalyzer.exe ./cmd/hsanalyzer
 ./hsanalyzer analyze --config config.yaml
 ```
 
+### Обновление базы карт
+
+```bash
+# Обновить актуальную базу карт (ruRU -> data/cards.json)
+./hsanalyzer update-cards
+
+# Обновить базу для другой локали
+./hsanalyzer update-cards --locale enUS
+
+# Обновить базу в указанный путь
+./hsanalyzer update-cards --locale ruRU --out data/cards.json
+```
+
+Команда `update-cards` загружает актуальные данные карт из HearthstoneJSON:
+`https://api.hearthstonejson.com/v1/latest/<locale>/cards.json`
+
 ### Конфигурация
 
 Создайте файл `config.yaml`:

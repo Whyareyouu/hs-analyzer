@@ -1,0 +1,451 @@
+D 15:45:11.6065089 Hearthstone/35.2.240818 (PC;MS_7D76_Micro_Star_International_Co._Ltd._;Desktop;490e911995bcf6e0b221236218b299acb87b1c3c;11524;NVIDIA_GeForce_RTX_5060_Ti;NVIDIA;4318;Direct3D_11.0_level_11.1_;3072;50;Full;Windows_11_10.0.26200_64bit;12;AMD_Ryzen_5_7600X_6_Core_Processor_;8;True;False;True;False;True;True;True;True;True;True;1;False;31937;True;True;True;False;2560;1440;96;Desktop;True) Battle.net/CSharp
+D 15:45:11.6065089 Job_StartInitialBattleNetConnection done wait for LoginService
+D 15:45:11.6979690 Job_StartInitialBattleNetConnection  done wait for LoginManager
+D 15:45:11.6979690 Job_StartInitialBattleNetConnection done wait for ShouldBeConnectedToAurora
+D 15:45:11.6979690 StartInitalBattleNetConnection
+D 15:45:11.6979690 StartInitalBattleNetConnection: BattleNet.Connect with: eu.actual.battle.net:1119 , Auth: US-f2f0c7d9299212e30c170a51a283cd42-436813706 
+D 15:45:14.2255761 OnNetCacheObjReceived SAVE --> NetCacheFeatures
+D 15:45:14.9489003 Updated OAuth token with expiration 24.04.2026 15:45:13
+I 15:45:14.9489003 PerformAuthenticationAsync True
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheFeatures
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheProfileProgress
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheClientOptions
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheCollection
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheProfileNotices
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheProfileNotices
+D 15:45:14.9489003 Caching currency state: {
+  ArcaneDustBalance: 95
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 40
+  CurrencyVersion: 2610
+  RenownBalance: 0
+}
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheBoosters
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetPlayerArenaTickets
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheDisconnectedGame
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheDisplayBanner
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheDecks
+D 15:45:14.9489003 OnNetCacheObjReceived SAVE --> NetCacheMedalInfo
+D 15:45:15.5620486 OnNetCacheObjReceived SAVE --> NetCacheBaconRatingInfo
+D 15:45:15.6416249 OnNetCacheObjReceived SAVE --> NetCachePlayerRecords
+D 15:45:15.6697765 OnNetCacheObjReceived SAVE --> NetCacheHeroLevels
+D 15:45:15.7245321 OnNetCacheObjReceived SAVE --> NetCacheMercenariesPlayerInfo
+D 15:45:15.7665679 Updated OAuth token with expiration 24.04.2026 15:45:31
+I 15:45:15.7665679 PerformAuthenticationAsync True
+D 15:45:32.3073752 OnNetCacheObjReceived SAVE --> NetCacheProfileProgress
+D 15:45:32.3644186 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsGuideSkins
+D 15:45:32.3950106 OnNetCacheObjReceived SAVE --> NetCacheFavoriteHeroes
+D 15:45:32.4290259 OnNetCacheObjReceived SAVE --> NetCacheCoins
+D 15:45:32.4820557 OnNetCacheObjReceived SAVE --> NetCacheRewardProgress
+D 15:45:32.5236442 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsEmotes
+D 15:45:32.5888478 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsFinishers
+D 15:45:32.6290519 OnNetCacheObjReceived SAVE --> NetCacheCardBacks
+D 15:45:32.8907309 OnNetCacheObjReceived SAVE --> NetCacheAccountLicenses
+D 15:45:32.9543812 OnNetCacheObjReceived SAVE --> ClientStaticAssetsResponse
+D 15:45:33.2470121 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsHeroSkins
+D 15:45:33.9231555 OnNetCacheObjReceived SAVE --> NetCachePets
+D 15:45:34.0968861 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsBoardSkins
+D 15:45:42.7920592 Network.GetDeckContents 2724790028, 2731433346, 2731774845, 2732587110, 2731443185, 2731562739
+D 15:49:05.5243941 OnNetCacheObjReceived SAVE --> NetCacheHeroLevels
+D 15:49:05.5596809 OnNetCacheObjReceived SAVE --> NetCacheMedalInfo
+D 15:50:35.5328106 OnNetCacheObjReceived SAVE --> NetCacheBaconRatingInfo
+D 15:50:35.6756839 OnNetCacheObjReceived SAVE --> NetCachePlayerRecords
+D 15:59:20.0772403 OnNetCacheObjReceived SAVE --> NetCacheHeroLevels
+D 15:59:20.1236421 OnNetCacheObjReceived SAVE --> NetCacheMedalInfo
+D 15:59:32.7763822 OnNetCacheObjReceived SAVE --> NetCacheBaconRatingInfo
+D 15:59:32.8712577 OnNetCacheObjReceived SAVE --> NetCachePlayerRecords
+D 15:59:41.4872430 Handling card collection modification (collection version 7401): {
+  AmountSeen: 0
+  AssetCardId: 127759
+  Premium: 0
+  Quantity: 1
+}
+D 15:59:41.4872430 OnNetCacheObjReceived SAVE --> NetCacheBoosters
+D 15:59:50.6653277 Caching currency state: {
+  ArcaneDustBalance: 95
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2611
+  RenownBalance: 0
+}
+D 15:59:50.6653277 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 15:59:50.6653277 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 15:59:50.6653277 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 15:59:50.6653277 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 15:59:54.1542288 Network.OpenBooster
+D 15:59:54.5235582 Handling card collection modification (collection version 7402): {
+  AmountSeen: 0
+  AssetCardId: 122829
+  Premium: 1
+  Quantity: 1
+}
+D 15:59:54.5235582 Handling card collection modification (collection version 7402): {
+  AmountSeen: 0
+  AssetCardId: 123055
+  Premium: 1
+  Quantity: 1
+}
+D 15:59:54.5235582 Handling card collection modification (collection version 7402): {
+  AmountSeen: 0
+  AssetCardId: 122831
+  Premium: 1
+  Quantity: 1
+}
+D 15:59:54.5235582 Handling card collection modification (collection version 7402): {
+  AmountSeen: 0
+  AssetCardId: 123600
+  Premium: 1
+  Quantity: 1
+}
+D 15:59:54.5235582 Handling card collection modification (collection version 7402): {
+  AmountSeen: 0
+  AssetCardId: 123060
+  Premium: 1
+  Quantity: 1
+}
+D 15:59:54.5235582 OnNetCacheObjReceived SAVE --> NetCacheBoosters
+D 16:00:04.2459127 Network.OpenBooster
+D 16:00:04.4555816 Handling card collection modification (collection version 7403): {
+  AmountSeen: 0
+  AssetCardId: 122966
+  Premium: 1
+  Quantity: 1
+}
+D 16:00:04.4555816 Handling card collection modification (collection version 7403): {
+  AmountSeen: 0
+  AssetCardId: 123351
+  Premium: 1
+  Quantity: 1
+}
+D 16:00:04.4555816 Handling card collection modification (collection version 7403): {
+  AmountSeen: 0
+  AssetCardId: 122867
+  Premium: 1
+  Quantity: 1
+}
+D 16:00:04.4555816 Handling card collection modification (collection version 7403): {
+  AmountSeen: 0
+  AssetCardId: 123074
+  Premium: 1
+  Quantity: 1
+}
+D 16:00:04.4555816 Handling card collection modification (collection version 7403): {
+  AmountSeen: 0
+  AssetCardId: 122641
+  Premium: 1
+  Quantity: 1
+}
+D 16:00:04.4555816 OnNetCacheObjReceived SAVE --> NetCacheBoosters
+D 16:00:30.0409706 Caching currency state: {
+  ArcaneDustBalance: 145
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2612
+  RenownBalance: 0
+}
+D 16:00:30.0409706 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:30.0409706 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:30.0409706 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:30.0409706 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:30.0409706 Handling card collection modification (collection version 7404): {
+  AmountSeen: 1
+  AssetCardId: 123600
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:32.8277353 Caching currency state: {
+  ArcaneDustBalance: 195
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2613
+  RenownBalance: 0
+}
+D 16:00:32.8277353 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:32.8277353 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:32.8277353 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:32.8277353 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:32.8277353 Handling card collection modification (collection version 7405): {
+  AmountSeen: 1
+  AssetCardId: 122966
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:35.4270971 Caching currency state: {
+  ArcaneDustBalance: 295
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2614
+  RenownBalance: 0
+}
+D 16:00:35.4270971 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:35.4270971 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:35.4270971 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:35.4270971 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:35.4270971 Handling card collection modification (collection version 7406): {
+  AmountSeen: 1
+  AssetCardId: 122867
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:38.9004521 Caching currency state: {
+  ArcaneDustBalance: 695
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2615
+  RenownBalance: 0
+}
+D 16:00:38.9004521 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:38.9004521 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:38.9004521 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:38.9004521 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:38.9004521 Handling card collection modification (collection version 7407): {
+  AmountSeen: 1
+  AssetCardId: 123351
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:41.4382957 Caching currency state: {
+  ArcaneDustBalance: 745
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2616
+  RenownBalance: 0
+}
+D 16:00:41.4382957 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:41.4382957 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:41.4382957 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:41.4382957 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:41.4382957 Handling card collection modification (collection version 7408): {
+  AmountSeen: 1
+  AssetCardId: 123060
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:45.4798180 Caching currency state: {
+  ArcaneDustBalance: 795
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2617
+  RenownBalance: 0
+}
+D 16:00:45.4798180 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:45.4798180 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:45.4798180 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:45.4798180 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:45.4798180 Handling card collection modification (collection version 7409): {
+  AmountSeen: 1
+  AssetCardId: 123074
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:48.1358826 Caching currency state: {
+  ArcaneDustBalance: 845
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2618
+  RenownBalance: 0
+}
+D 16:00:48.1358826 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:48.1358826 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:48.1358826 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:48.1358826 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:48.1358826 Handling card collection modification (collection version 7410): {
+  AmountSeen: 1
+  AssetCardId: 122831
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:51.0699877 Caching currency state: {
+  ArcaneDustBalance: 945
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2619
+  RenownBalance: 0
+}
+D 16:00:51.0699877 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:51.0699877 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:51.0699877 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:51.0699877 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:51.0699877 Handling card collection modification (collection version 7411): {
+  AmountSeen: 1
+  AssetCardId: 122829
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:53.0818985 Caching currency state: {
+  ArcaneDustBalance: 995
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2620
+  RenownBalance: 0
+}
+D 16:00:53.0818985 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:53.0818985 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:53.0818985 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:53.0818985 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:53.0818985 Handling card collection modification (collection version 7412): {
+  AmountSeen: 1
+  AssetCardId: 123055
+  Premium: 1
+  Quantity: -1
+}
+D 16:00:55.8125548 Caching currency state: {
+  ArcaneDustBalance: 1045
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2621
+  RenownBalance: 0
+}
+D 16:00:55.8125548 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:00:55.8125548 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:00:55.8125548 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:00:55.8125548 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:00:55.8125548 Handling card collection modification (collection version 7413): {
+  AmountSeen: 1
+  AssetCardId: 122641
+  Premium: 1
+  Quantity: -1
+}
+D 16:01:14.5426370 Caching currency state: {
+  ArcaneDustBalance: 1050
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2622
+  RenownBalance: 0
+}
+D 16:01:14.5426370 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:14.5426370 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:14.5426370 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:14.5426370 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:14.5426370 Handling card collection modification (collection version 7414): {
+  AmountSeen: 1
+  AssetCardId: 121757
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:17.9156427 Caching currency state: {
+  ArcaneDustBalance: 1055
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2623
+  RenownBalance: 0
+}
+D 16:01:17.9156427 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:17.9156427 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:17.9156427 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:17.9156427 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:17.9156427 Handling card collection modification (collection version 7415): {
+  AmountSeen: 1
+  AssetCardId: 122970
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:24.8354301 Caching currency state: {
+  ArcaneDustBalance: 1455
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2624
+  RenownBalance: 0
+}
+D 16:01:24.8354301 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:24.8354301 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:24.8354301 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:24.8354301 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:24.8354301 Handling card collection modification (collection version 7416): {
+  AmountSeen: 1
+  AssetCardId: 123109
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:26.9137912 Caching currency state: {
+  ArcaneDustBalance: 1460
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2625
+  RenownBalance: 0
+}
+D 16:01:26.9137912 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:26.9137912 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:26.9137912 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:26.9137912 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:26.9137912 Handling card collection modification (collection version 7417): {
+  AmountSeen: 1
+  AssetCardId: 123114
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:30.2889416 Caching currency state: {
+  ArcaneDustBalance: 1480
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2626
+  RenownBalance: 0
+}
+D 16:01:30.2889416 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:30.2889416 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:30.2889416 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:30.2889416 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:30.2889416 Handling card collection modification (collection version 7418): {
+  AmountSeen: 1
+  AssetCardId: 122757
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:36.0367415 Caching currency state: {
+  ArcaneDustBalance: 1500
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2627
+  RenownBalance: 0
+}
+D 16:01:36.0367415 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:36.0367415 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:36.0367415 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:36.0367415 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:36.0367415 Handling card collection modification (collection version 7419): {
+  AmountSeen: 1
+  AssetCardId: 122712
+  Premium: 0
+  Quantity: -1
+}
+D 16:01:42.4558660 Caching currency state: {
+  ArcaneDustBalance: 1505
+  BgTokenBalance: 2
+  BonusGoldBalance: 0
+  CappedGoldBalance: 140
+  CurrencyVersion: 2628
+  RenownBalance: 0
+}
+D 16:01:42.4558660 OnNetCacheObjReceived SAVE --> NetCacheArcaneDustBalance
+D 16:01:42.4558660 OnNetCacheObjReceived SAVE --> NetCacheGoldBalance
+D 16:01:42.4558660 OnNetCacheObjReceived SAVE --> NetCacheRenownBalance
+D 16:01:42.4558660 OnNetCacheObjReceived SAVE --> NetCacheBattlegroundsTokenBalance
+D 16:01:42.4558660 Handling card collection modification (collection version 7420): {
+  AmountSeen: 1
+  AssetCardId: 122831
+  Premium: 0
+  Quantity: -1
+}
+D 16:02:15.4036667 Network.CreateDeck hero=71070

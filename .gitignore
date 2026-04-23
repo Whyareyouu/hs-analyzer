@@ -35,8 +35,6 @@ Thumbs.db
 config.yaml
 !configs/config.yaml
 
-# Logs
-*.log
 
 # Data files (keep structure)
 data/cards.json

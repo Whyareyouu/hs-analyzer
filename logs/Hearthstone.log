@@ -1,0 +1,236 @@
+I 15:44:58.3001541 Application paused: False
+I 15:44:58.4148725 Tracert: ICMP protocol is ready.
+I 15:44:58.4148725 Current working dir=D:\Hearthstone
+I 15:44:58.4148725 SetLocale: ruRU
+I 15:44:58.4148725 [Jobs Fallback logger]: [JobQueue.QueueJob] Job (DeeplinkService.PostFullLoginJobs(ID:1)) QUEUED
+I 15:44:58.4148725 [Jobs Fallback logger]: [JobQueue.QueueJob] Dependency (WaitForFullLoginFlowComplete) added for queued job (DeeplinkService.PostFullLoginJobs(ID:1))
+I 15:44:58.4148725 Command Line: -launch -uid hs_beta
+W 15:44:58.4148725 UberText LoadCachedData() failed: The output char buffer is too small to contain the decoded characters, encoding 'Unicode (UTF-8)' fallback 'System.Text.DecoderReplacementFallback'.
+Parameter name: chars
+I 15:44:59.1472751 Main thread: True
+I 15:44:59.1472751 System Info:
+I 15:44:59.1472751 SystemInfo - Device Name: WHYAREYOU
+I 15:44:59.1472751 SystemInfo - Device Model: MS-7D76 (Micro-Star International Co., Ltd.)
+I 15:44:59.1472751 SystemInfo - OS: Windows 11  (10.0.26200) 64bit
+I 15:44:59.1472751 SystemInfo - CPU Type: AMD Ryzen 5 7600X 6-Core Processor 
+I 15:44:59.1472751 SystemInfo - CPU Cores: 12
+I 15:44:59.1472751 SystemInfo - System Memory: 31937
+I 15:44:59.1472751 SystemInfo - Screen Resolution: 2560x1440
+I 15:44:59.1472751 SystemInfo - Screen DPI: 96
+I 15:44:59.1472751 SystemInfo - GPU ID: 11524
+I 15:44:59.1472751 SystemInfo - GPU Name: NVIDIA GeForce RTX 5060 Ti
+I 15:44:59.1472751 SystemInfo - GPU Vendor: NVIDIA
+I 15:44:59.1472751 SystemInfo - GPU Memory: 3072
+I 15:44:59.1472751 SystemInfo - GPU Shader Level: 50
+I 15:44:59.1472751 SystemInfo - GPU NPOT Support: Full
+I 15:44:59.1472751 SystemInfo - Graphics API (version): Direct3D 11.0 [level 11.1]
+I 15:44:59.1472751 SystemInfo - Graphics API (type): Direct3D11
+I 15:44:59.1472751 SystemInfo - Graphics Supported Render Target Count: 8
+I 15:44:59.1472751 SystemInfo - Graphics Supports 3D Textures: True
+I 15:44:59.1472751 SystemInfo - Graphics Supports Compute Shaders: True
+I 15:44:59.1472751 SystemInfo - Graphics Supports Shadows: True
+I 15:44:59.1472751 SystemInfo - Graphics Supports Sparse Textures: True
+I 15:44:59.1472751 SystemInfo - Graphics RenderTextureFormat.ARGBHalf: True
+I 15:44:59.1472751 SystemInfo - Graphics Metal Support: False
+I 15:45:09.9467787 [Startup] Startup stage Start
+I 15:45:09.9467787 [Downloader] *** Loading DBF
+E 15:45:11.2576954 GAME_SAVE_SUBKEY DBF Asset has 0 records! Something went wrong generating it. Try checking the generated XMLs in the DBF folder.
+E 15:45:11.2576954 GLOBAL DBF Asset has 0 records! Something went wrong generating it. Try checking the generated XMLs in the DBF folder.
+I 15:45:11.6065089 *** BattleNet version: Product = 35.2.0.0, Data = 35200
+I 15:45:11.6979690 [Login] Beginning processing login challenges
+I 15:45:11.6979690 [Startup] Startup stage ConnectingToBattlenet
+I 15:45:11.6979690 CPU Benchmark Result (Average Frame Time): 31ms
+I 15:45:11.7906167 GPU Benchmark Result (Average Frame Time): 17ms
+I 15:45:13.8277729 [Login] We are now logged in, stopping processing challenges
+I 15:45:13.8277729 Region: EU
+I 15:45:13.8277729 Braze is supported  for this build: False
+I 15:45:13.8277729 [Startup] Startup stage ConnectingToHearthstone
+W 15:45:14.5973005 Attempting to get decks from CollectionManager, even though NetCacheDecks is not ready (meaning it's waiting for the decks to be updated)!
+W 15:45:14.5973005 Attempting to get decks from CollectionManager, even though NetCacheDecks is not ready (meaning it's waiting for the decks to be updated)!
+W 15:45:14.9489003 Attempting to get decks from CollectionManager, even though NetCacheDecks is not ready (meaning it's waiting for the decks to be updated)!
+W 15:45:14.9489003 Attempting to get decks from CollectionManager, even though NetCacheDecks is not ready (meaning it's waiting for the decks to be updated)!
+I 15:45:14.9489003 [Startup] Startup stage LaunchGame
+I 15:45:14.9489003 RegisterScreenBox tempGuardianVars=NetCache+NetCacheFeatures
+I 15:45:15.3087107 [HealthyGaming] CAIS ServerEnabledForPlatform=False AccountCAISForChina=False Country=NLD TimeSec=17,08979 PlayedTimeMin=0 RestedTimeMin=0 SessionStartTime=1776948312000
+I 15:45:15.7665679 [GameNetLogger] GameMgr.ChangeFindGameState() - state: CLIENT_STARTED, previous state: INVALID
+I 15:45:15.7665679 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_CONNECTING, previous state: CLIENT_STARTED
+I 15:45:15.7665679 [GameNetLogger] Network.GotoGameServe() - gameConnectionDisconnected True, IsRestoringGameState: False
+I 15:45:15.7665679 [GameNetLogger] Network.GotoGameServe() - address= 5.42.176.181:1119, game=18470, client=59068537, spectateKey= reconnecting=True
+I 15:45:15.7665679 TcpConnection - possible ip address: 5.42.176.181
+I 15:45:15.7665679 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 15:45:32.3571855 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with error code ERROR_OK
+I 15:45:32.3571855 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with socket error: Success, Message: Client: Connected
+I 15:45:32.3571855 [GameNetLogger] Network.SendGameServerHandshake()
+I 15:45:32.5761795 [GameNetLogger] GameMgr.OnGameSetup()
+I 15:45:32.5761795 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_STARTED, previous state: SERVER_GAME_CONNECTING
+I 15:45:32.5761795 SERVER_GAME_STARTED event - Loading Gameplay Scene
+I 15:45:32.5761795 [GameNetLogger] GameMgr.ChangeFindGameState() - state: INVALID, previous state: SERVER_GAME_STARTED
+I 15:45:32.6290519 Gameplay.Awake() - CurrentMode=GAMEPLAY, PrevMode=LOGIN
+W 15:45:33.2470121 CardBackManager SetDeckCardBack(): cardBack is null!
+W 15:46:18.7513634 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:46:18.7513634 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:46:18.7513634 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:46:18.7513634 Could not find object of name NonQuestObjects in actor
+W 15:46:18.7513634 Could not find object of name NonQuestObjects in actor
+W 15:46:18.7513634 Could not find object of name NonQuestObjects in actor
+W 15:46:18.7513634 Could not find object of name BGRewardVFX in actor
+W 15:46:18.7513634 Could not find object of name BGRewardVFX in actor
+W 15:46:18.7513634 Could not find object of name BGRewardVFX in actor
+I 15:49:04.7034447 [GameNetLogger] Player conceded the game
+I 15:49:10.4506195 [GameNetLogger] Network.DisconnectFromGameServer() - Reason: EndGameScreen 
+I 15:49:10.4506195 [GameNetLogger] Network.OnGameServerDisconnectEvent() - Disconnected from game server with BNet error: ERROR_OK socket error: Success, Message: 
+I 15:49:10.4506195 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 15:49:10.4506195 Hiding notification SpeechBubble(Clone) because something else is being shown.
+I 15:49:10.4719374 [GameNetLogger] Trying to send a packet while disconnected. ID 15 , PegasusGame.UserUI
+E 15:49:10.4719374 [GameNetLogger] RpcController.SendData() - Not connected
+I 15:50:35.2694115 RegisterScreenBox tempGuardianVars=NetCache+NetCacheFeatures
+W 15:50:36.2091274 Couldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+I 15:50:38.9754944 [GameNetLogger] GameMgr.ChangeFindGameState() - state: CLIENT_STARTED, previous state: INVALID
+I 15:50:39.1622550 [GameNetLogger] GameMgr.ChangeFindGameState() - state: BNET_QUEUE_DELAYED, previous state: CLIENT_STARTED
+I 15:50:45.7057857 [GameNetLogger] GameMgr.ChangeFindGameState() - state: BNET_QUEUE_UPDATED, previous state: BNET_QUEUE_DELAYED
+I 15:50:48.5058801 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_CONNECTING, previous state: BNET_QUEUE_UPDATED
+I 15:50:48.5058801 [GameNetLogger] Network.GotoGameServe() - gameConnectionDisconnected True, IsRestoringGameState: False
+I 15:50:48.5058801 [GameNetLogger] Network.GotoGameServe() - address= 5.42.176.54:1119, game=18264, client=59068537, spectateKey=adHfAg reconnecting=False
+I 15:50:48.5058801 TcpConnection - possible ip address: 5.42.176.54
+W 15:51:05.0158963 Network.ProcessNetwork not called for 16s 509ms
+I 15:51:05.1200410 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with error code ERROR_OK
+I 15:51:05.1200410 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with socket error: Success, Message: Client: Connected
+I 15:51:05.1200410 [GameNetLogger] Network.SendGameServerHandshake()
+I 15:51:05.2932807 [GameNetLogger] GameMgr.OnGameSetup()
+I 15:51:05.2932807 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_STARTED, previous state: SERVER_GAME_CONNECTING
+I 15:51:05.2932807 SERVER_GAME_STARTED event - Loading Gameplay Scene
+I 15:51:05.2932807 [GameNetLogger] GameMgr.ChangeFindGameState() - state: INVALID, previous state: SERVER_GAME_STARTED
+I 15:51:05.3460425 Gameplay.Awake() - CurrentMode=GAMEPLAY, PrevMode=TOURNAMENT
+W 15:53:07.6714775 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:53:07.6714775 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:53:07.6714775 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 15:53:07.6714775 Could not find object of name NonQuestObjects in actor
+W 15:53:07.6714775 Could not find object of name NonQuestObjects in actor
+W 15:53:07.6714775 Could not find object of name NonQuestObjects in actor
+W 15:53:07.6714775 Could not find object of name BGRewardVFX in actor
+W 15:53:07.6714775 Could not find object of name BGRewardVFX in actor
+W 15:53:07.6714775 Could not find object of name BGRewardVFX in actor
+E 15:58:02.2539823 [Asset] Asset 'TIMEFX_Mekkatorque_Aura_ImpactOnly_Super:db9ad9168eabc9c4b9e0df5f0aa5a257' is missing from asset bundles
+E 15:58:02.2539823 [Power] SubSpellController (SubSpellController).OnSubSpellLoaded(): Failed to load spell prefab! Prefab GUID: TIMEFX_Mekkatorque_Aura_ImpactOnly_Super:db9ad9168eabc9c4b9e0df5f0aa5a257
+I 15:59:24.8980624 [GameNetLogger] Network.DisconnectFromGameServer() - Reason: EndGameScreen 
+I 15:59:24.8980624 [GameNetLogger] Network.OnGameServerDisconnectEvent() - Disconnected from game server with BNet error: ERROR_OK socket error: Success, Message: 
+I 15:59:24.8980624 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 15:59:32.6345600 RegisterScreenBox tempGuardianVars=NetCache+NetCacheFeatures
+W 15:59:33.2016821 Couldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+E 15:59:36.9340023 GameObject is already being activated or deactivated.
+E 15:59:36.9340023 GameObject is already being activated or deactivated.
+E 15:59:36.9340023 Cannot set the parent of the GameObject 'JournalPopup.prefab:b61d6e9bd58789647a62494cf92fb93e' while it is being destroyed.
+E 15:59:36.9340023 Destroying object multiple times. Don't use DestroyImmediate on the same object in OnDisable or OnDestroy.
+I 15:59:37.1385076 [LuckyDraw] LuckyDrawManager status: Received instruction to initialize or update. Starting now.
+I 15:59:37.1385076 [LuckyDraw] LuckyDrawManager status: Waiting for store to initialize...
+I 15:59:37.1385076 [LuckyDraw] LuckyDrawManager status: Requested lucky draw data from Hearthstone server. Waiting for a response...
+I 15:59:37.4043955 [LuckyDraw] LuckyDrawManager status: Processing lucky draws received from the server. Creating data models etc.
+I 15:59:37.4043955 [LuckyDraw] Lucky Draw Box 74 status: Initializing. Creating lucky draw box state from Hearthstone server response.
+I 15:59:37.4043955 [LuckyDraw] Lucky Draw Box 74 status: Смертожабр is fully initialised.
+I 15:59:37.4043955 [LuckyDraw] LuckyDrawManager status: DFT system is fully initialized and ready!
+I 15:59:41.5209536 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 15:59:50.6653277 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:19.3660888 [LuckyDraw] LuckyDrawManager status: Received instruction to initialize or update. Starting now.
+I 16:00:19.3660888 [LuckyDraw] LuckyDrawManager status: Waiting for store to initialize...
+I 16:00:19.3660888 [LuckyDraw] LuckyDrawManager status: Requested lucky draw data from Hearthstone server. Waiting for a response...
+I 16:00:19.8584577 [LuckyDraw] LuckyDrawManager status: Processing lucky draws received from the server. Creating data models etc.
+I 16:00:19.8584577 [LuckyDraw] Lucky Draw Box 74 status: Initializing. Creating lucky draw box state from Hearthstone server response.
+I 16:00:19.8584577 [LuckyDraw] Lucky Draw Box 74 status: Смертожабр is fully initialised.
+I 16:00:19.8584577 [LuckyDraw] LuckyDrawManager status: DFT system is fully initialized and ready!
+W 16:00:23.5442293 LoadHeroButtonsForFavoriteHeroes: CCouldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+W 16:00:23.5442293 LoadHeroButtonsForFavoriteHeroes: CCouldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+I 16:00:28.2684940 setting up actor [name=Одержимый техник cardId=CATA_780 type=MINION] GOLDEN
+I 16:00:28.8912848 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:30.5316639 setting up actor [name=Кристаллоспин-детеныш cardId=CATA_130 type=MINION] GOLDEN
+I 16:00:30.9814009 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:33.2903819 setting up actor [name=Камнерукий боец cardId=CATA_551 type=MINION] GOLDEN
+I 16:00:33.8346464 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:36.1043943 setting up actor [name=Нестабильный заклинатель cardId=CATA_483 type=MINION] GOLDEN
+I 16:00:36.6485958 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:39.4513488 setting up actor [name=Агент Древних cardId=CATA_200 type=MINION] GOLDEN
+I 16:00:41.8650462 setting up actor [name=Похищенная сила cardId=CATA_202 type=SPELL] GOLDEN
+I 16:00:43.5148721 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:46.0659048 setting up actor [name=Негодные послушники cardId=CATA_499 type=SPELL] GOLDEN
+I 16:00:46.6346519 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:49.1572355 setting up actor [name=Последний бой Рафаама cardId=CATA_498 type=SPELL] GOLDEN
+I 16:00:49.7280034 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:00:51.5449196 setting up actor [name=Катастрофический боевой топор cardId=CATA_580 type=WEAPON] GOLDEN
+I 16:00:53.6653089 setting up actor [name=Дракобель-полукровка cardId=CATA_723 type=MINION] GOLDEN
+I 16:00:54.2493385 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:12.1503147 setting up actor [name=Поставка припасов cardId=CATA_820 type=SPELL] NORMAL
+I 16:01:12.7567320 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:15.8430680 setting up actor [name=Радужный летунчик cardId=CATA_133 type=MINION] NORMAL
+I 16:01:16.6626725 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:23.2289534 setting up actor [name=Ноздорму, бронзовый Аспект cardId=CATA_473 type=MINION] NORMAL
+I 16:01:23.7559621 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:25.1466140 setting up actor [name=Заступник-чешуелом cardId=CATA_475 type=MINION] NORMAL
+I 16:01:25.6114366 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:28.7217160 setting up actor [name=Рубиновое святилище cardId=CATA_301 type=LOCATION] NORMAL
+I 16:01:29.2369591 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+W 16:01:29.8349702 Could not find object of name Gem_Attack in actor
+W 16:01:29.8349702 Could not find object of name Gem_Health in actor
+I 16:01:33.1622284 setting up actor [name=Сумеречное святилище cardId=CATA_492 type=LOCATION] NORMAL
+I 16:01:34.3309590 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+W 16:01:35.6217233 Could not find object of name Gem_Attack in actor
+W 16:01:35.6217233 Could not find object of name Gem_Health in actor
+I 16:01:36.8940281 setting up actor [name=Негодные послушники cardId=CATA_499 type=SPELL] NORMAL
+I 16:01:37.6638890 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+I 16:01:48.2870146 [LuckyDraw] LuckyDrawManager status: Received instruction to initialize or update. Starting now.
+I 16:01:48.2870146 [LuckyDraw] LuckyDrawManager status: Waiting for store to initialize...
+I 16:01:48.2870146 [LuckyDraw] LuckyDrawManager status: Requested lucky draw data from Hearthstone server. Waiting for a response...
+I 16:01:51.9420677 [LuckyDraw] LuckyDrawManager status: Processing lucky draws received from the server. Creating data models etc.
+I 16:01:51.9420677 [LuckyDraw] Lucky Draw Box 74 status: Initializing. Creating lucky draw box state from Hearthstone server response.
+I 16:01:51.9420677 [LuckyDraw] Lucky Draw Box 74 status: Смертожабр is fully initialised.
+I 16:01:51.9420677 [LuckyDraw] LuckyDrawManager status: DFT system is fully initialized and ready!
+W 16:02:14.7789291 LoadHeroButtonsForFavoriteHeroes: CCouldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+W 16:02:14.7789291 LoadHeroButtonsForFavoriteHeroes: CCouldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+W 16:02:15.5344709 Navigation.PushUnique called for non-static method! - OnBackOutOfContainerContents
+E 16:02:37.0863621 GameObject is already being activated or deactivated.
+E 16:02:37.0863621 GameObject is already being activated or deactivated.
+E 16:02:37.0863621 Cannot set the parent of the GameObject 'JournalPopup.prefab:b61d6e9bd58789647a62494cf92fb93e' while it is being destroyed.
+E 16:02:37.0863621 Destroying object multiple times. Don't use DestroyImmediate on the same object in OnDisable or OnDestroy.
+I 16:02:37.3933802 [LuckyDraw] LuckyDrawManager status: Received instruction to initialize or update. Starting now.
+I 16:02:37.3933802 [LuckyDraw] LuckyDrawManager status: Waiting for store to initialize...
+I 16:02:37.3933802 [LuckyDraw] LuckyDrawManager status: Requested lucky draw data from Hearthstone server. Waiting for a response...
+I 16:02:37.8639406 [LuckyDraw] LuckyDrawManager status: Processing lucky draws received from the server. Creating data models etc.
+I 16:02:37.8639406 [LuckyDraw] Lucky Draw Box 74 status: Initializing. Creating lucky draw box state from Hearthstone server response.
+I 16:02:37.8639406 [LuckyDraw] Lucky Draw Box 74 status: Смертожабр is fully initialised.
+I 16:02:37.8639406 [LuckyDraw] LuckyDrawManager status: DFT system is fully initialized and ready!
+W 16:03:01.6057386 Couldn't find Favorite Hero for hero class: DEMONHUNTER defaulting to Vanilla Hero!
+I 16:04:58.5224311 [GameNetLogger] GameMgr.ChangeFindGameState() - state: CLIENT_STARTED, previous state: INVALID
+I 16:04:58.7100472 [GameNetLogger] GameMgr.ChangeFindGameState() - state: BNET_QUEUE_DELAYED, previous state: CLIENT_STARTED
+I 16:05:06.2025716 [GameNetLogger] GameMgr.ChangeFindGameState() - state: BNET_QUEUE_UPDATED, previous state: BNET_QUEUE_DELAYED
+I 16:05:08.9364286 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_CONNECTING, previous state: BNET_QUEUE_UPDATED
+I 16:05:08.9364286 [GameNetLogger] Network.GotoGameServe() - gameConnectionDisconnected True, IsRestoringGameState: False
+I 16:05:08.9364286 [GameNetLogger] Network.GotoGameServe() - address= 5.42.176.181:1119, game=19092, client=59068537, spectateKey=kfmeik reconnecting=False
+I 16:05:08.9364286 TcpConnection - possible ip address: 5.42.176.181
+W 16:05:25.4334458 Network.ProcessNetwork not called for 16s 497ms
+I 16:05:25.5236251 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with error code ERROR_OK
+I 16:05:25.5236251 [GameNetLogger] Network.OnGameServerConnectEvent() - Connected to game server with socket error: Success, Message: Client: Connected
+I 16:05:25.5236251 [GameNetLogger] Network.SendGameServerHandshake()
+I 16:05:25.7497153 [GameNetLogger] GameMgr.OnGameSetup()
+I 16:05:25.7497153 [GameNetLogger] GameMgr.ChangeFindGameState() - state: SERVER_GAME_STARTED, previous state: SERVER_GAME_CONNECTING
+I 16:05:25.7497153 SERVER_GAME_STARTED event - Loading Gameplay Scene
+I 16:05:25.7497153 [GameNetLogger] GameMgr.ChangeFindGameState() - state: INVALID, previous state: SERVER_GAME_STARTED
+I 16:05:25.7929705 Gameplay.Awake() - CurrentMode=GAMEPLAY, PrevMode=TOURNAMENT
+I 16:07:55.1429772 Hiding notification HelpTooltip_Tutorial because something else is being shown.
+W 16:08:11.4901047 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:08:11.4901047 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:08:11.4901047 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:08:11.4901047 Could not find object of name NonQuestObjects in actor
+W 16:08:11.4901047 Could not find object of name NonQuestObjects in actor
+W 16:08:11.4901047 Could not find object of name NonQuestObjects in actor
+W 16:08:11.4901047 Could not find object of name BGRewardVFX in actor
+W 16:08:11.4901047 Could not find object of name BGRewardVFX in actor
+W 16:08:11.4901047 Could not find object of name BGRewardVFX in actor
+W 16:09:10.6788216 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:09:10.6788216 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:09:10.6788216 Could not find object of name Card_Hand_BG_Quest_Text_Tray_Mesh in actor
+W 16:09:10.6788216 Could not find object of name NonQuestObjects in actor
+W 16:09:10.6788216 Could not find object of name NonQuestObjects in actor
+W 16:09:10.6788216 Could not find object of name NonQuestObjects in actor
+E 16:10:55.3695208 [All] actualChoiceCards is NULL. Attempting workaround.
+E 16:11:18.8189064 [All] actualChoiceCards is NULL. Attempting workaround.
+W 16:12:25.2059141 Animator.GotoState: State could not be found
+W 16:12:25.2059141 Invalid Layer Index '-1'
+E 16:16:27.9525765 Releasing render texture that is set as Camera.targetTexture!
