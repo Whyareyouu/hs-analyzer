@@ -1,18 +1,22 @@
-package game
+package state
 
 import (
 	"testing"
 	"time"
+
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/entity"
+	"hsanalyzer/internal/types"
 )
 
-func TestNewGameState(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestNew(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	if state.GameID != "game123" {
 		t.Errorf("Expected GameID game123, got %s", state.GameID)
 	}
 	if state.GameMode != GameModeStandard {
-		t.Errorf("Expected GameMode STANDARD, got %s", state.GameMode)
+		t.Errorf("Expected state.GameMode STANDARD, got %s", state.GameMode)
 	}
 	if state.CurrentTurn != 0 {
 		t.Errorf("Expected CurrentTurn 0, got %d", state.CurrentTurn)
@@ -31,8 +35,8 @@ func TestNewGameState(t *testing.T) {
 	}
 }
 
-func TestGameState_StartGame(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_StartGame(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	before := time.Now()
 	state.StartGame()
@@ -46,10 +50,10 @@ func TestGameState_StartGame(t *testing.T) {
 	}
 }
 
-func TestGameState_EndGame(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_EndGame(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
-	state.EndGame(PlayerTypePlayer)
+	state.EndGame(types.PlayerTypePlayer)
 
 	if state.EndTime == nil {
 		t.Error("EndTime should be set")
@@ -57,17 +61,17 @@ func TestGameState_EndGame(t *testing.T) {
 	if state.Winner == nil {
 		t.Error("Winner should be set")
 	}
-	if *state.Winner != PlayerTypePlayer {
+	if *state.Winner != types.PlayerTypePlayer {
 		t.Errorf("Expected winner PLAYER, got %s", *state.Winner)
 	}
 }
 
-func TestGameState_StartTurn(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_StartTurn(t *testing.T) {
+	state := New("game123", GameModeStandard)
 	state.Player.MaxMana = 3
 	state.Player.Mana = 0
 
-	turn := state.StartTurn(PlayerTypePlayer)
+	turn := state.StartTurn(types.PlayerTypePlayer)
 
 	if turn == nil {
 		t.Error("Turn should not be nil")
@@ -75,7 +79,7 @@ func TestGameState_StartTurn(t *testing.T) {
 	if state.CurrentTurn != 1 {
 		t.Errorf("Expected CurrentTurn 1, got %d", state.CurrentTurn)
 	}
-	if state.CurrentPlayer != PlayerTypePlayer {
+	if state.CurrentPlayer != types.PlayerTypePlayer {
 		t.Errorf("Expected CurrentPlayer PLAYER, got %s", state.CurrentPlayer)
 	}
 	if len(state.Turns) != 1 {
@@ -89,12 +93,12 @@ func TestGameState_StartTurn(t *testing.T) {
 	}
 }
 
-func TestGameState_StartTurn_ManaCap(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_StartTurn_ManaCap(t *testing.T) {
+	state := New("game123", GameModeStandard)
 	state.Player.MaxMana = 10
 	state.Player.Mana = 0
 
-	state.StartTurn(PlayerTypePlayer)
+	state.StartTurn(types.PlayerTypePlayer)
 
 	if state.Player.MaxMana != 10 {
 		t.Errorf("Expected Player MaxMana 10 (capped), got %d", state.Player.MaxMana)
@@ -104,9 +108,9 @@ func TestGameState_StartTurn_ManaCap(t *testing.T) {
 	}
 }
 
-func TestGameState_EndTurn(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
-	turn := state.StartTurn(PlayerTypePlayer)
+func TestState_EndTurn(t *testing.T) {
+	state := New("game123", GameModeStandard)
+	turn := state.StartTurn(types.PlayerTypePlayer)
 
 	state.EndTurn()
 
@@ -115,8 +119,8 @@ func TestGameState_EndTurn(t *testing.T) {
 	}
 }
 
-func TestGameState_GetCurrentTurn(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetCurrentTurn(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	// Нет ходов
 	turn := state.GetCurrentTurn()
@@ -125,7 +129,7 @@ func TestGameState_GetCurrentTurn(t *testing.T) {
 	}
 
 	// Есть ход
-	state.StartTurn(PlayerTypePlayer)
+	state.StartTurn(types.PlayerTypePlayer)
 	turn = state.GetCurrentTurn()
 	if turn == nil {
 		t.Error("Should return current turn")
@@ -135,54 +139,54 @@ func TestGameState_GetCurrentTurn(t *testing.T) {
 	}
 }
 
-func TestGameState_GetPlayer(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetPlayer(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
-	player := state.GetPlayer(PlayerTypePlayer)
+	player := state.GetPlayer(types.PlayerTypePlayer)
 	if player == nil {
 		t.Error("Should return player")
 	}
-	if player.Type != PlayerTypePlayer {
+	if player.Type != types.PlayerTypePlayer {
 		t.Errorf("Expected player type PLAYER, got %s", player.Type)
 	}
 
-	opponent := state.GetPlayer(PlayerTypeOpponent)
+	opponent := state.GetPlayer(types.PlayerTypeOpponent)
 	if opponent == nil {
 		t.Error("Should return opponent")
 	}
-	if opponent.Type != PlayerTypeOpponent {
+	if opponent.Type != types.PlayerTypeOpponent {
 		t.Errorf("Expected player type OPPONENT, got %s", opponent.Type)
 	}
 
-	unknown := state.GetPlayer(PlayerTypeUnknown)
+	unknown := state.GetPlayer(types.PlayerTypeUnknown)
 	if unknown != nil {
 		t.Error("Should return nil for unknown player type")
 	}
 }
 
-func TestGameState_GetOpponent(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetOpponent(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
-	opponent := state.GetOpponent(PlayerTypePlayer)
+	opponent := state.GetOpponent(types.PlayerTypePlayer)
 	if opponent == nil {
 		t.Error("Should return opponent")
 	}
-	if opponent.Type != PlayerTypeOpponent {
+	if opponent.Type != types.PlayerTypeOpponent {
 		t.Errorf("Expected opponent type OPPONENT, got %s", opponent.Type)
 	}
 
-	player := state.GetOpponent(PlayerTypeOpponent)
+	player := state.GetOpponent(types.PlayerTypeOpponent)
 	if player == nil {
 		t.Error("Should return player")
 	}
-	if player.Type != PlayerTypePlayer {
+	if player.Type != types.PlayerTypePlayer {
 		t.Errorf("Expected player type PLAYER, got %s", player.Type)
 	}
 }
 
-func TestGameState_AddEvent(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
-	state.StartTurn(PlayerTypePlayer)
+func TestState_AddEvent(t *testing.T) {
+	state := New("game123", GameModeStandard)
+	state.StartTurn(types.PlayerTypePlayer)
 
 	event := "test_event"
 	state.AddEvent(event)
@@ -197,12 +201,12 @@ func TestGameState_AddEvent(t *testing.T) {
 	}
 }
 
-func TestGameState_GetEntity(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetEntity(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	// Устанавливаем героев
-	state.Player.Hero = NewEntity(1, "HERO_01", PlayerTypePlayer)
-	state.Opponent.Hero = NewEntity(2, "HERO_02", PlayerTypeOpponent)
+	state.Player.Hero = entity.New(1, "HERO_01", types.PlayerTypePlayer)
+	state.Opponent.Hero = entity.New(2, "HERO_02", types.PlayerTypeOpponent)
 
 	// Получаем героя игрока
 	entity := state.GetEntity(1)
@@ -229,11 +233,11 @@ func TestGameState_GetEntity(t *testing.T) {
 	}
 }
 
-func TestGameState_GetCard(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetCard(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	// Добавляем карту в руку игрока
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := card.New("CS2_189", 42, types.PlayerTypePlayer)
 	state.Player.Hand.AddCard(card)
 
 	// Получаем карту
@@ -252,41 +256,41 @@ func TestGameState_GetCard(t *testing.T) {
 	}
 }
 
-func TestGameState_IsGameOver(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_IsGameOver(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	if state.IsGameOver() {
 		t.Error("Game should not be over")
 	}
 
-	state.EndGame(PlayerTypePlayer)
+	state.EndGame(types.PlayerTypePlayer)
 
 	if !state.IsGameOver() {
 		t.Error("Game should be over")
 	}
 }
 
-func TestGameState_GetWinner(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetWinner(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	winner := state.GetWinner()
 	if winner != nil {
 		t.Error("Winner should be nil")
 	}
 
-	state.EndGame(PlayerTypePlayer)
+	state.EndGame(types.PlayerTypePlayer)
 
 	winner = state.GetWinner()
 	if winner == nil {
 		t.Error("Winner should not be nil")
 	}
-	if *winner != PlayerTypePlayer {
+	if *winner != types.PlayerTypePlayer {
 		t.Errorf("Expected winner PLAYER, got %s", *winner)
 	}
 }
 
-func TestGameState_SetGetMetadata(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_SetGetMetadata(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	state.SetMetadata("test_key", "test_value")
 
@@ -299,23 +303,23 @@ func TestGameState_SetGetMetadata(t *testing.T) {
 	}
 }
 
-func TestGameState_GetTurnCount(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetTurnCount(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	if state.GetTurnCount() != 0 {
 		t.Errorf("Expected 0 turns, got %d", state.GetTurnCount())
 	}
 
-	state.StartTurn(PlayerTypePlayer)
-	state.StartTurn(PlayerTypeOpponent)
+	state.StartTurn(types.PlayerTypePlayer)
+	state.StartTurn(types.PlayerTypeOpponent)
 
 	if state.GetTurnCount() != 2 {
 		t.Errorf("Expected 2 turns, got %d", state.GetTurnCount())
 	}
 }
 
-func TestGameState_GetEventCount(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetEventCount(t *testing.T) {
+	state := New("game123", GameModeStandard)
 
 	if state.GetEventCount() != 0 {
 		t.Errorf("Expected 0 events, got %d", state.GetEventCount())
@@ -329,8 +333,8 @@ func TestGameState_GetEventCount(t *testing.T) {
 	}
 }
 
-func TestGameState_GetDuration(t *testing.T) {
-	state := NewGameState("game123", GameModeStandard)
+func TestState_GetDuration(t *testing.T) {
+	state := New("game123", GameModeStandard)
 	state.StartGame()
 
 	time.Sleep(10 * time.Millisecond)
@@ -340,7 +344,7 @@ func TestGameState_GetDuration(t *testing.T) {
 		t.Error("Duration should be at least 10ms")
 	}
 
-	state.EndGame(PlayerTypePlayer)
+	state.EndGame(types.PlayerTypePlayer)
 	duration = state.GetDuration()
 	if duration < 10*time.Millisecond {
 		t.Error("Duration should be at least 10ms")

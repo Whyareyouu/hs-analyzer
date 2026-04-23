@@ -1,9 +1,13 @@
-package game
+package card
 
-import "testing"
+import (
+	"testing"
 
-func TestNewCard(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	"hsanalyzer/internal/types"
+)
+
+func TestNew(t *testing.T) {
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	if card.ID != "CS2_189" {
 		t.Errorf("Expected ID CS2_189, got %s", card.ID)
@@ -11,10 +15,10 @@ func TestNewCard(t *testing.T) {
 	if card.EntityID != 42 {
 		t.Errorf("Expected EntityID 42, got %d", card.EntityID)
 	}
-	if card.Owner != PlayerTypePlayer {
+	if card.Owner != types.PlayerTypePlayer {
 		t.Errorf("Expected Owner PLAYER, got %s", card.Owner)
 	}
-	if card.Controller != PlayerTypePlayer {
+	if card.Controller != types.PlayerTypePlayer {
 		t.Errorf("Expected Controller PLAYER, got %s", card.Controller)
 	}
 	if card.Zone != ZoneUnknown {
@@ -26,7 +30,7 @@ func TestNewCard(t *testing.T) {
 }
 
 func TestCard_IsInHand(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	if card.IsInHand() {
 		t.Error("Card should not be in hand initially")
@@ -39,7 +43,7 @@ func TestCard_IsInHand(t *testing.T) {
 }
 
 func TestCard_IsInPlay(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	if card.IsInPlay() {
 		t.Error("Card should not be in play initially")
@@ -52,7 +56,7 @@ func TestCard_IsInPlay(t *testing.T) {
 }
 
 func TestCard_IsInDeck(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	if card.IsInDeck() {
 		t.Error("Card should not be in deck initially")
@@ -65,7 +69,7 @@ func TestCard_IsInDeck(t *testing.T) {
 }
 
 func TestCard_IsInGraveyard(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	if card.IsInGraveyard() {
 		t.Error("Card should not be in graveyard initially")
@@ -78,7 +82,7 @@ func TestCard_IsInGraveyard(t *testing.T) {
 }
 
 func TestCard_MoveTo(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 
 	card.MoveTo(ZoneHand, 3)
 
@@ -91,7 +95,7 @@ func TestCard_MoveTo(t *testing.T) {
 }
 
 func TestCard_SetCost(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 	card.OriginalCost = 5
 	card.Cost = 5
 
@@ -103,7 +107,7 @@ func TestCard_SetCost(t *testing.T) {
 }
 
 func TestCard_ResetCost(t *testing.T) {
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := New("CS2_189", 42, types.PlayerTypePlayer)
 	card.OriginalCost = 5
 	card.Cost = 3
 

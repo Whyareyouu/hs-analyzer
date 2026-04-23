@@ -1,4 +1,11 @@
-package game
+package player
+
+import (
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/entity"
+	"hsanalyzer/internal/types"
+	"hsanalyzer/internal/zone"
+)
 
 // Player представляет игрока
 type Player struct {
@@ -9,28 +16,28 @@ type Player struct {
 	Name string
 
 	// Type тип игрока (игрок или оппонент)
-	Type PlayerType
+	Type types.PlayerType
 
 	// Hero герой игрока
-	Hero *Entity
+	Hero *entity.Entity
 
 	// HeroPower сила героя
-	HeroPower *Card
+	HeroPower *card.Card
 
 	// Weapon оружие героя
-	Weapon *Card
+	Weapon *card.Card
 
 	// Hand рука игрока
-	Hand *Zone
+	Hand *zone.Zone
 
 	// Deck колода игрока
-	Deck *Zone
+	Deck *zone.Zone
 
 	// Board доска игрока
-	Board *Zone
+	Board *zone.Zone
 
 	// Graveyard кладбище игрока
-	Graveyard *Zone
+	Graveyard *zone.Zone
 
 	// Mana текущая мана
 	Mana int
@@ -42,63 +49,63 @@ type Player struct {
 	OverloadMana int
 
 	// DeckList изначальный список колоды
-	DeckList []*Card
+	DeckList []*card.Card
 }
 
-// NewPlayer создает нового игрока
-func NewPlayer(id int, playerType PlayerType) *Player {
+// New создает нового игрока
+func New(id int, playerType types.PlayerType) *Player {
 	return &Player{
 		ID:        id,
 		Type:      playerType,
-		Hand:      NewZone(ZoneHand, playerType),
-		Deck:      NewZone(ZoneDeck, playerType),
-		Board:     NewZone(ZonePlay, playerType),
-		Graveyard: NewZone(ZoneGraveyard, playerType),
-		DeckList:  make([]*Card, 0),
+		Hand:      zone.New(card.ZoneHand, playerType),
+		Deck:      zone.New(card.ZoneDeck, playerType),
+		Board:     zone.New(card.ZonePlay, playerType),
+		Graveyard: zone.New(card.ZoneGraveyard, playerType),
+		DeckList:  make([]*card.Card, 0),
 		Mana:      0,
 		MaxMana:   0,
 	}
 }
 
 // DrawCard берет карту из колоды в руку
-func (p *Player) DrawCard() *Card {
+func (p *Player) DrawCard() *card.Card {
 	if p.Deck.IsEmpty() {
 		return nil
 	}
 
 	// Берем первую карту из колоды
-	card := p.Deck.GetCardAt(0)
-	if card == nil {
+	c := p.Deck.GetCardAt(0)
+	if c == nil {
 		return nil
 	}
 
-	p.Deck.RemoveCard(card)
+	p.Deck.RemoveCard(c)
 
 	// Если рука полная, карта сгорает
 	if p.Hand.IsFull() {
-		p.Graveyard.AddCard(card)
-		return card
+		p.Graveyard.AddCard(c)
+		return c
 	}
 
-	p.Hand.AddCard(card)
-	return card
+	p.Hand.AddCard(c)
+	return c
 }
 
 // PlayCard разыгрывает карту из руки
-func (p *Player) PlayCard(card *Card, position int) bool {
-	if !p.Hand.RemoveCard(card) {
+func (p *Player) PlayCard(c *card.Card, position int) bool {
+	if !p.Hand.RemoveCard(c) {
 		return false
 	}
 
 	// Если это миньон, добавляем на доску
-	if card.Zone == ZonePlay {
+	if c.Zone == card.ZonePlay {
 		if p.Board.IsFull() {
 			return false
 		}
-		p.Board.AddCardAt(card, position)
+		p.Board.AddCardAt(c, position)
 	} else {
 		// Заклинания и другие карты идут на кладбище
-		p.Graveyard.AddCard(card)
+		p.Graveyard.AddCard(c)
 	}
 
 	return true
@@ -144,9 +151,9 @@ func (p *Player) AddOverload(amount int) {
 }
 
 // GetMinion возвращает миньона на доске по EntityID
-func (p *Player) GetMinion(entityID int) *Entity {
-	card := p.Board.GetCard(entityID)
-	if card == nil {
+func (p *Player) GetMinion(entityID int) *entity.Entity {
+	c := p.Board.GetCard(entityID)
+	if c == nil {
 		return nil
 	}
 	// В реальной реализации здесь будет связь с Entity
@@ -155,12 +162,12 @@ func (p *Player) GetMinion(entityID int) *Entity {
 }
 
 // RemoveMinion удаляет миньона с доски
-func (p *Player) RemoveMinion(entityID int) *Card {
-	card := p.Board.RemoveCardByEntityID(entityID)
-	if card != nil {
-		p.Graveyard.AddCard(card)
+func (p *Player) RemoveMinion(entityID int) *card.Card {
+	c := p.Board.RemoveCardByEntityID(entityID)
+	if c != nil {
+		p.Graveyard.AddCard(c)
 	}
-	return card
+	return c
 }
 
 // GetHandSize возвращает размер руки

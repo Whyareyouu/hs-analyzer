@@ -1,17 +1,20 @@
-package game
+package turn
 
 import (
 	"testing"
 	"time"
+
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/types"
 )
 
-func TestNewTurn(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+func TestNew(t *testing.T) {
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.Number != 1 {
 		t.Errorf("Expected Number 1, got %d", turn.Number)
 	}
-	if turn.Player != PlayerTypePlayer {
+	if turn.Player != types.PlayerTypePlayer {
 		t.Errorf("Expected Player PLAYER, got %s", turn.Player)
 	}
 	if len(turn.Events) != 0 {
@@ -32,7 +35,7 @@ func TestNewTurn(t *testing.T) {
 }
 
 func TestTurn_AddEvent(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	event1 := "event1"
 	event2 := "event2"
@@ -52,10 +55,10 @@ func TestTurn_AddEvent(t *testing.T) {
 }
 
 func TestTurn_AddCardPlayed(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	turn.AddCardPlayed(card1)
 	turn.AddCardPlayed(card2)
@@ -72,10 +75,10 @@ func TestTurn_AddCardPlayed(t *testing.T) {
 }
 
 func TestTurn_AddCardDrawn(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	turn.AddCardDrawn(card1)
 	turn.AddCardDrawn(card2)
@@ -92,7 +95,7 @@ func TestTurn_AddCardDrawn(t *testing.T) {
 }
 
 func TestTurn_AddAttack(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	attack1 := "attack1"
 	attack2 := "attack2"
@@ -112,7 +115,7 @@ func TestTurn_AddAttack(t *testing.T) {
 }
 
 func TestTurn_End(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.IsEnded() {
 		t.Error("Turn should not be ended initially")
@@ -134,7 +137,7 @@ func TestTurn_End(t *testing.T) {
 }
 
 func TestTurn_IsEnded(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.IsEnded() {
 		t.Error("Turn should not be ended")
@@ -148,7 +151,7 @@ func TestTurn_IsEnded(t *testing.T) {
 }
 
 func TestTurn_GetDuration(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	time.Sleep(10 * time.Millisecond)
 
@@ -165,7 +168,7 @@ func TestTurn_GetDuration(t *testing.T) {
 }
 
 func TestTurn_GetEventCount(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.GetEventCount() != 0 {
 		t.Errorf("Expected 0 events, got %d", turn.GetEventCount())
@@ -181,14 +184,14 @@ func TestTurn_GetEventCount(t *testing.T) {
 }
 
 func TestTurn_GetCardsPlayedCount(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.GetCardsPlayedCount() != 0 {
 		t.Errorf("Expected 0 cards played, got %d", turn.GetCardsPlayedCount())
 	}
 
-	turn.AddCardPlayed(NewCard("CARD_1", 1, PlayerTypePlayer))
-	turn.AddCardPlayed(NewCard("CARD_2", 2, PlayerTypePlayer))
+	turn.AddCardPlayed(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	turn.AddCardPlayed(card.New("CARD_2", 2, types.PlayerTypePlayer))
 
 	if turn.GetCardsPlayedCount() != 2 {
 		t.Errorf("Expected 2 cards played, got %d", turn.GetCardsPlayedCount())
@@ -196,15 +199,15 @@ func TestTurn_GetCardsPlayedCount(t *testing.T) {
 }
 
 func TestTurn_GetCardsDrawnCount(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.GetCardsDrawnCount() != 0 {
 		t.Errorf("Expected 0 cards drawn, got %d", turn.GetCardsDrawnCount())
 	}
 
-	turn.AddCardDrawn(NewCard("CARD_1", 1, PlayerTypePlayer))
-	turn.AddCardDrawn(NewCard("CARD_2", 2, PlayerTypePlayer))
-	turn.AddCardDrawn(NewCard("CARD_3", 3, PlayerTypePlayer))
+	turn.AddCardDrawn(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	turn.AddCardDrawn(card.New("CARD_2", 2, types.PlayerTypePlayer))
+	turn.AddCardDrawn(card.New("CARD_3", 3, types.PlayerTypePlayer))
 
 	if turn.GetCardsDrawnCount() != 3 {
 		t.Errorf("Expected 3 cards drawn, got %d", turn.GetCardsDrawnCount())
@@ -212,7 +215,7 @@ func TestTurn_GetCardsDrawnCount(t *testing.T) {
 }
 
 func TestTurn_GetAttacksCount(t *testing.T) {
-	turn := NewTurn(1, PlayerTypePlayer)
+	turn := New(1, types.PlayerTypePlayer)
 
 	if turn.GetAttacksCount() != 0 {
 		t.Errorf("Expected 0 attacks, got %d", turn.GetAttacksCount())
@@ -230,13 +233,13 @@ func TestTurn_GetAttacksCount(t *testing.T) {
 
 func TestTurn_CompleteFlow(t *testing.T) {
 	// Тест полного потока хода
-	turn := NewTurn(5, PlayerTypeOpponent)
+	turn := New(5, types.PlayerTypeOpponent)
 
 	// Добавляем события
 	turn.AddEvent("turn_start")
-	turn.AddCardDrawn(NewCard("CARD_1", 1, PlayerTypeOpponent))
-	turn.AddCardPlayed(NewCard("CARD_2", 2, PlayerTypeOpponent))
-	turn.AddCardPlayed(NewCard("CARD_3", 3, PlayerTypeOpponent))
+	turn.AddCardDrawn(card.New("CARD_1", 1, types.PlayerTypeOpponent))
+	turn.AddCardPlayed(card.New("CARD_2", 2, types.PlayerTypeOpponent))
+	turn.AddCardPlayed(card.New("CARD_3", 3, types.PlayerTypeOpponent))
 	turn.AddAttack("attack1")
 	turn.AddAttack("attack2")
 	turn.AddEvent("turn_end")
@@ -245,7 +248,7 @@ func TestTurn_CompleteFlow(t *testing.T) {
 	if turn.Number != 5 {
 		t.Errorf("Expected turn number 5, got %d", turn.Number)
 	}
-	if turn.Player != PlayerTypeOpponent {
+	if turn.Player != types.PlayerTypeOpponent {
 		t.Errorf("Expected player OPPONENT, got %s", turn.Player)
 	}
 	if turn.GetEventCount() != 2 {

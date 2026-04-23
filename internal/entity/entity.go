@@ -1,4 +1,6 @@
-package game
+package entity
+
+import "hsanalyzer/internal/types"
 
 // Entity представляет сущность на доске (миньон, герой)
 type Entity struct {
@@ -24,10 +26,10 @@ type Entity struct {
 	Position int
 
 	// Owner - владелец сущности
-	Owner PlayerType
+	Owner types.PlayerType
 
 	// Attributes - атрибуты сущности (Taunt, Divine Shield и т.д.)
-	Attributes EntityAttributes
+	Attributes Attributes
 
 	// Enchantments - активные зачарования на сущности
 	Enchantments []*Enchantment
@@ -39,8 +41,8 @@ type Entity struct {
 	CreatedByEffect string
 }
 
-// EntityAttributes содержит атрибуты сущности
-type EntityAttributes struct {
+// Attributes содержит атрибуты сущности
+type Attributes struct {
 	// Taunt - провокация
 	Taunt bool
 
@@ -99,14 +101,14 @@ type Enchantment struct {
 	Source string
 }
 
-// NewEntity создает новую сущность
-func NewEntity(id int, cardID string, owner PlayerType) *Entity {
+// New создает новую сущность
+func New(id int, cardID string, owner types.PlayerType) *Entity {
 	return &Entity{
 		ID:           id,
 		CardID:       cardID,
 		Owner:        owner,
 		Position:     -1,
-		Attributes:   EntityAttributes{},
+		Attributes:   Attributes{},
 		Enchantments: make([]*Enchantment, 0),
 	}
 }

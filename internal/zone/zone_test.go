@@ -1,14 +1,19 @@
-package game
+package zone
 
-import "testing"
+import (
+	"testing"
 
-func TestNewZone(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/types"
+)
 
-	if zone.Type != ZoneHand {
+func TestNew(t *testing.T) {
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+
+	if zone.Type != card.ZoneHand {
 		t.Errorf("Expected Type HAND, got %s", zone.Type)
 	}
-	if zone.Owner != PlayerTypePlayer {
+	if zone.Owner != types.PlayerTypePlayer {
 		t.Errorf("Expected Owner PLAYER, got %s", zone.Owner)
 	}
 	if len(zone.Cards) != 0 {
@@ -17,27 +22,27 @@ func TestNewZone(t *testing.T) {
 }
 
 func TestZone_AddCard(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	c := card.New("CS2_189", 42, types.PlayerTypePlayer)
 
-	zone.AddCard(card)
+	zone.AddCard(c)
 
 	if zone.Count() != 1 {
 		t.Errorf("Expected 1 card, got %d", zone.Count())
 	}
-	if card.Zone != ZoneHand {
-		t.Errorf("Expected card zone HAND, got %s", card.Zone)
+	if c.Zone != card.ZoneHand {
+		t.Errorf("Expected card zone HAND, got %s", c.Zone)
 	}
-	if card.Position != 0 {
-		t.Errorf("Expected card position 0, got %d", card.Position)
+	if c.Position != 0 {
+		t.Errorf("Expected card position 0, got %d", c.Position)
 	}
 }
 
 func TestZone_AddCardAt(t *testing.T) {
-	zone := NewZone(ZonePlay, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
-	card3 := NewCard("CARD_3", 3, PlayerTypePlayer)
+	zone := New(card.ZonePlay, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
+	card3 := card.New("CARD_3", 3, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -58,9 +63,9 @@ func TestZone_AddCardAt(t *testing.T) {
 }
 
 func TestZone_RemoveCard(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -79,9 +84,9 @@ func TestZone_RemoveCard(t *testing.T) {
 }
 
 func TestZone_RemoveCardByEntityID(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -100,10 +105,10 @@ func TestZone_RemoveCardByEntityID(t *testing.T) {
 }
 
 func TestZone_GetCard(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	c := card.New("CS2_189", 42, types.PlayerTypePlayer)
 
-	zone.AddCard(card)
+	zone.AddCard(c)
 
 	found := zone.GetCard(42)
 	if found == nil {
@@ -120,9 +125,9 @@ func TestZone_GetCard(t *testing.T) {
 }
 
 func TestZone_GetCardAt(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -142,14 +147,14 @@ func TestZone_GetCardAt(t *testing.T) {
 }
 
 func TestZone_Count(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
 
 	if zone.Count() != 0 {
 		t.Errorf("Expected 0 cards, got %d", zone.Count())
 	}
 
-	zone.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
-	zone.AddCard(NewCard("CARD_2", 2, PlayerTypePlayer))
+	zone.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	zone.AddCard(card.New("CARD_2", 2, types.PlayerTypePlayer))
 
 	if zone.Count() != 2 {
 		t.Errorf("Expected 2 cards, got %d", zone.Count())
@@ -157,13 +162,13 @@ func TestZone_Count(t *testing.T) {
 }
 
 func TestZone_IsEmpty(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
 
 	if !zone.IsEmpty() {
 		t.Error("Zone should be empty")
 	}
 
-	zone.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
+	zone.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
 
 	if zone.IsEmpty() {
 		t.Error("Zone should not be empty")
@@ -172,14 +177,14 @@ func TestZone_IsEmpty(t *testing.T) {
 
 func TestZone_IsFull(t *testing.T) {
 	// Test board (max 7 minions)
-	board := NewZone(ZonePlay, PlayerTypePlayer)
+	board := New(card.ZonePlay, types.PlayerTypePlayer)
 
 	if board.IsFull() {
 		t.Error("Board should not be full")
 	}
 
 	for i := 0; i < 7; i++ {
-		board.AddCard(NewCard("CARD", i, PlayerTypePlayer))
+		board.AddCard(card.New("CARD", i, types.PlayerTypePlayer))
 	}
 
 	if !board.IsFull() {
@@ -187,14 +192,14 @@ func TestZone_IsFull(t *testing.T) {
 	}
 
 	// Test hand (max 10 cards)
-	hand := NewZone(ZoneHand, PlayerTypePlayer)
+	hand := New(card.ZoneHand, types.PlayerTypePlayer)
 
 	if hand.IsFull() {
 		t.Error("Hand should not be full")
 	}
 
 	for i := 0; i < 10; i++ {
-		hand.AddCard(NewCard("CARD", i, PlayerTypePlayer))
+		hand.AddCard(card.New("CARD", i, types.PlayerTypePlayer))
 	}
 
 	if !hand.IsFull() {
@@ -203,9 +208,9 @@ func TestZone_IsFull(t *testing.T) {
 }
 
 func TestZone_Clear(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	zone.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
-	zone.AddCard(NewCard("CARD_2", 2, PlayerTypePlayer))
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	zone.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	zone.AddCard(card.New("CARD_2", 2, types.PlayerTypePlayer))
 
 	zone.Clear()
 
@@ -215,9 +220,9 @@ func TestZone_Clear(t *testing.T) {
 }
 
 func TestZone_GetCards(t *testing.T) {
-	zone := NewZone(ZoneHand, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
+	zone := New(card.ZoneHand, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -236,10 +241,10 @@ func TestZone_GetCards(t *testing.T) {
 }
 
 func TestZone_MoveCard(t *testing.T) {
-	zone := NewZone(ZonePlay, PlayerTypePlayer)
-	card1 := NewCard("CARD_1", 1, PlayerTypePlayer)
-	card2 := NewCard("CARD_2", 2, PlayerTypePlayer)
-	card3 := NewCard("CARD_3", 3, PlayerTypePlayer)
+	zone := New(card.ZonePlay, types.PlayerTypePlayer)
+	card1 := card.New("CARD_1", 1, types.PlayerTypePlayer)
+	card2 := card.New("CARD_2", 2, types.PlayerTypePlayer)
+	card3 := card.New("CARD_3", 3, types.PlayerTypePlayer)
 
 	zone.AddCard(card1)
 	zone.AddCard(card2)
@@ -263,8 +268,8 @@ func TestZone_MoveCard(t *testing.T) {
 }
 
 func TestZone_MoveCard_InvalidEntityID(t *testing.T) {
-	zone := NewZone(ZonePlay, PlayerTypePlayer)
-	zone.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
+	zone := New(card.ZonePlay, types.PlayerTypePlayer)
+	zone.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
 
 	moved := zone.MoveCard(999, 0)
 
@@ -274,8 +279,8 @@ func TestZone_MoveCard_InvalidEntityID(t *testing.T) {
 }
 
 func TestZone_MoveCard_InvalidPosition(t *testing.T) {
-	zone := NewZone(ZonePlay, PlayerTypePlayer)
-	zone.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
+	zone := New(card.ZonePlay, types.PlayerTypePlayer)
+	zone.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
 
 	moved := zone.MoveCard(1, 10)
 

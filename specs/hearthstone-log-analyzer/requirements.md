@@ -156,3 +156,45 @@
 3. IF путь к логам не указан THEN система SHALL использовать стандартный путь для Windows
 4. WHEN пользователь указывает путь THEN система SHALL валидировать существование директории
 5. WHEN выводится результат THEN система SHALL использовать формат вывода из конфигурации (консоль/файл)
+
+## Архитектурное правило: Go Imports (Module-Based Only)
+
+### Общий принцип
+
+Всегда используй **module path из `go.mod`** для всех внутренних импортов.
+
+### Правило импортов
+
+```go
+// go.mod
+module <MODULE_PATH>
+
+// Импорты строятся так:
+import "<MODULE_PATH>/internal/player"
+import "<MODULE_PATH>/internal/card"
+```
+
+### ❌ Запрещено
+
+- `../player`
+- `./player`
+- `player`
+- `github.com/yourusername/...` (если это не ваш реальный module path в `go.mod`)
+- Любые относительные пути
+- Выдуманные пути, не соответствующие go.mod
+
+### ✅ Правильно
+
+```go
+import (
+    "<MODULE_PATH>/internal/card"
+    "<MODULE_PATH>/internal/entity"
+    "<MODULE_PATH>/internal/player"
+)
+```
+
+### Важно
+
+- Если go.mod отсутствует: не выдумывать импорты, добавить TODO или создать go.mod
+- Все импорты должны быть консистентны по всему проекту
+- Использовать полный module path для всех внутренних пакетов

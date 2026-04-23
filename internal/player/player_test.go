@@ -1,14 +1,20 @@
-package game
+package player
 
-import "testing"
+import (
+	"testing"
 
-func TestNewPlayer(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/entity"
+	"hsanalyzer/internal/types"
+)
+
+func TestNew(t *testing.T) {
+	player := New(1, types.PlayerTypePlayer)
 
 	if player.ID != 1 {
 		t.Errorf("Expected ID 1, got %d", player.ID)
 	}
-	if player.Type != PlayerTypePlayer {
+	if player.Type != types.PlayerTypePlayer {
 		t.Errorf("Expected Type PLAYER, got %s", player.Type)
 	}
 	if player.Hand == nil {
@@ -32,10 +38,10 @@ func TestNewPlayer(t *testing.T) {
 }
 
 func TestPlayer_DrawCard(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	// Добавляем карту в колоду
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := card.New("CS2_189", 42, types.PlayerTypePlayer)
 	player.Deck.AddCard(card)
 
 	// Берем карту
@@ -56,7 +62,7 @@ func TestPlayer_DrawCard(t *testing.T) {
 }
 
 func TestPlayer_DrawCard_EmptyDeck(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	drawnCard := player.DrawCard()
 
@@ -66,15 +72,15 @@ func TestPlayer_DrawCard_EmptyDeck(t *testing.T) {
 }
 
 func TestPlayer_DrawCard_FullHand(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	// Заполняем руку
 	for i := 0; i < 10; i++ {
-		player.Hand.AddCard(NewCard("CARD", i, PlayerTypePlayer))
+		player.Hand.AddCard(card.New("CARD", i, types.PlayerTypePlayer))
 	}
 
 	// Добавляем карту в колоду
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	card := card.New("CS2_189", 42, types.PlayerTypePlayer)
 	player.Deck.AddCard(card)
 
 	// Пытаемся взять карту
@@ -92,7 +98,7 @@ func TestPlayer_DrawCard_FullHand(t *testing.T) {
 }
 
 func TestPlayer_SpendMana(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.Mana = 5
 
 	success := player.SpendMana(3)
@@ -106,7 +112,7 @@ func TestPlayer_SpendMana(t *testing.T) {
 }
 
 func TestPlayer_SpendMana_NotEnough(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.Mana = 2
 
 	success := player.SpendMana(5)
@@ -120,7 +126,7 @@ func TestPlayer_SpendMana_NotEnough(t *testing.T) {
 }
 
 func TestPlayer_RefillMana(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.MaxMana = 5
 	player.Mana = 0
 
@@ -132,7 +138,7 @@ func TestPlayer_RefillMana(t *testing.T) {
 }
 
 func TestPlayer_RefillMana_WithOverload(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.MaxMana = 5
 	player.Mana = 0
 	player.OverloadMana = 2
@@ -148,7 +154,7 @@ func TestPlayer_RefillMana_WithOverload(t *testing.T) {
 }
 
 func TestPlayer_GainMaxMana(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.MaxMana = 5
 
 	player.GainMaxMana(2)
@@ -159,7 +165,7 @@ func TestPlayer_GainMaxMana(t *testing.T) {
 }
 
 func TestPlayer_GainMaxMana_Cap(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	player.MaxMana = 9
 
 	player.GainMaxMana(5)
@@ -170,7 +176,7 @@ func TestPlayer_GainMaxMana_Cap(t *testing.T) {
 }
 
 func TestPlayer_SetMaxMana(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	player.SetMaxMana(7)
 
@@ -180,7 +186,7 @@ func TestPlayer_SetMaxMana(t *testing.T) {
 }
 
 func TestPlayer_AddOverload(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	player.AddOverload(2)
 
@@ -190,8 +196,8 @@ func TestPlayer_AddOverload(t *testing.T) {
 }
 
 func TestPlayer_RemoveMinion(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
-	card := NewCard("CS2_189", 42, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
+	card := card.New("CS2_189", 42, types.PlayerTypePlayer)
 	player.Board.AddCard(card)
 
 	removed := player.RemoveMinion(42)
@@ -208,9 +214,9 @@ func TestPlayer_RemoveMinion(t *testing.T) {
 }
 
 func TestPlayer_GetHandSize(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
-	player.Hand.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
-	player.Hand.AddCard(NewCard("CARD_2", 2, PlayerTypePlayer))
+	player := New(1, types.PlayerTypePlayer)
+	player.Hand.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	player.Hand.AddCard(card.New("CARD_2", 2, types.PlayerTypePlayer))
 
 	size := player.GetHandSize()
 
@@ -220,10 +226,10 @@ func TestPlayer_GetHandSize(t *testing.T) {
 }
 
 func TestPlayer_GetBoardSize(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
-	player.Board.AddCard(NewCard("CARD_1", 1, PlayerTypePlayer))
-	player.Board.AddCard(NewCard("CARD_2", 2, PlayerTypePlayer))
-	player.Board.AddCard(NewCard("CARD_3", 3, PlayerTypePlayer))
+	player := New(1, types.PlayerTypePlayer)
+	player.Board.AddCard(card.New("CARD_1", 1, types.PlayerTypePlayer))
+	player.Board.AddCard(card.New("CARD_2", 2, types.PlayerTypePlayer))
+	player.Board.AddCard(card.New("CARD_3", 3, types.PlayerTypePlayer))
 
 	size := player.GetBoardSize()
 
@@ -233,9 +239,9 @@ func TestPlayer_GetBoardSize(t *testing.T) {
 }
 
 func TestPlayer_GetDeckSize(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 	for i := 0; i < 30; i++ {
-		player.Deck.AddCard(NewCard("CARD", i, PlayerTypePlayer))
+		player.Deck.AddCard(card.New("CARD", i, types.PlayerTypePlayer))
 	}
 
 	size := player.GetDeckSize()
@@ -246,7 +252,7 @@ func TestPlayer_GetDeckSize(t *testing.T) {
 }
 
 func TestPlayer_IsAlive(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	// Без героя
 	if player.IsAlive() {
@@ -254,7 +260,7 @@ func TestPlayer_IsAlive(t *testing.T) {
 	}
 
 	// С живым героем
-	player.Hero = NewEntity(1, "HERO_01", PlayerTypePlayer)
+	player.Hero = entity.New(1, "HERO_01", types.PlayerTypePlayer)
 	player.Hero.Health = 30
 	if !player.IsAlive() {
 		t.Error("Player with alive hero should be alive")
@@ -268,7 +274,7 @@ func TestPlayer_IsAlive(t *testing.T) {
 }
 
 func TestPlayer_IsDead(t *testing.T) {
-	player := NewPlayer(1, PlayerTypePlayer)
+	player := New(1, types.PlayerTypePlayer)
 
 	// Без героя
 	if !player.IsDead() {
@@ -276,7 +282,7 @@ func TestPlayer_IsDead(t *testing.T) {
 	}
 
 	// С живым героем
-	player.Hero = NewEntity(1, "HERO_01", PlayerTypePlayer)
+	player.Hero = entity.New(1, "HERO_01", types.PlayerTypePlayer)
 	player.Hero.Health = 30
 	if player.IsDead() {
 		t.Error("Player with alive hero should not be dead")

@@ -1,4 +1,4 @@
-package game
+package types
 
 // PlayerType определяет тип игрока
 type PlayerType string

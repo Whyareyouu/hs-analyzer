@@ -1,4 +1,6 @@
-package game
+package card
+
+import "hsanalyzer/internal/types"
 
 // Card представляет карту в игре
 type Card struct {
@@ -18,10 +20,10 @@ type Card struct {
 	OriginalCost int
 
 	// Owner - владелец карты
-	Owner PlayerType
+	Owner types.PlayerType
 
 	// Controller - текущий контроллер карты (может отличаться от владельца)
-	Controller PlayerType
+	Controller types.PlayerType
 
 	// Zone - текущая зона карты
 	Zone ZoneType
@@ -33,8 +35,21 @@ type Card struct {
 	CreatedBy string
 }
 
-// NewCard создает новую карту
-func NewCard(id string, entityID int, owner PlayerType) *Card {
+// ZoneType определяет тип игровой зоны
+type ZoneType string
+
+const (
+	ZoneHand      ZoneType = "HAND"
+	ZoneDeck      ZoneType = "DECK"
+	ZonePlay      ZoneType = "PLAY"
+	ZoneGraveyard ZoneType = "GRAVEYARD"
+	ZoneSecret    ZoneType = "SECRET"
+	ZoneSetAside  ZoneType = "SETASIDE"
+	ZoneUnknown   ZoneType = "UNKNOWN"
+)
+
+// New создает новую карту
+func New(id string, entityID int, owner types.PlayerType) *Card {
 	return &Card{
 		ID:         id,
 		EntityID:   entityID,

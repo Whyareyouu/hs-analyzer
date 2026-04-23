@@ -1,6 +1,11 @@
-package game
+package turn
 
-import "time"
+import (
+	"time"
+
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/types"
+)
 
 // Turn представляет игровой ход
 type Turn struct {
@@ -8,7 +13,7 @@ type Turn struct {
 	Number int
 
 	// Player игрок, чей это ход
-	Player PlayerType
+	Player types.PlayerType
 
 	// Events события в этом ходу
 	Events []interface{} // Event интерфейс будет определен позже
@@ -20,25 +25,25 @@ type Turn struct {
 	EndTime *time.Time
 
 	// CardsPlayed карты, сыгранные в этот ход
-	CardsPlayed []*Card
+	CardsPlayed []*card.Card
 
 	// AttacksMade атаки, совершенные в этот ход
 	AttacksMade []interface{} // Attack будет определен позже
 
 	// CardsDrawn карты, взятые в этот ход
-	CardsDrawn []*Card
+	CardsDrawn []*card.Card
 }
 
-// NewTurn создает новый ход
-func NewTurn(number int, player PlayerType) *Turn {
+// New создает новый ход
+func New(number int, player types.PlayerType) *Turn {
 	return &Turn{
 		Number:      number,
 		Player:      player,
 		Events:      make([]interface{}, 0),
 		StartTime:   time.Now(),
-		CardsPlayed: make([]*Card, 0),
+		CardsPlayed: make([]*card.Card, 0),
 		AttacksMade: make([]interface{}, 0),
-		CardsDrawn:  make([]*Card, 0),
+		CardsDrawn:  make([]*card.Card, 0),
 	}
 }
 
@@ -48,13 +53,13 @@ func (t *Turn) AddEvent(event interface{}) {
 }
 
 // AddCardPlayed добавляет сыгранную карту
-func (t *Turn) AddCardPlayed(card *Card) {
-	t.CardsPlayed = append(t.CardsPlayed, card)
+func (t *Turn) AddCardPlayed(c *card.Card) {
+	t.CardsPlayed = append(t.CardsPlayed, c)
 }
 
 // AddCardDrawn добавляет взятую карту
-func (t *Turn) AddCardDrawn(card *Card) {
-	t.CardsDrawn = append(t.CardsDrawn, card)
+func (t *Turn) AddCardDrawn(c *card.Card) {
+	t.CardsDrawn = append(t.CardsDrawn, c)
 }
 
 // AddAttack добавляет атаку
