@@ -8,16 +8,16 @@
   - Создать базовый README.md с описанием проекта
   - _Requirements: 12.1, 12.2_
 
-- [ ] 2. Реализация domain моделей
+- [x] 2. Реализация domain моделей
 
-  - [ ] 2.1 Создать базовые типы и константы
+  - [x] 2.1 Создать базовые типы и константы
 
     - Реализовать типы PlayerType, ZoneType, CardType, EventType в internal/game
     - Создать константы для игровых режимов в game_mode.go
     - Написать unit тесты для типов
     - _Requirements: 10.1, 10.3_
 
-  - [ ] 2.2 Реализовать структуры карт и сущностей
+  - [x] 2.2 Реализовать структуры карт и сущностей
 
     - Создать Card структуру в internal/game/card.go
     - Создать Entity структуру с EntityAttributes в internal/game/entity.go
@@ -25,7 +25,7 @@
     - Написать unit тесты для структур
     - _Requirements: 3.3, 3.4, 5.1_
 
-  - [ ] 2.3 Реализовать Player и GameState
+  - [x] 2.3 Реализовать Player и GameState
 
     - Создать Player структуру с зонами в internal/game/player.go
     - Создать GameState структуру в internal/game/state.go
@@ -33,7 +33,8 @@
     - Написать unit тесты для Player и GameState
     - _Requirements: 2.1, 2.2, 5.2, 5.3_
 
-  - [ ] 2.4 Создать Turn структуру
+  - [x] 2.4 Создать Turn структуру
+
     - Реализовать Turn в internal/game/turn.go
     - Добавить методы для добавления событий в ход
     - Написать unit тесты для Turn
