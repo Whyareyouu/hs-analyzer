@@ -1,6 +1,7 @@
 package carddb
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,24 +15,26 @@ func TestJSONDatabase_LoadAndGetters(t *testing.T) {
 	payload := `[
 		{
 			"id":"CS2_029",
-			"name":"Fireball",
-			"nameRu":"Огненный шар",
-			"text":"Deal 6 damage.",
-			"textRu":"Наносит 6 урона.",
+			"dbfId":315,
+			"name":"Огненный шар",
+			"text":"Наносит 6 ед. урона.",
 			"cost":4,
+			"cardClass":"MAGE",
 			"type":"SPELL",
-			"rarity":"FREE",
-			"cardClass":"MAGE"
+			"set":"CORE",
+			"rarity":"FREE"
 		},
 		{
 			"id":"CS2_122",
-			"name":"Raid Leader",
+			"dbfId":122,
+			"name":"Вождь рейда",
 			"cost":3,
 			"attack":2,
 			"health":2,
-			"type":"MINION",
-			"rarity":"COMMON",
 			"cardClass":"NEUTRAL",
+			"type":"MINION",
+			"set":"CORE",
+			"rarity":"COMMON",
 			"race":"NONE"
 		}
 	]`
@@ -49,24 +52,24 @@ func TestJSONDatabase_LoadAndGetters(t *testing.T) {
 	if !ok {
 		t.Fatalf("card must be found by id")
 	}
-	if cardByID.Name != "Fireball" {
+	if cardByID.Name != "Огненный шар" {
 		t.Fatalf("unexpected name: %s", cardByID.Name)
 	}
 
-	cardByEN, ok := db.GetCardByName("fireball")
+	cardByName, ok := db.GetCardByName("огненный шар")
 	if !ok {
-		t.Fatalf("card must be found by en name")
+		t.Fatalf("card must be found by localized name")
 	}
-	if cardByEN.ID != "CS2_029" {
-		t.Fatalf("unexpected id: %s", cardByEN.ID)
+	if cardByName.ID != "CS2_029" {
+		t.Fatalf("unexpected id: %s", cardByName.ID)
 	}
 
-	cardByRU, ok := db.GetCardByName("  ОГНЕННЫЙ ШАР ")
+	cardByUpper, ok := db.GetCardByName("  ОГНЕННЫЙ ШАР ")
 	if !ok {
-		t.Fatalf("card must be found by ru name")
+		t.Fatalf("card must be found by case-insensitive localized name")
 	}
-	if cardByRU.ID != "CS2_029" {
-		t.Fatalf("unexpected id for ru lookup: %s", cardByRU.ID)
+	if cardByUpper.ID != "CS2_029" {
+		t.Fatalf("unexpected id for localized lookup: %s", cardByUpper.ID)
 	}
 }
 
@@ -76,7 +79,7 @@ func TestJSONDatabase_LoadMapFormat(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "cards-map.json")
 	payload := `{
-		"CS2_188": {"name":"Abusive Sergeant","cost":1,"type":"MINION"}
+		"CS2_188": {"name":"Одержимый сержант","dbfId":188,"cost":1,"cardClass":"NEUTRAL","type":"MINION","set":"CORE"}
 	}`
 
 	if err := os.WriteFile(path, []byte(payload), 0o600); err != nil {
@@ -92,7 +95,7 @@ func TestJSONDatabase_LoadMapFormat(t *testing.T) {
 	if !ok {
 		t.Fatalf("card must be found by id from map format")
 	}
-	if cardByID.Name != "Abusive Sergeant" {
+	if cardByID.Name != "Одержимый сержант" {
 		t.Fatalf("unexpected card name: %s", cardByID.Name)
 	}
 }
@@ -120,22 +123,70 @@ func TestCardInfo_GetLocalizedName(t *testing.T) {
 	t.Parallel()
 
 	card := &CardInfo{
-		Name:   "Fireball",
-		NameRu: "Огненный шар",
+		Name: "Огненный шар",
 	}
 
 	if got := card.GetLocalizedName("ru"); got != "Огненный шар" {
 		t.Fatalf("expected ru name, got %s", got)
 	}
-	if got := card.GetLocalizedName("ru-RU"); got != "Огненный шар" {
-		t.Fatalf("expected ru-RU name, got %s", got)
+	if got := card.GetLocalizedName("en"); got != "Огненный шар" {
+		t.Fatalf("expected locale-agnostic name, got %s", got)
 	}
-	if got := card.GetLocalizedName("en"); got != "Fireball" {
-		t.Fatalf("expected fallback english name, got %s", got)
+}
+
+func TestJSONDatabase_Load_RealCardsJSONFormat(t *testing.T) {
+	t.Parallel()
+
+	realCardsPath := filepath.Join("..", "..", "data", "cards.json")
+	if _, err := os.Stat(realCardsPath); err != nil {
+		t.Skipf("real cards db is unavailable: %v", err)
 	}
 
-	card.NameRu = ""
-	if got := card.GetLocalizedName("ru"); got != "Fireball" {
-		t.Fatalf("expected fallback name without NameRu, got %s", got)
+	rawData, err := os.ReadFile(realCardsPath)
+	if err != nil {
+		t.Fatalf("read real cards db: %v", err)
+	}
+
+	var rawCards []map[string]interface{}
+	if err := json.Unmarshal(rawData, &rawCards); err != nil {
+		t.Fatalf("unmarshal real cards db: %v", err)
+	}
+	if len(rawCards) == 0 {
+		t.Fatalf("real cards db must contain cards")
+	}
+
+	var sampleID, sampleName string
+	for _, c := range rawCards {
+		id, _ := c["id"].(string)
+		name, _ := c["name"].(string)
+		if id != "" && name != "" {
+			sampleID = id
+			sampleName = name
+			break
+		}
+	}
+	if sampleID == "" || sampleName == "" {
+		t.Fatalf("failed to find sample card in real cards db")
+	}
+
+	db := NewJSONDatabase()
+	if err := db.Load(realCardsPath); err != nil {
+		t.Fatalf("load real cards db: %v", err)
+	}
+
+	cardByID, ok := db.GetCard(sampleID)
+	if !ok {
+		t.Fatalf("card must be found by id: %s", sampleID)
+	}
+	if cardByID.Name == "" {
+		t.Fatalf("card name must not be empty for id %s", sampleID)
+	}
+
+	cardByName, ok := db.GetCardByName(sampleName)
+	if !ok {
+		t.Fatalf("card must be found by name: %s", sampleName)
+	}
+	if cardByName.ID != sampleID {
+		t.Fatalf("unexpected card id by name: got %s, want %s", cardByName.ID, sampleID)
 	}
 }

@@ -49,8 +49,7 @@ func (db *JSONDatabase) Load(path string) error {
 
 		cardCopy := card
 		db.cardsByID[card.ID] = &cardCopy
-		db.indexCardName(&cardCopy.Name, &cardCopy)
-		db.indexCardName(&cardCopy.NameRu, &cardCopy)
+		db.indexCardName(cardCopy.Name, &cardCopy)
 	}
 
 	return nil
@@ -79,8 +78,8 @@ func (db *JSONDatabase) GetCardByName(name string) (*CardInfo, bool) {
 	return card, ok
 }
 
-func (db *JSONDatabase) indexCardName(name *string, card *CardInfo) {
-	key := normalizeName(*name)
+func (db *JSONDatabase) indexCardName(name string, card *CardInfo) {
+	key := normalizeName(name)
 	if key != "" {
 		db.cardsByName[key] = card
 	}

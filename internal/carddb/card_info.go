@@ -1,7 +1,5 @@
 package carddb
 
-import "strings"
-
 // CardType определяет тип карты.
 type CardType string
 
@@ -68,10 +66,9 @@ const (
 // CardInfo содержит информацию о карте из базы данных.
 type CardInfo struct {
 	ID          string    `json:"id"`
+	DBFID       int       `json:"dbfId,omitempty"`
 	Name        string    `json:"name"`
-	NameRu      string    `json:"nameRu,omitempty"`
 	Text        string    `json:"text,omitempty"`
-	TextRu      string    `json:"textRu,omitempty"`
 	Cost        int       `json:"cost,omitempty"`
 	Attack      int       `json:"attack,omitempty"`
 	Health      int       `json:"health,omitempty"`
@@ -88,12 +85,7 @@ func (c *CardInfo) GetLocalizedName(locale string) string {
 	if c == nil {
 		return ""
 	}
-
-	switch strings.ToLower(strings.TrimSpace(locale)) {
-	case "ru", "ru-ru", "ru_ru":
-		if c.NameRu != "" {
-			return c.NameRu
-		}
-	}
+	// Для HearthstoneJSON локализованное имя уже находится в поле Name
+	// выбранной локали (например, ruRU/enUS).
 	return c.Name
 }
