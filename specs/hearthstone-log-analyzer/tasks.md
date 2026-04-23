@@ -81,16 +81,16 @@
     - Написать unit тесты
     - _Requirements: 6.1, 6.2, 6.7, 7.1, 7.2, 7.4_
 
-- [ ] 4. Реализация CardDatabase
+- [x] 4. Реализация CardDatabase
 
-  - [ ] 4.1 Создать интерфейс и структуры CardInfo
+  - [x] 4.1 Создать интерфейс и структуры CardInfo
 
     - Определить CardDatabase интерфейс в internal/carddb/database.go
     - Создать CardInfo структуру в internal/carddb/card_info.go
     - Добавить типы CardType, Rarity, CardClass, Race
     - _Requirements: 9.3_
 
-  - [ ] 4.2 Реализовать JSON загрузчик базы карт
+  - [x] 4.2 Реализовать JSON загрузчик базы карт
 
     - Создать JSONDatabase в internal/carddb/json_database.go
     - Реализовать метод Load для загрузки из JSON
@@ -98,7 +98,7 @@
     - Написать unit тесты с mock данными
     - _Requirements: 9.1, 9.2, 9.4_
 
-  - [ ] 4.3 Добавить поддержку локализации
+  - [x] 4.3 Добавить поддержку локализации
     - Добавить поля NameRu и TextRu в CardInfo
     - Реализовать метод GetLocalizedName
     - Написать unit тесты
