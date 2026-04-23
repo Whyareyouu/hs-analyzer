@@ -174,8 +174,3 @@ GOOS=windows GOARCH=amd64 go build -o hsanalyzer.exe ./cmd/hsanalyzer
 ## Лицензия
 
 MIT
-
-## Контакты
-
-- GitHub: [yourusername/hsanalyzer](https://github.com/yourusername/hsanalyzer)
-- Issues: [github.com/yourusername/hsanalyzer/issues](https://github.com/yourusername/hsanalyzer/issues)
