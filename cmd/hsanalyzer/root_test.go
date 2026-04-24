@@ -33,7 +33,7 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 
 	logsDir := t.TempDir()
 	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen_old.log"), filepath.Join(logsDir, "LoadingScreen_old.log"))
+	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
 
 	var stdout bytes.Buffer
 	cmd := newRootCmd()
@@ -64,7 +64,7 @@ func TestAnalyzeCommandWritesOutputToFile(t *testing.T) {
 
 	logsDir := t.TempDir()
 	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen_old.log"), filepath.Join(logsDir, "LoadingScreen_old.log"))
+	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
 
 	outputPath := filepath.Join(t.TempDir(), "result.txt")
 	cmd := newRootCmd()
@@ -95,13 +95,45 @@ func TestBuildContainerRejectsUnsupportedFormat(t *testing.T) {
 	_, err := buildContainer(analyzeOptions{
 		logsPath:    filepath.Join("..", "..", "logs"),
 		cardsDBPath: filepath.Join("..", "..", "data", "cards.json"),
-		format:      "json",
+		format:      "xml",
 	})
 	if err == nil {
 		t.Fatalf("expected unsupported format error")
 	}
 	if !strings.Contains(err.Error(), "unsupported output format") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
+	t.Parallel()
+
+	logsDir := t.TempDir()
+	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
+	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
+	copyFileForTest(t, filepath.Join("..", "..", "logs", "Power.log"), filepath.Join(logsDir, "Power.log"))
+
+	outputPath := filepath.Join(t.TempDir(), "timeline.json")
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{
+		"analyze",
+		"--logs-path", logsDir,
+		"--cards-db-path", filepath.Join("..", "..", "data", "cards.json"),
+		"--format", "json",
+		"--output", "file",
+		"--output-file", outputPath,
+	})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute analyze: %v", err)
+	}
+
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatalf("read output file: %v", err)
+	}
+	if !strings.Contains(string(data), `"number"`) || !strings.Contains(string(data), `"events"`) || !strings.Contains(string(data), `"player"`) {
+		t.Fatalf("unexpected json file output:\n%s", string(data))
 	}
 }
 

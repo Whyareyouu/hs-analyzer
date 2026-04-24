@@ -55,6 +55,7 @@ func buildContainer(options analyzeOptions) (*appContainer, error) {
 		Language: cfg.Output.Language,
 		Verbose:  cfg.Output.Verbose,
 	}))
+	formatterRegistry.MustRegister(formatter.NewJSONFormatter())
 
 	selectedFormatter, ok := formatterRegistry.Get(cfg.Output.Format)
 	if !ok {
@@ -136,7 +137,7 @@ func validateCLIConfig(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
 	}
-	if cfg.Output.Format != "text" {
+	if cfg.Output.Format != "text" && cfg.Output.Format != "json" {
 		return fmt.Errorf("unsupported output format %q", cfg.Output.Format)
 	}
 	switch cfg.Output.Language {

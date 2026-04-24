@@ -74,3 +74,20 @@ func TestRegistryCanRegisterTextFormatter(t *testing.T) {
 		t.Fatalf("unexpected formatter name: %s", got.Name())
 	}
 }
+
+func TestRegistryCanRegisterJSONFormatter(t *testing.T) {
+	t.Parallel()
+
+	registry := NewRegistry()
+	if err := registry.Register(NewJSONFormatter()); err != nil {
+		t.Fatalf("register json formatter: %v", err)
+	}
+
+	got, ok := registry.Get("json")
+	if !ok {
+		t.Fatalf("expected json formatter")
+	}
+	if got.Name() != "json" {
+		t.Fatalf("unexpected formatter name: %s", got.Name())
+	}
+}
