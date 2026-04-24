@@ -10,16 +10,18 @@ import (
 
 // JSONDatabase реализует CardDatabase на основе JSON-файла.
 type JSONDatabase struct {
-	mu          sync.RWMutex
-	cardsByID   map[string]*CardInfo
-	cardsByName map[string]*CardInfo
+	mu           sync.RWMutex
+	cardsByID    map[string]*CardInfo
+	cardsByDBFID map[int]*CardInfo
+	cardsByName  map[string]*CardInfo
 }
 
 // NewJSONDatabase создает новую JSON-базу карт.
 func NewJSONDatabase() *JSONDatabase {
 	return &JSONDatabase{
-		cardsByID:   make(map[string]*CardInfo),
-		cardsByName: make(map[string]*CardInfo),
+		cardsByID:    make(map[string]*CardInfo),
+		cardsByDBFID: make(map[int]*CardInfo),
+		cardsByName:  make(map[string]*CardInfo),
 	}
 }
 
@@ -39,6 +41,7 @@ func (db *JSONDatabase) Load(path string) error {
 	defer db.mu.Unlock()
 
 	db.cardsByID = make(map[string]*CardInfo, len(loadedCards))
+	db.cardsByDBFID = make(map[int]*CardInfo, len(loadedCards))
 	db.cardsByName = make(map[string]*CardInfo, len(loadedCards)*2)
 
 	for i := range loadedCards {
@@ -49,6 +52,9 @@ func (db *JSONDatabase) Load(path string) error {
 
 		cardCopy := card
 		db.cardsByID[card.ID] = &cardCopy
+		if cardCopy.DBFID > 0 {
+			db.cardsByDBFID[cardCopy.DBFID] = &cardCopy
+		}
 		db.indexCardName(cardCopy.Name, &cardCopy)
 	}
 
@@ -61,6 +67,15 @@ func (db *JSONDatabase) GetCard(id string) (*CardInfo, bool) {
 	defer db.mu.RUnlock()
 
 	card, ok := db.cardsByID[id]
+	return card, ok
+}
+
+// GetCardByDBFID возвращает карту по DBF ID.
+func (db *JSONDatabase) GetCardByDBFID(dbfID int) (*CardInfo, bool) {
+	db.mu.RLock()
+	defer db.mu.RUnlock()
+
+	card, ok := db.cardsByDBFID[dbfID]
 	return card, ok
 }
 

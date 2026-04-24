@@ -151,6 +151,7 @@ func TestEventType_String(t *testing.T) {
 		{"GameStart", EventTypeGameStart, "game_start"},
 		{"TurnStart", EventTypeTurnStart, "turn_start"},
 		{"TurnEnd", EventTypeTurnEnd, "turn_end"},
+		{"DeckList", EventTypeDeckList, "deck_list"},
 		{"CardPlayed", EventTypeCardPlayed, "card_played"},
 		{"CardDrawn", EventTypeCardDrawn, "card_drawn"},
 		{"Attack", EventTypeAttack, "attack"},
@@ -179,6 +180,7 @@ func TestEventType_IsValid(t *testing.T) {
 	}{
 		{"Valid GameStart", EventTypeGameStart, true},
 		{"Valid TurnStart", EventTypeTurnStart, true},
+		{"Valid DeckList", EventTypeDeckList, true},
 		{"Valid CardPlayed", EventTypeCardPlayed, true},
 		{"Valid Attack", EventTypeAttack, true},
 		{"Valid GameEnd", EventTypeGameEnd, true},

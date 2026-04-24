@@ -70,6 +70,21 @@ func TestCardEventsApply(t *testing.T) {
 	s := state.New("game-id", state.GameModeStandard)
 	player := s.GetPlayer(types.PlayerTypePlayer)
 
+	deckList := []*card.Card{
+		card.New("CARD_A", 1, types.PlayerTypePlayer),
+		card.New("CARD_B", 2, types.PlayerTypePlayer),
+	}
+	deckEvent := NewDeckListEvent(types.PlayerTypePlayer, deckList, "test deck", "123", "CODE")
+	if err := deckEvent.Apply(s); err != nil {
+		t.Fatalf("deck list apply failed: %v", err)
+	}
+	if len(player.DeckList) != 2 {
+		t.Fatalf("expected two cards in deck list")
+	}
+	if player.Name != "test deck" {
+		t.Fatalf("unexpected player name: %s", player.Name)
+	}
+
 	played := card.New("CARD_PLAY", 100, types.PlayerTypePlayer)
 	played.Zone = card.ZonePlay
 	player.Hand.AddCard(played)

@@ -71,6 +71,14 @@ func TestJSONDatabase_LoadAndGetters(t *testing.T) {
 	if cardByUpper.ID != "CS2_029" {
 		t.Fatalf("unexpected id for localized lookup: %s", cardByUpper.ID)
 	}
+
+	cardByDBFID, ok := db.GetCardByDBFID(315)
+	if !ok {
+		t.Fatalf("card must be found by dbf id")
+	}
+	if cardByDBFID.ID != "CS2_029" {
+		t.Fatalf("unexpected id by dbf id: %s", cardByDBFID.ID)
+	}
 }
 
 func TestJSONDatabase_LoadMapFormat(t *testing.T) {

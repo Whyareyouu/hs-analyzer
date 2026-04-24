@@ -8,6 +8,9 @@ type CardDatabase interface {
 	// GetCard возвращает карту по CardID.
 	GetCard(id string) (*CardInfo, bool)
 
+	// GetCardByDBFID возвращает карту по DBF ID.
+	GetCardByDBFID(dbfID int) (*CardInfo, bool)
+
 	// GetCardByName возвращает карту по локализованному или базовому имени.
 	GetCardByName(name string) (*CardInfo, bool)
 }

@@ -21,6 +21,7 @@ type PowerParser struct {
 	hasActiveTurn     bool
 	pendingPlays      map[int]pendingPlay
 	emittedPlays      map[int]struct{}
+	damageTotals      map[int]int
 }
 
 type pendingPlay struct {
@@ -107,38 +108,73 @@ func (p *PowerParser) reset() {
 	p.hasActiveTurn = false
 	p.pendingPlays = make(map[int]pendingPlay)
 	p.emittedPlays = make(map[int]struct{})
+	p.damageTotals = make(map[int]int)
 }
 
 func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, error) {
-	if tag != hslog.TagTurn {
+	switch tag {
+	case hslog.TagTurn:
+		turnNumber, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, fmt.Errorf("invalid turn value %q", value)
+		}
+
+		playerType := identifyTurnPlayer(entity)
+		if playerType == types.PlayerTypeUnknown {
+			return nil, nil
+		}
+
+		if p.hasActiveTurn && p.currentTurnNumber == turnNumber && p.currentTurnPlayer == playerType {
+			return nil, nil
+		}
+
+		events := make([]game.Event, 0, 2)
+		if p.hasActiveTurn {
+			events = append(events, game.NewTurnEndEvent())
+		}
+
+		events = append(events, game.NewTurnStartEvent(playerType))
+		p.currentTurnNumber = turnNumber
+		p.currentTurnPlayer = playerType
+		p.hasActiveTurn = true
+
+		return events, nil
+	case "DAMAGE":
+		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		if err != nil || !ok {
+			return nil, err
+		}
+
+		damageTotal, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, fmt.Errorf("invalid damage value %q", value)
+		}
+
+		previous := p.damageTotals[logged.entityID]
+		p.damageTotals[logged.entityID] = damageTotal
+		if damageTotal <= previous {
+			return nil, nil
+		}
+
+		return []game.Event{
+			game.NewDamageEvent(logged.entityID, damageTotal-previous),
+		}, nil
+	case hslog.TagZone:
+		if value != string(card.ZoneGraveyard) {
+			return nil, nil
+		}
+
+		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		if err != nil || !ok {
+			return nil, err
+		}
+
+		return []game.Event{
+			game.NewDeathEvent(logged.entityID),
+		}, nil
+	default:
 		return nil, nil
 	}
-
-	turnNumber, err := strconv.Atoi(value)
-	if err != nil {
-		return nil, fmt.Errorf("invalid turn value %q", value)
-	}
-
-	playerType := identifyTurnPlayer(entity)
-	if playerType == types.PlayerTypeUnknown {
-		return nil, nil
-	}
-
-	if p.hasActiveTurn && p.currentTurnNumber == turnNumber && p.currentTurnPlayer == playerType {
-		return nil, nil
-	}
-
-	events := make([]game.Event, 0, 2)
-	if p.hasActiveTurn {
-		events = append(events, game.NewTurnEndEvent())
-	}
-
-	events = append(events, game.NewTurnStartEvent(playerType))
-	p.currentTurnNumber = turnNumber
-	p.currentTurnPlayer = playerType
-	p.hasActiveTurn = true
-
-	return events, nil
 }
 
 func identifyTurnPlayer(entity string) types.PlayerType {
@@ -165,6 +201,19 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 	}
 
 	switch blockType {
+	case hslog.BlockTypeAttack:
+		if strings.Contains(line, "PowerTaskList.DebugPrintPower()") {
+			return nil, nil
+		}
+
+		target, ok, err := parseLoggedTarget(line)
+		if err != nil || !ok {
+			return nil, err
+		}
+
+		return []game.Event{
+			game.NewAttackEvent(entity.entityID, target.entityID),
+		}, nil
 	case hslog.BlockTypePlay:
 		p.pendingPlays[entity.entityID] = pendingPlay{
 			entityID: entity.entityID,
@@ -218,6 +267,28 @@ func parseLoggedEntity(line string) (loggedEntity, bool, error) {
 		return loggedEntity{}, false, nil
 	}
 
+	return buildLoggedEntity(matches)
+}
+
+func parseLoggedEntityFromRawEntity(raw string) (loggedEntity, bool, error) {
+	matches := hslog.PowerEntityPattern.FindStringSubmatch("Entity=" + raw)
+	if matches == nil {
+		return loggedEntity{}, false, nil
+	}
+
+	return buildLoggedEntity(matches)
+}
+
+func parseLoggedTarget(line string) (loggedEntity, bool, error) {
+	matches := hslog.PowerTargetPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return loggedEntity{}, false, nil
+	}
+
+	return buildLoggedEntity(matches)
+}
+
+func buildLoggedEntity(matches []string) (loggedEntity, bool, error) {
 	entityID, err := strconv.Atoi(matches[2])
 	if err != nil {
 		return loggedEntity{}, false, fmt.Errorf("invalid entity id %q", matches[2])

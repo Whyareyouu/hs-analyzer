@@ -86,6 +86,7 @@ const (
 	EventTypeGameStart       EventType = "game_start"
 	EventTypeTurnStart       EventType = "turn_start"
 	EventTypeTurnEnd         EventType = "turn_end"
+	EventTypeDeckList        EventType = "deck_list"
 	EventTypeCardPlayed      EventType = "card_played"
 	EventTypeCardDrawn       EventType = "card_drawn"
 	EventTypeAttack          EventType = "attack"
@@ -106,7 +107,7 @@ func (e EventType) String() string {
 func (e EventType) IsValid() bool {
 	switch e {
 	case EventTypeGameStart, EventTypeTurnStart, EventTypeTurnEnd,
-		EventTypeCardPlayed, EventTypeCardDrawn, EventTypeAttack,
+		EventTypeDeckList, EventTypeCardPlayed, EventTypeCardDrawn, EventTypeAttack,
 		EventTypeDamage, EventTypeHeal, EventTypeDeath,
 		EventTypeEffectTriggered, EventTypeDiscover, EventTypeGameEnd:
 		return true

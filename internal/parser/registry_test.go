@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/game"
 )
 
@@ -62,5 +63,24 @@ func TestRegistryRejectsDuplicateLogType(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "already registered") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestRegistryCanRegisterDeckParser(t *testing.T) {
+	t.Parallel()
+
+	registry := NewRegistry()
+	parser := NewDeckParser(carddb.NewJSONDatabase())
+
+	if err := registry.Register(parser); err != nil {
+		t.Fatalf("register deck parser: %v", err)
+	}
+
+	got, ok := registry.Get(LogTypeDeck)
+	if !ok {
+		t.Fatalf("expected deck parser to be registered")
+	}
+	if got.Name() != "deck_parser" {
+		t.Fatalf("unexpected parser name: %s", got.Name())
 	}
 }

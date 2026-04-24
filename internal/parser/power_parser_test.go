@@ -37,8 +37,12 @@ func TestPowerParserParseBaseStructure(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parse power log: %v", err)
 	}
-	if len(events) != 0 {
+	if len(events) != 1 {
 		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	if _, ok := events[0].(*game.AttackEvent); !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
 	}
 }
 
@@ -148,5 +152,73 @@ func TestPowerParserParseCardPlayedFromRealLogFragments(t *testing.T) {
 	}
 	if cardPlayed.Position != 0 {
 		t.Fatalf("unexpected position: %d", cardPlayed.Position)
+	}
+}
+
+func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) {
+	t.Parallel()
+
+	attackLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - BLOCK_START BlockType=ATTACK Entity=[entityName=Сумеречное яйцо id=103")
+	damageTargetLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Темный наездник id=27 zone=PLAY zonePos=2 cardId=EDR_456 player=1] tag=DAMAGE value=2")
+	damageAttackerLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Сумеречное яйцо id=103 zone=PLAY zonePos=2 cardId=CATA_210 player=2] tag=DAMAGE value=2")
+	deathTargetLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Темный наездник id=27 zone=PLAY zonePos=2 cardId=EDR_456 player=1] tag=ZONE value=GRAVEYARD")
+	deathAttackerLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Сумеречное яйцо id=103 zone=PLAY zonePos=2 cardId=CATA_210 player=2] tag=ZONE value=GRAVEYARD")
+
+	input := strings.Join([]string{
+		attackLine,
+		damageTargetLine,
+		damageAttackerLine,
+		deathTargetLine,
+		deathAttackerLine,
+	}, "\n")
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+
+	if len(events) != 5 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	attack, ok := events[0].(*game.AttackEvent)
+	if !ok {
+		t.Fatalf("unexpected first event type: %T", events[0])
+	}
+	if attack.AttackerEntityID != 103 || attack.TargetEntityID != 27 {
+		t.Fatalf("unexpected attack event: attacker=%d target=%d", attack.AttackerEntityID, attack.TargetEntityID)
+	}
+
+	damageOne, ok := events[1].(*game.DamageEvent)
+	if !ok {
+		t.Fatalf("unexpected second event type: %T", events[1])
+	}
+	if damageOne.TargetEntityID != 27 || damageOne.Amount != 2 {
+		t.Fatalf("unexpected first damage event: target=%d amount=%d", damageOne.TargetEntityID, damageOne.Amount)
+	}
+
+	damageTwo, ok := events[2].(*game.DamageEvent)
+	if !ok {
+		t.Fatalf("unexpected third event type: %T", events[2])
+	}
+	if damageTwo.TargetEntityID != 103 || damageTwo.Amount != 2 {
+		t.Fatalf("unexpected second damage event: target=%d amount=%d", damageTwo.TargetEntityID, damageTwo.Amount)
+	}
+
+	deathOne, ok := events[3].(*game.DeathEvent)
+	if !ok {
+		t.Fatalf("unexpected fourth event type: %T", events[3])
+	}
+	if deathOne.EntityID != 27 {
+		t.Fatalf("unexpected first death event: %d", deathOne.EntityID)
+	}
+
+	deathTwo, ok := events[4].(*game.DeathEvent)
+	if !ok {
+		t.Fatalf("unexpected fifth event type: %T", events[4])
+	}
+	if deathTwo.EntityID != 103 {
+		t.Fatalf("unexpected second death event: %d", deathTwo.EntityID)
 	}
 }

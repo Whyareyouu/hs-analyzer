@@ -135,6 +135,45 @@ func (e *TurnEndEvent) Apply(gameState *state.State) error {
 	return nil
 }
 
+// DeckListEvent обозначает определение исходной колоды игрока.
+type DeckListEvent struct {
+	BaseEvent
+	Player types.PlayerType
+	Cards  []*card.Card
+	Name   string
+	DeckID string
+	Code   string
+}
+
+func NewDeckListEvent(playerType types.PlayerType, cards []*card.Card, name, deckID, code string) *DeckListEvent {
+	return &DeckListEvent{
+		BaseEvent: NewBaseEvent(types.EventTypeDeckList),
+		Player:    playerType,
+		Cards:     cards,
+		Name:      name,
+		DeckID:    deckID,
+		Code:      code,
+	}
+}
+
+func (e *DeckListEvent) Apply(gameState *state.State) error {
+	if gameState == nil {
+		return errors.New("game state is nil")
+	}
+
+	player := gameState.GetPlayer(e.Player)
+	if player == nil {
+		return fmt.Errorf("player not found: %s", e.Player)
+	}
+
+	player.DeckList = append(player.DeckList[:0], e.Cards...)
+	if e.Name != "" {
+		player.Name = e.Name
+	}
+
+	return nil
+}
+
 // CardPlayedEvent обозначает розыгрыш карты.
 type CardPlayedEvent struct {
 	BaseEvent
@@ -218,7 +257,7 @@ type AttackEvent struct {
 
 func NewAttackEvent(attackerEntityID, targetEntityID int) *AttackEvent {
 	return &AttackEvent{
-		BaseEvent:         NewBaseEvent(types.EventTypeAttack),
+		BaseEvent:        NewBaseEvent(types.EventTypeAttack),
 		AttackerEntityID: attackerEntityID,
 		TargetEntityID:   targetEntityID,
 	}
@@ -335,9 +374,9 @@ func (e *EffectTriggeredEvent) Apply(gameState *state.State) error {
 // DiscoverEvent обозначает событие механики Discover.
 type DiscoverEvent struct {
 	BaseEvent
-	Player      types.PlayerType
-	Options     []string
-	ChosenCard  string
+	Player       types.PlayerType
+	Options      []string
+	ChosenCard   string
 	ChosenCardID int
 }
 

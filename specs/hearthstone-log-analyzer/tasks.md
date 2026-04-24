@@ -159,7 +159,7 @@
     - Написать unit тесты с примерами логов
     - _Requirements: 1.3, 1.6, 10.1, 10.2_
 
-  - [ ] 7.3 Реализовать DeckParser
+  - [x] 7.3 Реализовать DeckParser
 
     - Создать DeckParser в internal/parser/deck_parser.go
     - Парсить список карт в колоде
@@ -198,7 +198,7 @@
     - Написать unit тесты
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.6_
 
-  - [ ] 7.8 PowerParser - парсинг атак
+  - [x] 7.8 PowerParser - парсинг атак
 
     - Добавить парсинг ATTACK событий
     - Генерировать AttackEvent
