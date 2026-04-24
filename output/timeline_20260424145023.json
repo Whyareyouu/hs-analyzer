@@ -1,0 +1,6241 @@
+[
+  {
+    "number": 1,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 26,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 95
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 103
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TLC_515",
+            "entity_id": 60,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 0
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "END_036",
+          "chosen_card_id": 118,
+          "options": [
+            "CATA_158",
+            "END_036",
+            "CATA_154"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 118
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8559594+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 60
+        }
+      },
+      {
+        "index": 7,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "EDR_528",
+            "entity_id": 39,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 1
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 8,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_034",
+          "chosen_card_id": 124,
+          "options": [
+            "TIME_034",
+            "TLC_600",
+            "CATA_210"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 9,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 124
+        }
+      },
+      {
+        "index": 10,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:0",
+          "source_entity_id": 124
+        }
+      },
+      {
+        "index": 11,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 127
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 123
+        }
+      },
+      {
+        "index": 13,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 39
+        }
+      },
+      {
+        "index": 14,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 103,
+          "target_entity_id": 27
+        }
+      },
+      {
+        "index": 15,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 27
+        }
+      },
+      {
+        "index": 16,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8569607+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 103
+        }
+      },
+      {
+        "index": 17,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 27
+        }
+      },
+      {
+        "index": 18,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 103
+        }
+      },
+      {
+        "index": 19,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 103
+        }
+      },
+      {
+        "index": 20,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 103
+        }
+      },
+      {
+        "index": 21,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 120
+        }
+      },
+      {
+        "index": 22,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 120
+        }
+      },
+      {
+        "index": 23,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 121
+        }
+      },
+      {
+        "index": 24,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 121
+        }
+      },
+      {
+        "index": 25,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 8,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8579611+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "END_033",
+            "entity_id": 25,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 2
+          },
+          "player": "PLAYER",
+          "position": 3
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:4",
+          "source_entity_id": 29
+        }
+      },
+      {
+        "index": 3,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 29
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 30
+        }
+      },
+      {
+        "index": 5,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 29,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 7,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 22,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8589606+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8599614+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 95
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8599614+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8609602+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_034",
+            "entity_id": 124,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 3
+          },
+          "player": "OPPONENT",
+          "position": 3
+        }
+      },
+      {
+        "index": 4,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8609602+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_000tb",
+          "chosen_card_id": 141,
+          "options": [
+            "TIME_000ta",
+            "TIME_000tb"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8609602+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 141
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8609602+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:3",
+          "source_entity_id": 135
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8609602+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 135
+        }
+      },
+      {
+        "index": 8,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.861973+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 9,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.861973+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.861973+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.861973+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 135
+        }
+      },
+      {
+        "index": 12,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.861973+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 135
+        }
+      },
+      {
+        "index": 13,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 138,
+          "target_entity_id": 29
+        }
+      },
+      {
+        "index": 14,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 29
+        }
+      },
+      {
+        "index": 15,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 138
+        }
+      },
+      {
+        "index": 16,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 29
+        }
+      },
+      {
+        "index": 17,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 138
+        }
+      },
+      {
+        "index": 18,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 29
+        }
+      },
+      {
+        "index": 19,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 131,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 20,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 21,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 15,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8629727+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:4",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 3,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 64,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 136
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 136
+        }
+      },
+      {
+        "index": 7,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_111",
+            "entity_id": 81,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 1
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 8,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "END_033",
+            "entity_id": 22,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 16
+          },
+          "player": "PLAYER",
+          "position": 4
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 124
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 20
+        }
+      },
+      {
+        "index": 11,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_EX1_391",
+            "entity_id": 20,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 8
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 12,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 25,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 6,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 14,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 36,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 3,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.863972+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 95
+        }
+      },
+      {
+        "index": 4,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TLC_515",
+            "entity_id": 57,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 2
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 5,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_711",
+          "chosen_card_id": 145,
+          "options": [
+            "CORE_RLK_567",
+            "TIME_711",
+            "DINO_407"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 145
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 57
+        }
+      },
+      {
+        "index": 8,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 53
+        }
+      },
+      {
+        "index": 9,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_711",
+            "entity_id": 53,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 6
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 10,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "DINO_407",
+          "chosen_card_id": 143,
+          "options": [
+            "DINO_407",
+            "CORE_RLK_567"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 11,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8654748+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 143
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 147
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:4",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 14,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 15,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 16,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 17,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 135
+        }
+      },
+      {
+        "index": 18,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 135
+        }
+      },
+      {
+        "index": 19,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 131,
+          "target_entity_id": 81
+        }
+      },
+      {
+        "index": 20,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 81
+        }
+      },
+      {
+        "index": 21,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 131
+        }
+      },
+      {
+        "index": 22,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 131
+        }
+      },
+      {
+        "index": 23,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8664774+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 81
+        }
+      },
+      {
+        "index": 24,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 124,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 25,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 7,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 26,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 6,
+          "target_entity_id": 124
+        }
+      },
+      {
+        "index": 27,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 124
+        }
+      },
+      {
+        "index": 28,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:3",
+          "source_entity_id": 124
+        }
+      },
+      {
+        "index": 29,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 124
+        }
+      },
+      {
+        "index": 30,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 157,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 31,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 32,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 6,
+          "target_entity_id": 157
+        }
+      },
+      {
+        "index": 33,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 25
+        }
+      },
+      {
+        "index": 34,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8674771+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 157
+        }
+      },
+      {
+        "index": 35,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8684789+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 3,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8684789+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8684789+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "START_OF_GAME_KEYWORD",
+          "source_entity_id": 56
+        }
+      },
+      {
+        "index": 2,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 10,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_210",
+            "entity_id": 13,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 3
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 68
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "GAME_005",
+            "entity_id": 68,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 11
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 13
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 54
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 13
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 13
+        }
+      },
+      {
+        "index": 8,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8694789+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_785",
+            "entity_id": 54,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 18
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 9,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 5,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_472",
+            "entity_id": 29,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 4
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 3,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 88,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 4,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 9,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 11,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8704791+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8714791+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_200",
+            "entity_id": 55,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 5
+          },
+          "player": "OPPONENT",
+          "position": 1
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8721401+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "EDR_528",
+            "entity_id": 40,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 4
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8721401+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_475",
+          "chosen_card_id": 94,
+          "options": [
+            "CATA_475",
+            "EDR_258",
+            "EDR_856"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 5,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8721401+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 94
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8721401+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 97
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8726695+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 93
+        }
+      },
+      {
+        "index": 8,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8726695+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 40
+        }
+      },
+      {
+        "index": 9,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8726695+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 85,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 10,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8731906+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 10,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 13,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8731906+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8731906+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 2,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8742224+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 88,
+          "target_entity_id": 85
+        }
+      },
+      {
+        "index": 3,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8742224+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 85
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8742224+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 88
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8742224+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 85
+        }
+      },
+      {
+        "index": 6,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8742224+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "HERO_04bp",
+            "entity_id": 65,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 11
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 7,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 64,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 8,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 29
+        }
+      },
+      {
+        "index": 11,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 55
+        }
+      },
+      {
+        "index": 12,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 11,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 10,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8747405+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8752657+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 35
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8752657+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "GAME_005",
+            "entity_id": 35,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 12
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8758117+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 45
+        }
+      },
+      {
+        "index": 5,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8758117+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_EX1_145",
+            "entity_id": 45,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 14
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8758117+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 106
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8758117+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 86
+        }
+      },
+      {
+        "index": 8,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8763361+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "FIR_941",
+            "entity_id": 86,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 9
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 9,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8763361+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 12,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 24,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8763361+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8763361+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8768529+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_474",
+            "entity_id": 4,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 5
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 3,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8768529+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 103,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8768529+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 8,
+          "target_entity_id": 103
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8768529+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 103
+        }
+      },
+      {
+        "index": 6,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 88,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 7,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 8,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 8,
+          "target_entity_id": 88
+        }
+      },
+      {
+        "index": 9,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 88
+        }
+      },
+      {
+        "index": 10,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 64,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 12,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 8,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8773723+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 29
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 29
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 64
+        }
+      },
+      {
+        "index": 16,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 29
+        }
+      },
+      {
+        "index": 17,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 4
+        }
+      },
+      {
+        "index": 18,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 114
+        }
+      },
+      {
+        "index": 19,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 20,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 113
+        }
+      },
+      {
+        "index": 21,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8778863+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_CS1_130",
+            "entity_id": 113,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 5
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 22,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8784044+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 4
+        }
+      },
+      {
+        "index": 23,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8784044+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 13,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 12,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8784044+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 110,
+          "target_entity_id": 4
+        }
+      },
+      {
+        "index": 2,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 8,
+          "target_entity_id": 4
+        }
+      },
+      {
+        "index": 3,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 110
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 110
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 4
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:4",
+          "source_entity_id": 110
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:4",
+          "source_entity_id": 110
+        }
+      },
+      {
+        "index": 8,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_475",
+            "entity_id": 94,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 10
+          },
+          "player": "OPPONENT",
+          "position": 1
+        }
+      },
+      {
+        "index": 9,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8789225+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 94
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.879443+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 11,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.879443+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 14,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 4,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.879443+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8799571+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 117
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8799571+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 21
+        }
+      },
+      {
+        "index": 3,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8799571+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 15,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 30,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8799571+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8804785+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 121
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8804785+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 63
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8804785+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_EX1_129",
+            "entity_id": 63,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 9
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8809945+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_474",
+          "chosen_card_id": 125,
+          "options": [
+            "TIME_009",
+            "CATA_474",
+            "CATA_475"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8809945+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 53
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8809945+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 121
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 34
+        }
+      },
+      {
+        "index": 8,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 69
+        }
+      },
+      {
+        "index": 9,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 69
+        }
+      },
+      {
+        "index": 10,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 69
+        }
+      },
+      {
+        "index": 11,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 69
+        }
+      },
+      {
+        "index": 12,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 70
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 70
+        }
+      },
+      {
+        "index": 14,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 70
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 70
+        }
+      },
+      {
+        "index": 16,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 71
+        }
+      },
+      {
+        "index": 17,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 71
+        }
+      },
+      {
+        "index": 18,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 71
+        }
+      },
+      {
+        "index": 19,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 71
+        }
+      },
+      {
+        "index": 20,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 72
+        }
+      },
+      {
+        "index": 21,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:2",
+          "source_entity_id": 72
+        }
+      },
+      {
+        "index": 22,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 72
+        }
+      },
+      {
+        "index": 23,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:2",
+          "source_entity_id": 72
+        }
+      },
+      {
+        "index": 24,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8815123+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_785",
+            "entity_id": 34,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 7
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 25,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8820232+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 94
+        }
+      },
+      {
+        "index": 26,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8820232+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 27,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8820232+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 121
+        }
+      },
+      {
+        "index": 28,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8820232+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 121
+        }
+      },
+      {
+        "index": 29,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8825444+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 16,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 9,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8825444+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8825444+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 116
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_044",
+            "entity_id": 32,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 7
+          },
+          "player": "PLAYER",
+          "position": 2
+        }
+      },
+      {
+        "index": 3,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:5",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 4,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:5",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 32
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 21
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 8,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 17,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 22,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.883066+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_474",
+            "entity_id": 125,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 7
+          },
+          "player": "OPPONENT",
+          "position": 1
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "HERO_03bp",
+            "entity_id": 67,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 6
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 3,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 4,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 66
+        }
+      },
+      {
+        "index": 7,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 143
+        }
+      },
+      {
+        "index": 8,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 94,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 94
+        }
+      },
+      {
+        "index": 11,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 128,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 12,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 128
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 128
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 94
+        }
+      },
+      {
+        "index": 16,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 17,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 18,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 139
+        }
+      },
+      {
+        "index": 19,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 139
+        }
+      },
+      {
+        "index": 20,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 125
+        }
+      },
+      {
+        "index": 21,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 18,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 17,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8840692+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8855727+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 116
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8855727+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_009",
+            "entity_id": 28,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 6
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 141
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 140
+        }
+      },
+      {
+        "index": 6,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_AT_055",
+            "entity_id": 140,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 3
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 7,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 25,
+          "target_entity_id": 125
+        }
+      },
+      {
+        "index": 8,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 5,
+          "target_entity_id": 125
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 125
+        }
+      },
+      {
+        "index": 11,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 21
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 21
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 14,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 12
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 16
+        }
+      },
+      {
+        "index": 16,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 19,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 29,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8865763+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_154",
+            "entity_id": 51,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 8
+          },
+          "player": "OPPONENT",
+          "position": 2
+        }
+      },
+      {
+        "index": 3,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 159
+        }
+      },
+      {
+        "index": 6,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_BRM_013",
+            "entity_id": 159,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 15
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 7,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 8,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 9,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8885763+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 129
+        }
+      },
+      {
+        "index": 10,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_600",
+            "entity_id": 129,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 5
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 11,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:6",
+          "source_entity_id": 36
+        }
+      },
+      {
+        "index": 12,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:6",
+          "source_entity_id": 52
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:6",
+          "source_entity_id": 59
+        }
+      },
+      {
+        "index": 14,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:8",
+          "source_entity_id": 36
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:8",
+          "source_entity_id": 52
+        }
+      },
+      {
+        "index": 16,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:8",
+          "source_entity_id": 59
+        }
+      },
+      {
+        "index": 17,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 144
+        }
+      },
+      {
+        "index": 18,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_447",
+            "entity_id": 144,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 13
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 19,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8895768+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 94
+        }
+      },
+      {
+        "index": 20,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 64
+        }
+      },
+      {
+        "index": 21,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 25
+        }
+      },
+      {
+        "index": 22,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 28
+        }
+      },
+      {
+        "index": 23,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 152
+        }
+      },
+      {
+        "index": 24,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 64
+        }
+      },
+      {
+        "index": 25,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 25
+        }
+      },
+      {
+        "index": 26,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:4",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 27,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 25
+        }
+      },
+      {
+        "index": 28,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 20,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 4,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.890577+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "START_OF_GAME_KEYWORD",
+          "source_entity_id": 58
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "START_OF_GAME_KEYWORD",
+          "source_entity_id": 18
+        }
+      },
+      {
+        "index": 3,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 21,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 2,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 22,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 2,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8920803+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 23,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 5,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_039",
+            "entity_id": 36,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 8
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 2,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_131",
+          "chosen_card_id": 84,
+          "options": [
+            "EDR_270",
+            "CATA_131",
+            "EDR_848"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 36
+        }
+      },
+      {
+        "index": 4,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 24,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 5,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8930856+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 35
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "EDR_270",
+            "entity_id": 10,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 6
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 10
+        }
+      },
+      {
+        "index": 4,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 25,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 14,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 15
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 63
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 70
+        }
+      },
+      {
+        "index": 4,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8940848+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "GAME_005",
+            "entity_id": 70,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 4
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 5,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_131",
+            "entity_id": 84,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 11
+          },
+          "player": "OPPONENT",
+          "position": 1
+        }
+      },
+      {
+        "index": 6,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "EDR_528",
+            "entity_id": 49,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 10
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 7,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_140",
+          "chosen_card_id": 106,
+          "options": [
+            "CATA_131",
+            "CATA_140",
+            "CORE_RLK_657"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 8,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 106
+        }
+      },
+      {
+        "index": 9,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:0",
+          "source_entity_id": 106
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8955891+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 109
+        }
+      },
+      {
+        "index": 11,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8961108+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 104
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8961108+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 49
+        }
+      },
+      {
+        "index": 13,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8961108+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 26,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 15,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8961108+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8961108+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 35
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TLC_100",
+            "entity_id": 31,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 13
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 3,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 15,
+          "target_entity_id": 84
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 84
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 15
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 15
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8966291+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 84
+        }
+      },
+      {
+        "index": 8,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 9,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 11,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 124
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 124
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 14,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 27,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 6,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8971547+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.8981913+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "END_036",
+          "chosen_card_id": 127,
+          "options": [
+            "END_036",
+            "CATA_200",
+            "CATA_497"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8981913+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 127
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 130
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 126
+        }
+      },
+      {
+        "index": 5,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 28,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 19,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "OBJECTIVE",
+          "source_entity_id": 35
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.8987138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 35
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.899235+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TLC_100t2",
+            "entity_id": 123,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 14
+          },
+          "player": "PLAYER",
+          "position": 2
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8997532+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 123
+        }
+      },
+      {
+        "index": 5,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.8997532+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 144,
+          "target_entity_id": 45
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.8997532+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 45
+        }
+      },
+      {
+        "index": 7,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9002713+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 144
+        }
+      },
+      {
+        "index": 8,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9002713+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 144
+        }
+      },
+      {
+        "index": 9,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9002713+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 143,
+          "target_entity_id": 45
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9002713+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 45
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9002713+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 143
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9007874+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 45
+        }
+      },
+      {
+        "index": 13,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9007874+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 143
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9007874+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 25
+        }
+      },
+      {
+        "index": 15,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9013078+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 4
+        }
+      },
+      {
+        "index": 16,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9013078+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 31,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 17,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9013078+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 18,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9013078+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 29,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 9,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9013078+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_008",
+          "chosen_card_id": 158,
+          "options": [
+            "TIME_008",
+            "TIME_014",
+            "TIME_033"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 159
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 160
+        }
+      },
+      {
+        "index": 4,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_433",
+          "chosen_card_id": 164,
+          "options": [
+            "TIME_018",
+            "TIME_441",
+            "TIME_433"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 162
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9023338+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 163
+        }
+      },
+      {
+        "index": 7,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9028514+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_200",
+            "entity_id": 38,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 17
+          },
+          "player": "OPPONENT",
+          "position": 2
+        }
+      },
+      {
+        "index": 8,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9028514+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 30,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 27,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9028514+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9033696+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_111",
+            "entity_id": 5,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 12
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9033696+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "Core_LOE_115",
+            "entity_id": 147,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 7
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9033696+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 147
+        }
+      },
+      {
+        "index": 4,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9033696+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_111",
+            "entity_id": 16,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 10
+          },
+          "player": "PLAYER",
+          "position": 4
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 142
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:4",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 135
+        }
+      },
+      {
+        "index": 8,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_OG_047",
+            "entity_id": 135,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 2
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 9,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_701",
+            "entity_id": 151,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 8
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9038882+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 151
+        }
+      },
+      {
+        "index": 11,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9044053+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_701",
+            "entity_id": 26,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 9
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9044053+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 26
+        }
+      },
+      {
+        "index": 13,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9044053+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 39
+        }
+      },
+      {
+        "index": 14,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9044053+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 39
+        }
+      },
+      {
+        "index": 15,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9044053+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 155
+        }
+      },
+      {
+        "index": 16,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 156
+        }
+      },
+      {
+        "index": 17,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 154
+        }
+      },
+      {
+        "index": 18,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 31,
+          "target_entity_id": 39
+        }
+      },
+      {
+        "index": 19,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 39
+        }
+      },
+      {
+        "index": 20,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 31
+        }
+      },
+      {
+        "index": 21,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 39
+        }
+      },
+      {
+        "index": 22,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9049244+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_134",
+            "entity_id": 154,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 0
+          },
+          "player": "PLAYER",
+          "position": 0
+        }
+      },
+      {
+        "index": 23,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9054348+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 179
+        }
+      },
+      {
+        "index": 24,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9054348+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 179
+        }
+      },
+      {
+        "index": 25,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9054348+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 26,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9054348+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 31,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 19,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9054348+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9065096+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 16
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9065096+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_433",
+            "entity_id": 164,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 16
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 3,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_000ta",
+          "chosen_card_id": 200,
+          "options": [
+            "TIME_000ta",
+            "TIME_000tb"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 200
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 164
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 5
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 65
+        }
+      },
+      {
+        "index": 8,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 5
+        }
+      },
+      {
+        "index": 9,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9075138+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 5
+        }
+      },
+      {
+        "index": 10,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 38,
+          "target_entity_id": 31
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 31
+        }
+      },
+      {
+        "index": 12,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 38
+        }
+      },
+      {
+        "index": 13,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 31
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 38
+        }
+      },
+      {
+        "index": 15,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.908514+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 31
+        }
+      },
+      {
+        "index": 16,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 17,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_875t1",
+            "entity_id": 41,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 19
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 18,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 32,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 24,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9095144+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "FIR_907",
+            "entity_id": 33,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 1
+          },
+          "player": "PLAYER",
+          "position": 1
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_210",
+            "entity_id": 173,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 15
+          },
+          "player": "PLAYER",
+          "position": 7
+        }
+      },
+      {
+        "index": 4,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 208,
+          "target_entity_id": 204
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 204
+        }
+      },
+      {
+        "index": 6,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 208
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 204
+        }
+      },
+      {
+        "index": 8,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 189,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 10,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9105153+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 190,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9115142+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 12,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9115142+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 207,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9115142+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 14,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9115142+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 15,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.912515+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 16,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.912515+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 17,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.912515+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 123
+        }
+      },
+      {
+        "index": 18,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.912515+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 123
+        }
+      },
+      {
+        "index": 19,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 123
+        }
+      },
+      {
+        "index": 20,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 212
+        }
+      },
+      {
+        "index": 21,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 212
+        }
+      },
+      {
+        "index": 22,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 23,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 33,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 9,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9130181+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 2,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9140225+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 68,
+          "target_entity_id": 207
+        }
+      },
+      {
+        "index": 3,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9140225+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 207
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9140225+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 41
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 41
+        }
+      },
+      {
+        "index": 7,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 207
+        }
+      },
+      {
+        "index": 8,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 34,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 28,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9155267+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 173
+        }
+      },
+      {
+        "index": 3,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.916531+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 22,
+          "target_entity_id": 54
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.916531+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 6,
+          "target_entity_id": 54
+        }
+      },
+      {
+        "index": 5,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.916531+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 5,
+          "target_entity_id": 22
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.916531+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 54
+        }
+      },
+      {
+        "index": 7,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.916531+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 189,
+          "target_entity_id": 227
+        }
+      },
+      {
+        "index": 8,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 227
+        }
+      },
+      {
+        "index": 9,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 189
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 227
+        }
+      },
+      {
+        "index": 11,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 208,
+          "target_entity_id": 223
+        }
+      },
+      {
+        "index": 12,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 223
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 208
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 208
+        }
+      },
+      {
+        "index": 15,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 223
+        }
+      },
+      {
+        "index": 16,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 221,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 17,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 18,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 190,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 19,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9175311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 2,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 20,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 33
+        }
+      },
+      {
+        "index": 21,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 22,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 23,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 68
+        }
+      },
+      {
+        "index": 24,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 233
+        }
+      },
+      {
+        "index": 25,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 233
+        }
+      },
+      {
+        "index": 26,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 27,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 35,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 36,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9185311+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 2,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 48
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "GAME_005",
+            "entity_id": 48,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 3
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 4,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 18,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 5,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 68
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "1724",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 8,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_190t12",
+          "chosen_card_id": 238,
+          "options": [
+            "CATA_190t10",
+            "CATA_190t11",
+            "CATA_190t12",
+            "CATA_190t13"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 9,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 238
+        }
+      },
+      {
+        "index": 10,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 189
+        }
+      },
+      {
+        "index": 11,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 190
+        }
+      },
+      {
+        "index": 12,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 173
+        }
+      },
+      {
+        "index": 13,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 221
+        }
+      },
+      {
+        "index": 14,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 22
+        }
+      },
+      {
+        "index": 15,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 232
+        }
+      },
+      {
+        "index": 16,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9195316+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 189
+        }
+      },
+      {
+        "index": 17,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 190
+        }
+      },
+      {
+        "index": 18,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 173
+        }
+      },
+      {
+        "index": 19,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 221
+        }
+      },
+      {
+        "index": 20,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 22
+        }
+      },
+      {
+        "index": 21,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 232
+        }
+      },
+      {
+        "index": 22,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 189
+        }
+      },
+      {
+        "index": 23,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 190
+        }
+      },
+      {
+        "index": 24,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 173
+        }
+      },
+      {
+        "index": 25,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9210351+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "DEATHRATTLE",
+          "source_entity_id": 22
+        }
+      },
+      {
+        "index": 26,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 55,
+          "target_entity_id": 243
+        }
+      },
+      {
+        "index": 27,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 3,
+          "target_entity_id": 243
+        }
+      },
+      {
+        "index": 28,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 1,
+          "target_entity_id": 41
+        }
+      },
+      {
+        "index": 29,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TRIGGER_VISUAL",
+          "source_entity_id": 41
+        }
+      },
+      {
+        "index": 30,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:4",
+          "source_entity_id": 42
+        }
+      },
+      {
+        "index": 31,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 42
+        }
+      },
+      {
+        "index": 32,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 41
+        }
+      },
+      {
+        "index": 33,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 243
+        }
+      },
+      {
+        "index": 34,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9220387+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 35,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9230395+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 36,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 15,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9230395+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      },
+      {
+        "index": 1,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9230395+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "HEALTH_CHANGE:4",
+          "source_entity_id": 42
+        }
+      },
+      {
+        "index": 2,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9230395+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_875t",
+            "entity_id": 72,
+            "owner": "PLAYER",
+            "zone": "PLAY",
+            "position": 4
+          },
+          "player": "PLAYER",
+          "position": 4
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "EDR_856",
+            "entity_id": 17,
+            "owner": "PLAYER",
+            "zone": "GRAVEYARD",
+            "position": 17
+          },
+          "player": "PLAYER",
+          "position": 3
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 258
+        }
+      },
+      {
+        "index": 5,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 253
+        }
+      },
+      {
+        "index": 6,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:3",
+          "source_entity_id": 42
+        }
+      },
+      {
+        "index": 7,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:1",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 8,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 66,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 9,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 241,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 10,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 242,
+          "target_entity_id": 55
+        }
+      },
+      {
+        "index": 11,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 264
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 264
+        }
+      },
+      {
+        "index": 13,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9240855+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 66
+        }
+      },
+      {
+        "index": 14,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.925591+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 37,
+    "player": "OPPONENT",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "ended_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 24,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.925591+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 1,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.926595+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 4,
+          "target_entity_id": 17
+        }
+      },
+      {
+        "index": 2,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.926595+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "LIFESTEAL",
+          "source_entity_id": 224
+        }
+      },
+      {
+        "index": 3,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.926595+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 224
+        }
+      },
+      {
+        "index": 4,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.926595+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 17
+        }
+      },
+      {
+        "index": 5,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.926595+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CORE_SW_442",
+            "entity_id": 224,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 1
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 6,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_432",
+            "entity_id": 228,
+            "owner": "OPPONENT",
+            "zone": "GRAVEYARD",
+            "position": 20
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 7,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_158",
+          "chosen_card_id": 269,
+          "options": [
+            "CATA_158",
+            "EDR_528",
+            "CATA_200"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 8,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "CATA_132",
+          "chosen_card_id": 270,
+          "options": [
+            "TIME_701",
+            "CATA_132",
+            "TIME_702"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 9,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 228
+        }
+      },
+      {
+        "index": 10,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 62
+        }
+      },
+      {
+        "index": 11,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9275945+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "TIME_008",
+            "entity_id": 158,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 2
+          },
+          "player": "OPPONENT",
+          "position": 1
+        }
+      },
+      {
+        "index": 12,
+        "type": "discover",
+        "timestamp": "2026-04-24T14:50:23.928595+03:00",
+        "summary": "discover",
+        "attributes": {
+          "chosen_card": "TIME_000tb",
+          "chosen_card_id": 275,
+          "options": [
+            "TIME_000ta",
+            "TIME_000tb"
+          ],
+          "player": "OPPONENT"
+        }
+      },
+      {
+        "index": 13,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.928595+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 275
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9295973+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 64
+        }
+      },
+      {
+        "index": 15,
+        "type": "card_played",
+        "timestamp": "2026-04-24T14:50:23.9315964+03:00",
+        "summary": "card_played",
+        "attributes": {
+          "card": {
+            "id": "CATA_190p",
+            "entity_id": 244,
+            "owner": "OPPONENT",
+            "zone": "PLAY",
+            "position": 0
+          },
+          "player": "OPPONENT",
+          "position": 0
+        }
+      },
+      {
+        "index": 16,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9315964+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:5",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 17,
+        "type": "attack",
+        "timestamp": "2026-04-24T14:50:23.9315964+03:00",
+        "summary": "attack",
+        "attributes": {
+          "attacker_entity_id": 55,
+          "target_entity_id": 241
+        }
+      },
+      {
+        "index": 18,
+        "type": "damage",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "damage",
+        "attributes": {
+          "amount": 5,
+          "target_entity_id": 241
+        }
+      },
+      {
+        "index": 19,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 241
+        }
+      },
+      {
+        "index": 20,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "TAG_ONE_TURN_EFFECT",
+          "source_entity_id": 274
+        }
+      },
+      {
+        "index": 21,
+        "type": "death",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "death",
+        "attributes": {
+          "entity_id": 274
+        }
+      },
+      {
+        "index": 22,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "effect_triggered",
+        "attributes": {
+          "effect_name": "ATK_CHANGE:0",
+          "source_entity_id": 55
+        }
+      },
+      {
+        "index": 23,
+        "type": "turn_end",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "turn_end"
+      }
+    ]
+  },
+  {
+    "number": 38,
+    "player": "PLAYER",
+    "started_at": "2026-04-24T14:50:23.9509419+03:00",
+    "event_count": 1,
+    "events": [
+      {
+        "index": 0,
+        "type": "turn_start",
+        "timestamp": "2026-04-24T14:50:23.9331001+03:00",
+        "summary": "turn_start",
+        "attributes": {
+          "player": "PLAYER"
+        }
+      }
+    ]
+  }
+]
