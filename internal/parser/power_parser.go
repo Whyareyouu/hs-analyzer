@@ -23,12 +23,20 @@ type PowerParser struct {
 	emittedPlays      map[int]struct{}
 	damageTotals      map[int]int
 	statValues        map[int]map[string]int
+	discoverChoices   map[int]discoverChoice
+	activeChoiceID    int
+	collectChoiceID   int
 }
 
 type pendingPlay struct {
 	entityID int
 	player   types.PlayerType
 	cardID   string
+}
+
+type discoverChoice struct {
+	player  types.PlayerType
+	options []string
 }
 
 func NewPowerParser() *PowerParser {
@@ -85,10 +93,27 @@ func (p *PowerParser) isRelevantLine(line string) bool {
 		hslog.PowerTagChangePattern.MatchString(line) ||
 		hslog.PowerFullEntityPattern.MatchString(line) ||
 		hslog.PowerShowEntityPattern.MatchString(line) ||
-		hslog.PowerBlockStartPattern.MatchString(line)
+		hslog.PowerBlockStartPattern.MatchString(line) ||
+		hslog.PowerEntityChoicesHeaderPattern.MatchString(line) ||
+		hslog.PowerChoiceEntityPattern.MatchString(line) ||
+		hslog.PowerSendChoicesPattern.MatchString(line) ||
+		hslog.PowerChosenEntityPattern.MatchString(line)
 }
 
 func (p *PowerParser) parseLine(line string) ([]game.Event, error) {
+	if strings.Contains(line, "m_chosenEntities[0]=") {
+		return p.parseChosenEntity(line)
+	}
+	if strings.Contains(line, "Entities[") && strings.Contains(line, "DebugPrintEntityChoices()") {
+		return p.parseChoiceOption(line)
+	}
+	if strings.Contains(line, "GameState.DebugPrintEntityChoices()") {
+		return p.parseEntityChoicesHeader(line)
+	}
+	if strings.Contains(line, "GameState.SendChoices()") {
+		return p.parseSendChoices(line)
+	}
+
 	if matches := hslog.PowerBlockStartPattern.FindStringSubmatch(line); matches != nil {
 		return p.parseBlockStart(line, matches[1])
 	}
@@ -111,6 +136,9 @@ func (p *PowerParser) reset() {
 	p.emittedPlays = make(map[int]struct{})
 	p.damageTotals = make(map[int]int)
 	p.statValues = make(map[int]map[string]int)
+	p.discoverChoices = make(map[int]discoverChoice)
+	p.activeChoiceID = 0
+	p.collectChoiceID = 0
 }
 
 func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, error) {
@@ -213,6 +241,113 @@ func identifyTurnPlayer(entity string) types.PlayerType {
 	}
 
 	return types.PlayerTypeUnknown
+}
+
+func (p *PowerParser) parseEntityChoicesHeader(line string) ([]game.Event, error) {
+	if strings.Contains(line, "PowerTaskList.DebugPrintPower()") {
+		return nil, nil
+	}
+
+	matches := hslog.PowerEntityChoicesHeaderPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, nil
+	}
+
+	choiceID, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return nil, fmt.Errorf("invalid choice id %q", matches[1])
+	}
+	if matches[3] != "GENERAL" {
+		return nil, nil
+	}
+
+	player := identifyTurnPlayer(matches[2])
+	if player == types.PlayerTypeUnknown {
+		return nil, nil
+	}
+
+	p.discoverChoices[choiceID] = discoverChoice{
+		player:  player,
+		options: make([]string, 0, 3),
+	}
+	p.collectChoiceID = choiceID
+	return nil, nil
+}
+
+func (p *PowerParser) parseChoiceOption(line string) ([]game.Event, error) {
+	matches := hslog.PowerChoiceEntityPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, nil
+	}
+
+	entity, ok, err := buildLoggedEntity(matches)
+	if err != nil || !ok {
+		return nil, err
+	}
+	if entity.zone != card.ZoneSetAside || entity.cardID == "" {
+		return nil, nil
+	}
+
+	if p.collectChoiceID == 0 {
+		return nil, nil
+	}
+
+	choice, ok := p.discoverChoices[p.collectChoiceID]
+	if !ok {
+		return nil, nil
+	}
+	choice.options = append(choice.options, entity.cardID)
+	p.discoverChoices[p.collectChoiceID] = choice
+
+	return nil, nil
+}
+
+func (p *PowerParser) parseSendChoices(line string) ([]game.Event, error) {
+	matches := hslog.PowerSendChoicesPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, nil
+	}
+	if matches[2] != "GENERAL" {
+		return nil, nil
+	}
+
+	choiceID, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return nil, fmt.Errorf("invalid send choice id %q", matches[1])
+	}
+	p.activeChoiceID = choiceID
+	return nil, nil
+}
+
+func (p *PowerParser) parseChosenEntity(line string) ([]game.Event, error) {
+	if p.activeChoiceID == 0 {
+		return nil, nil
+	}
+
+	choice, ok := p.discoverChoices[p.activeChoiceID]
+	if !ok || len(choice.options) < 2 {
+		return nil, nil
+	}
+
+	matches := hslog.PowerChosenEntityPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, nil
+	}
+
+	chosen, ok, err := buildLoggedEntity(matches)
+	if err != nil || !ok {
+		return nil, err
+	}
+	if chosen.cardID == "" {
+		return nil, nil
+	}
+
+	event := game.NewDiscoverEvent(choice.player, append([]string(nil), choice.options...), chosen.cardID, chosen.entityID)
+	delete(p.discoverChoices, p.activeChoiceID)
+	p.activeChoiceID = 0
+	p.collectChoiceID = 0
+
+	return []game.Event{event}, nil
 }
 
 func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, error) {

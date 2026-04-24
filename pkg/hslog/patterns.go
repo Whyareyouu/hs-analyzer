@@ -13,4 +13,8 @@ var (
 	PowerEntityPattern              = regexp.MustCompile(`Entity=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
 	PowerTargetPattern              = regexp.MustCompile(`Target=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
 	PowerTriggerKeywordPattern      = regexp.MustCompile(`TriggerKeyword=([A-Z0-9_]+)`)
+	PowerEntityChoicesHeaderPattern = regexp.MustCompile(`DebugPrintEntityChoices\(\) - id=(\d+) Player=(.+?) TaskList=\d+ ChoiceType=([A-Z_]+)`)
+	PowerChoiceEntityPattern        = regexp.MustCompile(`Entities\[\d+\]=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
+	PowerSendChoicesPattern         = regexp.MustCompile(`SendChoices\(\) - id=(\d+) ChoiceType=([A-Z_]+)`)
+	PowerChosenEntityPattern        = regexp.MustCompile(`m_chosenEntities\[0\]=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
 )

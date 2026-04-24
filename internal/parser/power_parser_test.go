@@ -266,3 +266,46 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 		t.Fatalf("unexpected stat effect name: %s", statEvent.EffectName)
 	}
 }
+
+func TestPowerParserParseDiscoverFromRealLogFragments(t *testing.T) {
+	t.Parallel()
+
+	input := strings.Join([]string{
+		findLogLine(t, "Power.log", "GameState.DebugPrintEntityChoices() - id=6 Player=HappY#23785"),
+		findLogLine(t, "Power.log", "GameState.DebugPrintEntityChoices() -   Entities[0]=[entityName=Безумный приспешник id=117 zone=SETASIDE zonePos=0 cardId=CATA_158 player=2]"),
+		findLogLine(t, "Power.log", "GameState.DebugPrintEntityChoices() -   Entities[1]=[entityName=Морхи id=118 zone=SETASIDE zonePos=0 cardId=END_036 player=2]"),
+		findLogLine(t, "Power.log", "GameState.DebugPrintEntityChoices() -   Entities[2]=[entityName=Синестра id=119 zone=SETASIDE zonePos=0 cardId=CATA_154 player=2]"),
+		findLogLine(t, "Power.log", "GameState.SendChoices() - id=6 ChoiceType=GENERAL"),
+		findLogLine(t, "Power.log", "GameState.SendChoices() -   m_chosenEntities[0]=[entityName=Морхи id=118 zone=SETASIDE zonePos=0 cardId=END_036 player=2]"),
+	}, "\n")
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	discover, ok := events[0].(*game.DiscoverEvent)
+	if !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
+	}
+	if discover.Player != types.PlayerTypeOpponent {
+		t.Fatalf("unexpected player: %s", discover.Player)
+	}
+	if len(discover.Options) != 3 {
+		t.Fatalf("unexpected options count: %d", len(discover.Options))
+	}
+	if discover.Options[0] != "CATA_158" || discover.Options[1] != "END_036" || discover.Options[2] != "CATA_154" {
+		t.Fatalf("unexpected options: %#v", discover.Options)
+	}
+	if discover.ChosenCard != "END_036" {
+		t.Fatalf("unexpected chosen card: %s", discover.ChosenCard)
+	}
+	if discover.ChosenCardID != 118 {
+		t.Fatalf("unexpected chosen entity id: %d", discover.ChosenCardID)
+	}
+}
