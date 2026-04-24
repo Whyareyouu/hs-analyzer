@@ -15,6 +15,7 @@ import (
 	"hsanalyzer/internal/logreader"
 	"hsanalyzer/internal/parser"
 	"hsanalyzer/internal/state"
+	"hsanalyzer/internal/types"
 )
 
 // ReaderFactory создает reader для чтения логов.
@@ -27,6 +28,16 @@ type Analyzer struct {
 	parserRegistry *parser.Registry
 	pipeline       *Pipeline
 	readerFactory  ReaderFactory
+}
+
+// SessionBounds описывает границы игровой сессии внутри набора событий.
+type SessionBounds struct {
+	StartIndex int
+	EndIndex   int
+	StartTime  string
+	EndTime    string
+	HasStart   bool
+	HasEnd     bool
 }
 
 // NewAnalyzer создает основной analyzer и валидирует его зависимости.
@@ -79,12 +90,13 @@ func (a *Analyzer) Analyze(ctx context.Context) (*state.State, error) {
 		return nil, err
 	}
 
-	sortEvents(events)
+	events, bounds := a.MergeAndSortEvents(events)
 
-	gameState := state.New("", state.GameModeUnknown)
-	if err := a.pipeline.ProcessAll(ctx, gameState, events); err != nil {
-		return nil, fmt.Errorf("process events: %w", err)
+	gameState, err := a.ApplyEvents(ctx, events)
+	if err != nil {
+		return nil, err
 	}
+	gameState.SetMetadata("session_bounds", bounds)
 
 	return gameState, nil
 }
@@ -175,10 +187,76 @@ func (a *Analyzer) readLogContent(path string) (string, error) {
 	return builder.String(), nil
 }
 
+// MergeAndSortEvents объединяет события, сортирует их по timestamp и вычисляет границы игровой сессии.
+func (a *Analyzer) MergeAndSortEvents(eventGroups ...[]game.Event) ([]game.Event, SessionBounds) {
+	merged := mergeEvents(eventGroups...)
+	sortEvents(merged)
+	return merged, determineSessionBounds(merged)
+}
+
+// ApplyEvents создает начальное состояние и применяет к нему события через pipeline.
+func (a *Analyzer) ApplyEvents(ctx context.Context, events []game.Event) (*state.State, error) {
+	if a == nil {
+		return nil, fmt.Errorf("analyzer is nil")
+	}
+
+	gameState := state.New("", state.GameModeUnknown)
+	if err := a.pipeline.ProcessAll(ctx, gameState, events); err != nil {
+		return nil, fmt.Errorf("process events: %w", err)
+	}
+
+	return gameState, nil
+}
+
+func mergeEvents(eventGroups ...[]game.Event) []game.Event {
+	total := 0
+	for _, group := range eventGroups {
+		total += len(group)
+	}
+
+	merged := make([]game.Event, 0, total)
+	for _, group := range eventGroups {
+		merged = append(merged, group...)
+	}
+
+	return merged
+}
+
 func sortEvents(events []game.Event) {
 	sort.SliceStable(events, func(i, j int) bool {
 		return events[i].Timestamp().Before(events[j].Timestamp())
 	})
+}
+
+func determineSessionBounds(events []game.Event) SessionBounds {
+	bounds := SessionBounds{
+		StartIndex: -1,
+		EndIndex:   -1,
+	}
+
+	for i, event := range events {
+		if !bounds.HasStart && event.Type() == types.EventTypeGameStart {
+			bounds.StartIndex = i
+			bounds.StartTime = event.Timestamp().Format("2006-01-02T15:04:05.000000000Z07:00")
+			bounds.HasStart = true
+		}
+		if event.Type() == types.EventTypeGameEnd {
+			bounds.EndIndex = i
+			bounds.EndTime = event.Timestamp().Format("2006-01-02T15:04:05.000000000Z07:00")
+			bounds.HasEnd = true
+		}
+	}
+
+	if !bounds.HasStart && len(events) > 0 {
+		bounds.StartIndex = 0
+		bounds.StartTime = events[0].Timestamp().Format("2006-01-02T15:04:05.000000000Z07:00")
+	}
+	if !bounds.HasEnd && len(events) > 0 {
+		bounds.EndIndex = len(events) - 1
+		bounds.EndTime = events[len(events)-1].Timestamp().Format("2006-01-02T15:04:05.000000000Z07:00")
+	}
+
+	return bounds
 }
 
 func logFileCandidates(logType parser.LogType) []string {

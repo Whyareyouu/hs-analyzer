@@ -348,6 +348,14 @@ func TestAnalyzerAnalyzeSortsEventsBeforePipeline(t *testing.T) {
 	if !reflect.DeepEqual(order, []string{"old", "new"}) {
 		t.Fatalf("unexpected apply order: %v", order)
 	}
+
+	bounds, ok := gameState.GetMetadata("session_bounds").(SessionBounds)
+	if !ok {
+		t.Fatalf("expected session bounds metadata")
+	}
+	if bounds.StartIndex != 0 || bounds.EndIndex != 1 {
+		t.Fatalf("unexpected session bounds indexes: %+v", bounds)
+	}
 }
 
 func TestAnalyzerReadLogContentPropagatesReaderErrors(t *testing.T) {
@@ -372,5 +380,100 @@ func TestAnalyzerReadLogContentPropagatesReaderErrors(t *testing.T) {
 	_, err = analyzer.readLogContent("broken.log")
 	if err == nil || !strings.Contains(err.Error(), "read failed") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestAnalyzerMergeAndSortEventsDeterminesSessionBounds(t *testing.T) {
+	t.Parallel()
+
+	analyzer, err := NewAnalyzer(
+		&config.Config{Performance: config.PerformanceConfig{BufferSize: 128}},
+		&stubCardDatabase{},
+		parser.NewRegistry(),
+		NewPipeline(),
+		func(int) logreader.LogReader { return &stubLogReader{} },
+	)
+	if err != nil {
+		t.Fatalf("new analyzer: %v", err)
+	}
+
+	t0 := time.Unix(100, 0)
+	t1 := time.Unix(101, 0)
+	t2 := time.Unix(102, 0)
+	t3 := time.Unix(103, 0)
+
+	events, bounds := analyzer.MergeAndSortEvents(
+		[]game.Event{
+			testEvent{eventType: types.EventTypeTurnStart, timestamp: t1},
+			testEvent{eventType: types.EventTypeGameEnd, timestamp: t3},
+		},
+		[]game.Event{
+			testEvent{eventType: types.EventTypeGameStart, timestamp: t0},
+			testEvent{eventType: types.EventTypeTurnEnd, timestamp: t2},
+		},
+	)
+
+	gotTypes := []types.EventType{
+		events[0].Type(),
+		events[1].Type(),
+		events[2].Type(),
+		events[3].Type(),
+	}
+	wantTypes := []types.EventType{
+		types.EventTypeGameStart,
+		types.EventTypeTurnStart,
+		types.EventTypeTurnEnd,
+		types.EventTypeGameEnd,
+	}
+	if !reflect.DeepEqual(gotTypes, wantTypes) {
+		t.Fatalf("unexpected merged order: %v", gotTypes)
+	}
+	if !bounds.HasStart || !bounds.HasEnd {
+		t.Fatalf("expected explicit session bounds: %+v", bounds)
+	}
+	if bounds.StartIndex != 0 || bounds.EndIndex != 3 {
+		t.Fatalf("unexpected session bounds indexes: %+v", bounds)
+	}
+}
+
+func TestAnalyzerApplyEventsBuildsInitialStateAndProcessesPipeline(t *testing.T) {
+	t.Parallel()
+
+	pipeline := NewPipeline()
+	if err := pipeline.RegisterHandler(NewApplyEventHandler()); err != nil {
+		t.Fatalf("register apply handler: %v", err)
+	}
+
+	analyzer, err := NewAnalyzer(
+		&config.Config{Performance: config.PerformanceConfig{BufferSize: 128}},
+		&stubCardDatabase{},
+		parser.NewRegistry(),
+		pipeline,
+		func(int) logreader.LogReader { return &stubLogReader{} },
+	)
+	if err != nil {
+		t.Fatalf("new analyzer: %v", err)
+	}
+
+	gameState, err := analyzer.ApplyEvents(context.Background(), []game.Event{
+		game.NewGameStartEvent("session-1", state.GameModeStandard),
+		game.NewTurnStartEvent(types.PlayerTypePlayer),
+		game.NewTurnEndEvent(),
+	})
+	if err != nil {
+		t.Fatalf("apply events: %v", err)
+	}
+
+	if gameState.GameID != "session-1" {
+		t.Fatalf("unexpected game id: %s", gameState.GameID)
+	}
+	if gameState.GameMode != state.GameModeStandard {
+		t.Fatalf("unexpected game mode: %s", gameState.GameMode)
+	}
+	if gameState.GetTurnCount() != 1 {
+		t.Fatalf("unexpected turn count: %d", gameState.GetTurnCount())
+	}
+	if gameState.GetEventCount() != 3 {
+		t.Fatalf("unexpected event count: %d", gameState.GetEventCount())
 	}
 }
