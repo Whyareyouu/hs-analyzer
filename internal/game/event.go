@@ -204,11 +204,20 @@ func (e *CardPlayedEvent) Apply(gameState *state.State) error {
 		return fmt.Errorf("player not found: %s", e.Player)
 	}
 
-	// Для события розыгрыша карта должна перейти в состояние "разыграна".
-	e.Card.Zone = card.ZonePlay
-	if !player.PlayCard(e.Card, e.Position) {
-		return fmt.Errorf("failed to play card with entity id %d", e.Card.EntityID)
+	// Если карта уже была восстановлена в руке, используем обычный переход между зонами.
+	if player.Hand.GetCard(e.Card.EntityID) != nil {
+		e.Card.Zone = card.ZonePlay
+		if !player.PlayCard(e.Card, e.Position) {
+			return fmt.Errorf("failed to play card with entity id %d", e.Card.EntityID)
+		}
+	} else if player.Board.GetCard(e.Card.EntityID) == nil {
+		// В реальных логах часть карт/сущностей появляется без полного восстановления руки.
+		// В таком случае регистрируем сам факт появления на доске и продолжаем анализ.
+		e.Card.Zone = card.ZonePlay
+		player.Board.AddCardAt(e.Card, e.Position)
 	}
+
+	gameState.TrackCardEntity(e.Card)
 	return nil
 }
 
@@ -291,7 +300,7 @@ func (e *DamageEvent) Apply(gameState *state.State) error {
 	}
 	target := gameState.GetEntity(e.TargetEntityID)
 	if target == nil {
-		return fmt.Errorf("target entity not found: %d", e.TargetEntityID)
+		return nil
 	}
 	target.TakeDamage(e.Amount)
 	return nil
@@ -318,7 +327,7 @@ func (e *HealEvent) Apply(gameState *state.State) error {
 	}
 	target := gameState.GetEntity(e.TargetEntityID)
 	if target == nil {
-		return fmt.Errorf("target entity not found: %d", e.TargetEntityID)
+		return nil
 	}
 	target.Heal(e.Amount)
 	return nil
@@ -343,9 +352,16 @@ func (e *DeathEvent) Apply(gameState *state.State) error {
 	}
 	target := gameState.GetEntity(e.EntityID)
 	if target == nil {
-		return fmt.Errorf("entity not found: %d", e.EntityID)
+		return nil
 	}
 	target.Health = 0
+	if gameState.Player != nil {
+		_ = gameState.Player.RemoveMinion(e.EntityID)
+	}
+	if gameState.Opponent != nil {
+		_ = gameState.Opponent.RemoveMinion(e.EntityID)
+	}
+	gameState.RemoveTrackedEntity(e.EntityID)
 	return nil
 }
 

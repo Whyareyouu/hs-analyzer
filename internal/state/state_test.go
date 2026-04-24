@@ -233,6 +233,26 @@ func TestState_GetEntity(t *testing.T) {
 	}
 }
 
+func TestState_TrackCardEntity(t *testing.T) {
+	state := New("game123", GameModeStandard)
+
+	c := card.New("CARD_1", 42, types.PlayerTypePlayer)
+	state.Player.Board.AddCard(c)
+
+	tracked := state.TrackCardEntity(c)
+	if tracked == nil {
+		t.Fatal("expected tracked entity")
+	}
+	if tracked.ID != 42 {
+		t.Fatalf("unexpected tracked entity id: %d", tracked.ID)
+	}
+
+	found := state.GetEntity(42)
+	if found == nil || found.ID != 42 {
+		t.Fatalf("expected tracked entity to be available")
+	}
+}
+
 func TestState_GetCard(t *testing.T) {
 	state := New("game123", GameModeStandard)
 

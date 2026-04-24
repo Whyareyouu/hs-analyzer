@@ -61,6 +61,9 @@ type State struct {
 
 	// metadata дополнительные метаданные
 	metadata map[string]interface{}
+
+	// entities кэш сущностей по EntityID для игровых объектов кроме героев.
+	entities map[int]*entity.Entity
 }
 
 // New создает новое состояние игры
@@ -76,6 +79,7 @@ func New(gameID string, gameMode GameMode) *State {
 		Events:        make([]interface{}, 0),
 		StartTime:     time.Now(),
 		metadata:      make(map[string]interface{}),
+		entities:      make(map[int]*entity.Entity),
 	}
 }
 
@@ -164,6 +168,14 @@ func (s *State) GetEntity(entityID int) *entity.Entity {
 	if s.Opponent != nil && s.Opponent.Hero != nil && s.Opponent.Hero.ID == entityID {
 		return s.Opponent.Hero
 	}
+	if tracked, ok := s.entities[entityID]; ok {
+		return tracked
+	}
+
+	if c := s.GetCard(entityID); c != nil {
+		tracked := s.TrackCardEntity(c)
+		return tracked
+	}
 	return nil
 }
 
@@ -207,6 +219,30 @@ func (s *State) AddEvent(event interface{}) {
 	if currentTurn != nil {
 		currentTurn.AddEvent(event)
 	}
+}
+
+// TrackCardEntity регистрирует сущность на основе карты и возвращает ее.
+func (s *State) TrackCardEntity(c *card.Card) *entity.Entity {
+	if s == nil || c == nil {
+		return nil
+	}
+
+	if tracked, ok := s.entities[c.EntityID]; ok {
+		return tracked
+	}
+
+	tracked := entity.New(c.EntityID, c.ID, c.Owner)
+	tracked.SetStats(0, 1)
+	s.entities[c.EntityID] = tracked
+	return tracked
+}
+
+// RemoveTrackedEntity удаляет сущность из внутреннего кэша.
+func (s *State) RemoveTrackedEntity(entityID int) {
+	if s == nil {
+		return
+	}
+	delete(s.entities, entityID)
 }
 
 // ResetMinionsAttacks сбрасывает атаки миньонов игрока

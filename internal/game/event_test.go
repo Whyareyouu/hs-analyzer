@@ -145,6 +145,35 @@ func TestCombatEventsApply(t *testing.T) {
 	}
 }
 
+func TestCombatEventsApplyToTrackedMinion(t *testing.T) {
+	s := state.New("game-id", state.GameModeStandard)
+
+	minion := card.New("MINION_1", 61, types.PlayerTypeOpponent)
+	minion.Zone = card.ZonePlay
+	s.Opponent.Board.AddCard(minion)
+	tracked := s.TrackCardEntity(minion)
+	tracked.SetStats(2, 3)
+
+	damage := NewDamageEvent(61, 2)
+	if err := damage.Apply(s); err != nil {
+		t.Fatalf("damage apply failed: %v", err)
+	}
+	if tracked.Health != 1 {
+		t.Fatalf("expected minion health 1, got %d", tracked.Health)
+	}
+
+	death := NewDeathEvent(61)
+	if err := death.Apply(s); err != nil {
+		t.Fatalf("death apply failed: %v", err)
+	}
+	if s.Opponent.Board.Count() != 0 {
+		t.Fatalf("expected board to be empty after death")
+	}
+	if s.Opponent.Graveyard.Count() != 1 {
+		t.Fatalf("expected minion in graveyard after death")
+	}
+}
+
 func TestEffectEventsApply(t *testing.T) {
 	s := state.New("game-id", state.GameModeStandard)
 
