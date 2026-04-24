@@ -230,7 +230,7 @@
 
 - [ ] 8. Реализация Analyzer и Pipeline
 
-  - [ ] 8.1 Создать Pipeline для обработки событий
+  - [x] 8.1 Создать Pipeline для обработки событий
 
     - Создать Pipeline в internal/analyzer/pipeline.go
     - Определить EventHandler интерфейс
