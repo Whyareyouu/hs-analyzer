@@ -1,0 +1,2 @@
+D 15:45:33.2470121 LoadingScreen.DisableTransitionUnfriendlyStuff() - BoardStandardGame(Clone) (UnityEngine.GameObject)
+D 15:45:38.4164680 LoadingScreen.OnSceneLoaded() - prevMode=LOGIN currMode=GAMEPLAY

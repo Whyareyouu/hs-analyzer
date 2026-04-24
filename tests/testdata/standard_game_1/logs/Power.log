@@ -1,0 +1,11 @@
+D 15:45:59.6291375 GameState.DebugPrintPower() -     TAG_CHANGE Entity=HappY#23785 tag=TURN value=3
+D 15:45:59.6291375 GameState.DebugPrintPower() - BLOCK_START BlockType=TRIGGER Entity=[entityName=Сумеречное яйцо id=95 zone=PLAY zonePos=1 cardId=CATA_210 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=1 Target=0 SubOption=-1 TriggerKeyword=TRIGGER_VISUAL
+D 15:46:08.2569120 GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Карта сектантов id=60 zone=HAND zonePos=3 cardId=TLC_515 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1
+D 15:46:08.2839169 PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Карта сектантов id=60 zone=PLAY zonePos=0 cardId=TLC_515 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1
+D 15:46:08.2701833 GameState.DebugPrintEntityChoices() - id=6 Player=HappY#23785 TaskList=56 ChoiceType=GENERAL CountMin=1 CountMax=1
+D 15:46:08.2701833 GameState.DebugPrintEntityChoices() -   Entities[0]=[entityName=Безумный приспешник id=117 zone=SETASIDE zonePos=0 cardId=CATA_158 player=2]
+D 15:46:08.2701833 GameState.DebugPrintEntityChoices() -   Entities[1]=[entityName=Морхи id=118 zone=SETASIDE zonePos=0 cardId=END_036 player=2]
+D 15:46:08.2701833 GameState.DebugPrintEntityChoices() -   Entities[2]=[entityName=Синестра id=119 zone=SETASIDE zonePos=0 cardId=CATA_154 player=2]
+D 15:46:15.9821611 GameState.SendChoices() - id=6 ChoiceType=GENERAL
+D 15:46:15.9821611 GameState.SendChoices() -   m_chosenEntities[0]=[entityName=Морхи id=118 zone=SETASIDE zonePos=0 cardId=END_036 player=2]
+D 15:46:55.3786804 GameState.DebugPrintPower() - BLOCK_START BlockType=ATTACK Entity=[entityName=Сумеречное яйцо id=103 zone=PLAY zonePos=2 cardId=CATA_210 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=[entityName=Темный наездник id=27 zone=PLAY zonePos=2 cardId=EDR_456 player=1] SubOption=-1

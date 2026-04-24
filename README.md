@@ -1,6 +1,6 @@
 # Hearthstone Log Analyzer
 
-`hsanalyzer` — CLI-инструмент на Go для разбора логов Hearthstone, сборки игровой хронологии и вывода результата в текстовом виде.
+`hsanalyzer` — CLI-инструмент на Go для разбора логов Hearthstone, сборки игровой хронологии и вывода результата в `text` и `json`.
 
 ## Текущий статус
 
@@ -16,7 +16,6 @@
 
 Ограничения текущей версии:
 
-- основной формат вывода только `text`
 - `Zone.log` поддержан на уровне analyzer, но если файла нет, он просто пропускается
 - поля `filters` и часть `performance` в конфиге пока зарезервированы и не влияют на итоговый анализ
 - полный прогон `analyze` на реальном наборе логов может завершаться ошибкой на части `Power.log`, если для события не удалось восстановить нужную сущность в `GameState`
@@ -132,8 +131,7 @@ output:
   verbose: false
 
 filters:
-  game_mode:
-    - standard
+  game_mode: []
   min_turns: 0
   max_turns: 0
 
@@ -141,6 +139,8 @@ performance:
   workers: 1
   buffer_size: 65536
 ```
+
+Готовый пример с комментариями лежит в [configs/config.yaml](configs/config.yaml).
 
 Что реально используется сейчас:
 
@@ -204,6 +204,22 @@ CLI и analyzer сейчас работают со следующими файл
 
 - `ru`
 - `en`
+
+`JSONFormatter` формирует хронологию по ходам с массивом `events`, карточной информацией, Discover-опциями и человекочитаемыми описаниями `effect_triggered`.
+
+## Тестовые данные
+
+Минимальные end-to-end fixtures лежат в `tests/testdata/`:
+
+- `standard_game_1/logs` — компактный набор `LoadingScreen.log`, `Power.log`, `Zone.log`
+- `cards/cards_sample.json` — минимальная база карт для e2e
+- `expected/` — golden/expected данные для integration тестов
+
+Запуск:
+
+```bash
+make test-integration
+```
 
 ## Структура проекта
 

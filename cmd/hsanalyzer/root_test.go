@@ -30,12 +30,8 @@ func TestRootCommandContainsExpectedSubcommands(t *testing.T) {
 	}
 }
 
-func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
+func TestAnalyzeCommandPrintsFormattedResultFromFixtureLogs(t *testing.T) {
 	t.Parallel()
-
-	logsDir := t.TempDir()
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
 
 	var stdout bytes.Buffer
 	cmd := newRootCmd()
@@ -43,8 +39,8 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 	cmd.SetErr(&stdout)
 	cmd.SetArgs([]string{
 		"analyze",
-		"--logs-path", logsDir,
-		"--cards-db-path", filepath.Join("..", "..", "data", "cards.json"),
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", fixtureCardsPath(),
 		"--format", "text",
 		"--lang", "ru",
 	})
@@ -53,11 +49,10 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 		t.Fatalf("execute analyze: %v", err)
 	}
 
-	output := stdout.String()
-	for _, want := range []string{"Игра", "Режим: STANDARD", "Игрок: ZA | LE | PA", "Итог"} {
-		if !strings.Contains(output, want) {
-			t.Fatalf("output does not contain %q:\n%s", want, output)
-		}
+	output := strings.TrimSpace(stdout.String())
+	expected := strings.TrimSpace(readFixtureFile(t, fixtureExpectedPath("standard_game_1_text.txt")))
+	if output != expected {
+		t.Fatalf("unexpected output:\n--- got ---\n%s\n--- want ---\n%s", output, expected)
 	}
 
 	entries, err := os.ReadDir(projectOutputDirForTest())
@@ -72,16 +67,12 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 func TestAnalyzeCommandWritesOutputToFile(t *testing.T) {
 	t.Parallel()
 
-	logsDir := t.TempDir()
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
-
 	outputPath := filepath.Join(t.TempDir(), "result.txt")
 	cmd := newRootCmd()
 	cmd.SetArgs([]string{
 		"analyze",
-		"--logs-path", logsDir,
-		"--cards-db-path", filepath.Join("..", "..", "data", "cards.json"),
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", fixtureCardsPath(),
 		"--output", "file",
 		"--output-file", outputPath,
 	})
@@ -115,20 +106,15 @@ func TestBuildContainerRejectsUnsupportedFormat(t *testing.T) {
 	}
 }
 
-func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
+func TestAnalyzeCommandWritesJSONTurnsArrayToFileFromFixtureLogs(t *testing.T) {
 	t.Parallel()
-
-	logsDir := t.TempDir()
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "Decks.log"), filepath.Join(logsDir, "Decks.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "LoadingScreen.log"), filepath.Join(logsDir, "LoadingScreen.log"))
-	copyFileForTest(t, filepath.Join("..", "..", "logs", "Power.log"), filepath.Join(logsDir, "Power.log"))
 
 	outputPath := filepath.Join(t.TempDir(), "timeline.json")
 	cmd := newRootCmd()
 	cmd.SetArgs([]string{
 		"analyze",
-		"--logs-path", logsDir,
-		"--cards-db-path", filepath.Join("..", "..", "data", "cards.json"),
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", fixtureCardsPath(),
 		"--format", "json",
 		"--output", "file",
 		"--output-file", outputPath,
@@ -199,6 +185,15 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
 	if discover.ChosenCardInfo == nil || discover.ChosenCardInfo.Name == "" {
 		t.Fatalf("expected human-readable chosen discover card in json output")
 	}
+	for _, want := range strings.Split(readFixtureFile(t, fixtureExpectedPath("standard_game_1_json_contains.txt")), "\n") {
+		want = strings.TrimSpace(want)
+		if want == "" {
+			continue
+		}
+		if !strings.Contains(string(data), want) {
+			t.Fatalf("json output does not contain %q:\n%s", want, string(data))
+		}
+	}
 
 	outputEntries, err := os.ReadDir(projectOutputDirForTest())
 	if err != nil {
@@ -221,18 +216,6 @@ func TestRootCommandRejectsInvalidLogLevel(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid log level") {
 		t.Fatalf("unexpected error: %v", err)
-	}
-}
-
-func copyFileForTest(t *testing.T, src, dst string) {
-	t.Helper()
-
-	data, err := os.ReadFile(src)
-	if err != nil {
-		t.Fatalf("read %s: %v", src, err)
-	}
-	if err := os.WriteFile(dst, data, 0o644); err != nil {
-		t.Fatalf("write %s: %v", dst, err)
 	}
 }
 

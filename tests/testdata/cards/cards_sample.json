@@ -1,0 +1,82 @@
+[
+  {
+    "id": "TLC_515",
+    "dbfId": 117697,
+    "name": "Карта сектантов",
+    "text": "[x]Вы <b>раскапываете</b> карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+    "cost": 2,
+    "type": "SPELL",
+    "rarity": "RARE",
+    "cardClass": "ROGUE",
+    "set": "THE_LOST_CITY",
+    "collectible": true
+  },
+  {
+    "id": "EDR_528",
+    "dbfId": 110001,
+    "name": "Кошмарное топливо",
+    "text": "Раскопка. Получает усиление от серии приемов.",
+    "cost": 1,
+    "type": "SPELL",
+    "rarity": "COMMON",
+    "cardClass": "ROGUE",
+    "set": "EMERALD_DREAM",
+    "collectible": true
+  },
+  {
+    "id": "CATA_210",
+    "dbfId": 110002,
+    "name": "Сумеречное яйцо",
+    "text": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+    "cost": 3,
+    "attack": 0,
+    "health": 3,
+    "type": "MINION",
+    "rarity": "COMMON",
+    "cardClass": "NEUTRAL",
+    "set": "CATA",
+    "collectible": true
+  },
+  {
+    "id": "END_036",
+    "dbfId": 110003,
+    "name": "Морхи",
+    "text": "Дракон.",
+    "cost": 4,
+    "attack": 4,
+    "health": 4,
+    "type": "MINION",
+    "rarity": "EPIC",
+    "cardClass": "NEUTRAL",
+    "set": "END",
+    "collectible": true
+  },
+  {
+    "id": "CATA_158",
+    "dbfId": 110004,
+    "name": "Безумный приспешник",
+    "text": "Случайный эффект.",
+    "cost": 2,
+    "attack": 2,
+    "health": 2,
+    "type": "MINION",
+    "rarity": "COMMON",
+    "cardClass": "NEUTRAL",
+    "set": "CATA",
+    "collectible": true
+  },
+  {
+    "id": "CATA_154",
+    "dbfId": 110005,
+    "name": "Синестра",
+    "text": "Легендарный дракон.",
+    "cost": 9,
+    "attack": 8,
+    "health": 8,
+    "type": "MINION",
+    "rarity": "LEGENDARY",
+    "cardClass": "NEUTRAL",
+    "set": "CATA",
+    "collectible": true
+  }
+]

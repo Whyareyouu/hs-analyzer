@@ -1,4 +1,4 @@
-.PHONY: build test clean run install lint
+.PHONY: build test clean run install lint fmt coverage test-unit test-integration help
 
 # Переменные
 BINARY_NAME=hsanalyzer
@@ -37,7 +37,7 @@ test-unit:
 # Integration тесты
 test-integration:
 	@echo "Running integration tests..."
-	@go test -v -race ./tests/...
+	@go test -v -race ./cmd/hsanalyzer
 	@echo "Integration tests complete"
 
 # Покрытие тестами

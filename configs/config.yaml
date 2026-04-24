@@ -1,0 +1,40 @@
+# Hearthstone Log Analyzer configuration
+
+# Directory with Hearthstone log files.
+logs_path: ./logs
+
+# Path to cards database JSON.
+cards_db_path: ./data/cards.json
+
+output:
+  # Output format: text or json
+  format: text
+
+  # Destination: stdout or file
+  destination: stdout
+
+  # Output file path when destination=file
+  file_path: ""
+
+  # Output language: ru or en
+  language: ru
+
+  # Include extended summary and hand details
+  verbose: false
+
+filters:
+  # Reserved for future filtering by game mode
+  game_mode: []
+
+  # Reserved for future minimum turn count filtering
+  min_turns: 0
+
+  # Reserved for future maximum turn count filtering
+  max_turns: 0
+
+performance:
+  # Reserved for future parallel processing
+  workers: 1
+
+  # Reader scanner buffer size in bytes
+  buffer_size: 65536
