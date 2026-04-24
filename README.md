@@ -1,79 +1,133 @@
 # Hearthstone Log Analyzer
 
-Анализатор логов Hearthstone - инструмент для парсинга и анализа игровых логов Hearthstone с выводом детальной хронологии игры в человекочитаемом формате.
+`hsanalyzer` — CLI-инструмент на Go для разбора логов Hearthstone, сборки игровой хронологии и вывода результата в текстовом виде.
 
-## Возможности
+## Текущий статус
 
-- 📊 Полный анализ игровых логов Hearthstone
-- 🎮 Поддержка стандартного режима игры
-- 📝 Детальная хронология всех событий игры
-- 🃏 Отслеживание сыгранных карт, атак, эффектов
-- 🤚 Мониторинг карт в руке игрока
-- 🔍 Поддержка механики "Раскопки" (Discover)
-- 🇷🇺 Локализация на русский язык
-- ⚙️ Гибкая конфигурация
+Сейчас в проекте реализованы:
+
+- чтение конфигурации через `yaml` и `viper`
+- загрузка базы карт из `data/cards.json`
+- парсеры для `Decks.log`, `Power.log`, `LoadingScreen.log` / `LoadingScreen_old.log`
+- `Analyzer` и `Pipeline` для объединения, сортировки и применения событий
+- текстовый formatter с поддержкой `ru` и `en`
+- CLI на `cobra`
+- structured logging через `zap`
+
+Ограничения текущей версии:
+
+- основной формат вывода только `text`
+- `Zone.log` поддержан на уровне analyzer, но если файла нет, он просто пропускается
+- поля `filters` и часть `performance` в конфиге пока зарезервированы и не влияют на итоговый анализ
+- полный прогон `analyze` на реальном наборе логов может завершаться ошибкой на части `Power.log`, если для события не удалось восстановить нужную сущность в `GameState`
 
 ## Требования
 
-- Go 1.21 или выше
-- Hearthstone (для генерации логов)
+- Go `1.21+`
+- логи Hearthstone
+- база карт `data/cards.json`
 
-## Установка
+## Быстрый старт
 
 ```bash
-# Клонировать репозиторий
-git clone https://github.com/yourusername/hsanalyzer.git
-cd hsanalyzer
-
-# Установить зависимости
 go mod download
-
-# Собрать проект
-go build -o hsanalyzer.exe ./cmd/hsanalyzer
+go build -o bin/hsanalyzer.exe ./cmd/hsanalyzer
 ```
 
-## Использование
-
-### Базовое использование
+Или через `Makefile`:
 
 ```bash
-# Анализ последней игры
-./hsanalyzer analyze
-
-# Указать путь к логам
-./hsanalyzer analyze --logs-path "C:\Program Files (x86)\Hearthstone\Logs"
-
-# Использовать конфигурационный файл
-./hsanalyzer analyze --config config.yaml
+make install
+make build
 ```
 
-### Обновление базы карт
+## Команды CLI
+
+Общая справка:
 
 ```bash
-# Обновить актуальную базу карт (ruRU -> data/cards.json)
-./hsanalyzer update-cards
-
-# Обновить базу для другой локали
-./hsanalyzer update-cards --locale enUS
-
-# Обновить базу в указанный путь
-./hsanalyzer update-cards --locale ruRU --out data/cards.json
+go run ./cmd/hsanalyzer --help
 ```
 
-Команда `update-cards` загружает актуальные данные карт из HearthstoneJSON:
-`https://api.hearthstonejson.com/v1/latest/<locale>/cards.json`
+Доступные команды:
 
-### Конфигурация
+- `analyze` — анализ логов Hearthstone
+- `update-cards` — загрузка актуальной базы карт
 
-Создайте файл `config.yaml`:
+Глобальный флаг:
+
+- `--log-level debug|info|warn|error` — уровень structured logging в `stderr`
+
+### analyze
+
+Справка:
+
+```bash
+go run ./cmd/hsanalyzer analyze --help
+```
+
+Флаги:
+
+- `--config` — путь к `yaml`-конфигу
+- `--logs-path` — путь к каталогу с логами
+- `--cards-db-path` — путь к `cards.json`
+- `--format` — формат вывода, сейчас поддержан только `text`
+- `--output` — `stdout` или `file`
+- `--output-file` — путь к файлу результата, если `--output file`
+- `--lang` — `ru` или `en`
+- `--verbose` — расширенный текстовый вывод
+
+Примеры:
+
+```bash
+go run ./cmd/hsanalyzer analyze --logs-path logs --cards-db-path data/cards.json
+
+go run ./cmd/hsanalyzer analyze \
+  --logs-path "C:\\Program Files (x86)\\Hearthstone\\Logs" \
+  --cards-db-path data/cards.json \
+  --lang ru \
+  --verbose
+
+go run ./cmd/hsanalyzer analyze \
+  --config .\config.yaml \
+  --output file \
+  --output-file .\result.txt
+```
+
+### update-cards
+
+Справка:
+
+```bash
+go run ./cmd/hsanalyzer update-cards --help
+```
+
+Примеры:
+
+```bash
+go run ./cmd/hsanalyzer update-cards
+go run ./cmd/hsanalyzer update-cards --locale enUS
+go run ./cmd/hsanalyzer update-cards --locale ruRU --out data/cards.json
+```
+
+Команда загружает файл карт из HearthstoneJSON:
+
+```text
+https://api.hearthstonejson.com/v1/latest/<locale>/cards.json
+```
+
+## Конфигурация
+
+Пример `config.yaml`:
 
 ```yaml
-logs_path: "C:\\Program Files (x86)\\Hearthstone\\Logs"
-cards_db_path: './data/cards.json'
+logs_path: ./logs
+cards_db_path: ./data/cards.json
 
 output:
   format: text
   destination: stdout
+  file_path: ""
   language: ru
   verbose: false
 
@@ -82,94 +136,127 @@ filters:
     - standard
   min_turns: 0
   max_turns: 0
+
+performance:
+  workers: 1
+  buffer_size: 65536
 ```
+
+Что реально используется сейчас:
+
+- `logs_path`
+- `cards_db_path`
+- `output.format`
+- `output.destination`
+- `output.file_path`
+- `output.language`
+- `output.verbose`
+- `performance.buffer_size`
+
+Что пока не влияет на поведение analyzer:
+
+- `filters.*`
+- `performance.workers`
+
+## Поддерживаемые логи
+
+CLI и analyzer сейчас работают со следующими файлами:
+
+- `Power.log`
+- `Decks.log`
+- `LoadingScreen.log`
+- `LoadingScreen_old.log`
+- `Zone.log` — опционально
+
+Важно:
+
+- для `LoadingScreen` используется fallback на `LoadingScreen_old.log`
+- если `Zone.log` отсутствует, analyzer продолжает работу без него
+
+## Что умеет парсить
+
+Сейчас реализован парсинг следующих событий:
+
+- начало игры и режим
+- список карт колоды
+- начало и конец ходов
+- розыгрыш карт
+- добор карт
+- атаки
+- урон
+- смерти
+- триггеры и изменения характеристик
+- `Discover`
+
+## Формат вывода
+
+`TextFormatter` формирует:
+
+- заголовок игры
+- хронологию по ходам
+- события добора и розыгрыша карт
+- боевые события
+- эффекты и `Discover`
+- текущее состояние руки
+- итоговую сводку
+
+Поддерживаются языки:
+
+- `ru`
+- `en`
 
 ## Структура проекта
 
-```
+```text
 hsanalyzer/
-├── cmd/
-│   └── hsanalyzer/          # CLI приложение
-├── internal/
-│   ├── analyzer/            # Оркестрация анализа
-│   ├── config/              # Конфигурация
-│   ├── parser/              # Парсеры логов
-│   ├── game/                # Domain модели
-│   ├── formatter/           # Форматтеры вывода
-│   ├── carddb/              # База данных карт
-│   └── logreader/           # Чтение логов
-├── pkg/
-│   └── hslog/               # Общие утилиты
-├── data/
-│   └── cards.json           # База карт
-└── configs/
-    └── config.yaml          # Пример конфигурации
+├── cmd/hsanalyzer/        # CLI на cobra
+├── internal/analyzer/     # Analyzer и Pipeline
+├── internal/carddb/       # База карт и update-cards
+├── internal/config/       # Конфигурация
+├── internal/formatter/    # Formatter и TextFormatter
+├── internal/logreader/    # Postrочное чтение логов
+├── internal/parser/       # Парсеры логов
+├── internal/state/        # Состояние игры
+├── data/cards.json        # База карт
+├── logs/                  # Примеры реальных логов
+└── specs/                 # Design/tasks
 ```
-
-## Архитектура
-
-Проект построен на принципах Clean Architecture:
-
-- **CLI Layer**: точка входа приложения
-- **Application Layer**: оркестрация и pipeline обработки
-- **Domain Layer**: бизнес-логика и модели игры
-- **Infrastructure Layer**: парсеры, форматтеры, БД карт
 
 ## Разработка
 
-### Запуск тестов
+Сборка:
 
 ```bash
-# Все тесты
-make test
-
-# Unit тесты
-go test ./internal/...
-
-# Integration тесты
-go test ./tests/...
-```
-
-### Сборка
-
-```bash
-# Сборка для текущей платформы
 make build
-
-# Сборка для Windows
-GOOS=windows GOARCH=amd64 go build -o hsanalyzer.exe ./cmd/hsanalyzer
 ```
 
-## Пример вывода
+Все тесты:
 
-```
-=== Игра начата ===
-Режим: Стандарт
-Игрок: PlayerName (Маг)
-Оппонент: OpponentName (Воин)
-
---- Ход 1 (Игрок) ---
-💎 Мана: 1/1
-🤚 Рука: [Огненный шар, Чародейский интеллект, Ледяная стрела]
-📥 Взята карта: Огненный шар
-
---- Ход 2 (Оппонент) ---
-💎 Мана: 2/2
-🎴 Сыграна карта: Кровожадный берсерк (2💎)
-  ⚔️ 2 / ❤️ 3
-
-...
+```bash
+go test ./...
 ```
 
-## Roadmap
+Через `Makefile`:
 
-- [x] Базовая структура проекта
-- [x] Парсинг основных логов
-- [x] Форматирование вывода
-- [ ] Web интерфейс
-- [ ] Статистика по играм
-- [ ] Поддержка арены и полей сражений
-- [ ] Real-time мониторинг
+```bash
+make test
+```
+
+Полезные цели:
+
+- `make build`
+- `make run`
+- `make test`
+- `make test-unit`
+- `make coverage`
+- `make lint`
+
+## Известные ограничения
+
+- analyzer пока не покрывает все кейсы восстановления сущностей из `Power.log`
+- formatter реализован только в текстовом виде
+- JSON output и web/UI еще не реализованы
+- интеграция `zap` есть только на уровне CLI
 
 ## Лицензия
 
