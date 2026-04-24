@@ -32,3 +32,23 @@ func findLogLine(t *testing.T, fileName, contains string) string {
 	t.Fatalf("line containing %q not found in %s", contains, fileName)
 	return ""
 }
+
+func findLogWindow(t *testing.T, fileName, contains string, extraLines int) string {
+	t.Helper()
+
+	lines := readLogLines(t, fileName)
+	for i, line := range lines {
+		if !strings.Contains(line, contains) {
+			continue
+		}
+
+		end := i + 1 + extraLines
+		if end > len(lines) {
+			end = len(lines)
+		}
+		return strings.Join(lines[i:end], "\n")
+	}
+
+	t.Fatalf("window containing %q not found in %s", contains, fileName)
+	return ""
+}

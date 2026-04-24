@@ -84,3 +84,22 @@ func TestRegistryCanRegisterDeckParser(t *testing.T) {
 		t.Fatalf("unexpected parser name: %s", got.Name())
 	}
 }
+
+func TestRegistryCanRegisterZoneParser(t *testing.T) {
+	t.Parallel()
+
+	registry := NewRegistry()
+	parser := NewZoneParser()
+
+	if err := registry.Register(parser); err != nil {
+		t.Fatalf("register zone parser: %v", err)
+	}
+
+	got, ok := registry.Get(LogTypeZone)
+	if !ok {
+		t.Fatalf("expected zone parser to be registered")
+	}
+	if got.Name() != "zone_parser" {
+		t.Fatalf("unexpected parser name: %s", got.Name())
+	}
+}

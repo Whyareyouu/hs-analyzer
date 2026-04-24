@@ -167,7 +167,7 @@
     - Написать unit тесты
     - _Requirements: 1.4, 5.1_
 
-  - [ ] 7.4 Реализовать ZoneParser
+  - [x] 7.4 Реализовать ZoneParser
 
     - Создать ZoneParser в internal/parser/zone_parser.go
     - Парсить перемещения карт между зонами
