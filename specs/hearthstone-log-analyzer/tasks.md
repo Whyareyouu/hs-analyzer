@@ -143,7 +143,7 @@
 
 - [ ] 7. Реализация парсеров логов
 
-  - [ ] 7.1 Создать базовый Parser интерфейс и утилиты
+  - [x] 7.1 Создать базовый Parser интерфейс и утилиты
 
     - Определить Parser интерфейс в internal/parser/parser.go
     - Создать LogType константы
@@ -151,7 +151,7 @@
     - Создать константы из логов HS в pkg/hslog/constants.go
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-  - [ ] 7.2 Реализовать LoadingScreenParser
+  - [x] 7.2 Реализовать LoadingScreenParser
 
     - Создать LoadingScreenParser в internal/parser/loading_parser.go
     - Парсить начало игры и режим игры
@@ -175,14 +175,14 @@
     - Написать unit тесты
     - _Requirements: 1.2, 5.2, 5.4_
 
-  - [ ] 7.5 Реализовать PowerParser - базовая структура
+  - [x] 7.5 Реализовать PowerParser - базовая структура
 
     - Создать PowerParser в internal/parser/power_parser.go
     - Реализовать базовую структуру парсера
     - Добавить regex паттерны для основных событий
     - _Requirements: 1.1_
 
-  - [ ] 7.6 PowerParser - парсинг ходов
+  - [x] 7.6 PowerParser - парсинг ходов
 
     - Добавить парсинг TAG_CHANGE для определения ходов
     - Генерировать TurnStartEvent и TurnEndEvent
@@ -190,7 +190,7 @@
     - Написать unit тесты
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-  - [ ] 7.7 PowerParser - парсинг розыгрыша карт
+  - [x] 7.7 PowerParser - парсинг розыгрыша карт
 
     - Добавить парсинг ACTION_START для розыгрыша карт
     - Парсить FULL_ENTITY для новых сущностей
@@ -222,7 +222,7 @@
     - Написать unit тесты
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 5.6_
 
-  - [ ] 7.11 Создать ParserRegistry
+  - [x] 7.11 Создать ParserRegistry
     - Создать Registry в internal/parser/registry.go
     - Реализовать регистрацию и получение парсеров
     - Написать unit тесты
