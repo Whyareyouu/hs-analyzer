@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"slices"
@@ -145,6 +146,32 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
 		t.Fatalf("unexpected json file output:\n%s", string(data))
 	}
 
+	card, ok, err := findFirstPlayedCard(data)
+	if err != nil {
+		t.Fatalf("find first played card: %v", err)
+	}
+	if !ok {
+		t.Fatalf("expected at least one card_played event in json output")
+	}
+	if card.ID == "" {
+		t.Fatalf("expected played card id in json output")
+	}
+	if card.Name == "" {
+		t.Fatalf("expected played card name in json output")
+	}
+	if card.Info == nil {
+		t.Fatalf("expected played card info in json output")
+	}
+	if card.Info.ID != card.ID {
+		t.Fatalf("card info id does not match card id: %s vs %s", card.Info.ID, card.ID)
+	}
+	if card.Info.Name == "" {
+		t.Fatalf("expected played card info name in json output")
+	}
+	if card.Info.Type == "" {
+		t.Fatalf("expected played card info type in json output")
+	}
+
 	outputEntries, err := os.ReadDir("output")
 	if err != nil {
 		t.Fatalf("read output dir: %v", err)
@@ -190,4 +217,54 @@ func containsTimelineJSON(entries []os.DirEntry) bool {
 	return slices.ContainsFunc(names, func(name string) bool {
 		return strings.HasPrefix(name, "timeline_") && strings.HasSuffix(name, ".json")
 	})
+}
+
+type jsonTimelineTurn struct {
+	Events []jsonTimelineEvent `json:"events"`
+}
+
+type jsonTimelineEvent struct {
+	Type       string                     `json:"type"`
+	Attributes map[string]json.RawMessage `json:"attributes"`
+}
+
+type jsonTimelineCard struct {
+	ID   string                `json:"id"`
+	Name string                `json:"name"`
+	Info *jsonTimelineCardInfo `json:"info"`
+}
+
+type jsonTimelineCardInfo struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+func findFirstPlayedCard(data []byte) (*jsonTimelineCard, bool, error) {
+	var turns []jsonTimelineTurn
+	if err := json.Unmarshal(data, &turns); err != nil {
+		return nil, false, err
+	}
+
+	for _, turn := range turns {
+		for _, event := range turn.Events {
+			if event.Type != "card_played" {
+				continue
+			}
+
+			rawCard, ok := event.Attributes["card"]
+			if !ok {
+				continue
+			}
+
+			var card jsonTimelineCard
+			if err := json.Unmarshal(rawCard, &card); err != nil {
+				return nil, false, err
+			}
+
+			return &card, true, nil
+		}
+	}
+
+	return nil, false, nil
 }

@@ -15,6 +15,7 @@ import (
 
 type appContainer struct {
 	config    *config.Config
+	cardDB    carddb.CardDatabase
 	analyzer  *analyzer.Analyzer
 	formatter formatter.Formatter
 }
@@ -38,6 +39,13 @@ func (c *appContainer) GetOutputFilePath() string {
 		return ""
 	}
 	return c.config.Output.FilePath
+}
+
+func (c *appContainer) GetCardDatabase() carddb.CardDatabase {
+	if c == nil {
+		return nil
+	}
+	return c.cardDB
 }
 
 func buildContainer(options analyzeOptions) (*appContainer, error) {
@@ -76,7 +84,7 @@ func buildContainer(options analyzeOptions) (*appContainer, error) {
 		Language: cfg.Output.Language,
 		Verbose:  cfg.Output.Verbose,
 	}))
-	formatterRegistry.MustRegister(formatter.NewJSONFormatter())
+	formatterRegistry.MustRegister(formatter.NewJSONFormatter(db))
 
 	selectedFormatter, ok := formatterRegistry.Get(cfg.Output.Format)
 	if !ok {
@@ -85,6 +93,7 @@ func buildContainer(options analyzeOptions) (*appContainer, error) {
 
 	return &appContainer{
 		config:    cfg,
+		cardDB:    db,
 		analyzer:  logAnalyzer,
 		formatter: selectedFormatter,
 	}, nil

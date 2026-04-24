@@ -13,8 +13,8 @@ func TestLoadingScreenParserParseGameStart(t *testing.T) {
 	t.Parallel()
 
 	input := strings.Join([]string{
-		findLogLine(t, "LoadingScreen_old.log", "LoadingScreen.DisableTransitionUnfriendlyStuff() - BoardStandardGame(Clone)"),
-		findLogLine(t, "LoadingScreen_old.log", "LoadingScreen.OnSceneLoaded() - prevMode=LOGIN currMode=GAMEPLAY"),
+		findLogLine(t, "LoadingScreen.log", "LoadingScreen.DisableTransitionUnfriendlyStuff() - BoardStandardGame(Clone)"),
+		findLogLine(t, "LoadingScreen.log", "LoadingScreen.OnSceneLoaded() - prevMode=LOGIN currMode=GAMEPLAY"),
 	}, "\n")
 
 	parser := NewLoadingScreenParser()
@@ -40,8 +40,8 @@ func TestLoadingScreenParserParseIgnoresNonGameplayTransitions(t *testing.T) {
 	t.Parallel()
 
 	input := strings.Join([]string{
-		findLogLine(t, "LoadingScreen_old.log", "LoadingScreen.OnSceneLoaded() - prevMode=STARTUP currMode=LOGIN"),
-		findLogLine(t, "LoadingScreen_old.log", "LoadingScreen.OnSceneLoaded() - prevMode=GAMEPLAY currMode=TOURNAMENT"),
+		findLogLine(t, "LoadingScreen.log", "LoadingScreen.OnSceneLoaded() - prevMode=STARTUP currMode=LOGIN"),
+		findLogLine(t, "LoadingScreen.log", "LoadingScreen.OnSceneLoaded() - prevMode=GAMEPLAY currMode=TOURNAMENT"),
 	}, "\n")
 
 	parser := NewLoadingScreenParser()

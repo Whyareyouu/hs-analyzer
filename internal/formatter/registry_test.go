@@ -79,7 +79,7 @@ func TestRegistryCanRegisterJSONFormatter(t *testing.T) {
 	t.Parallel()
 
 	registry := NewRegistry()
-	if err := registry.Register(NewJSONFormatter()); err != nil {
+	if err := registry.Register(NewJSONFormatter(nil)); err != nil {
 		t.Fatalf("register json formatter: %v", err)
 	}
 

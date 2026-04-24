@@ -6,16 +6,19 @@ import (
 	"time"
 
 	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/game"
 	"hsanalyzer/internal/state"
 )
 
 // JSONFormatter сериализует итоговое состояние игры в JSON-хронологию по ходам.
-type JSONFormatter struct{}
+type JSONFormatter struct {
+	cardDB carddb.CardDatabase
+}
 
 // NewJSONFormatter создает JSON formatter.
-func NewJSONFormatter() *JSONFormatter {
-	return &JSONFormatter{}
+func NewJSONFormatter(cardDB carddb.CardDatabase) *JSONFormatter {
+	return &JSONFormatter{cardDB: cardDB}
 }
 
 func (f *JSONFormatter) Name() string {
@@ -50,7 +53,7 @@ func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
 				continue
 			}
 
-			item.Events = append(item.Events, buildJSONEvent(index, event))
+			item.Events = append(item.Events, f.buildJSONEvent(index, event))
 		}
 
 		timeline = append(timeline, item)
@@ -69,7 +72,7 @@ func (f *JSONFormatter) FormatEvent(event game.Event) (string, error) {
 		return "", fmt.Errorf("event is nil")
 	}
 
-	encoded, err := json.MarshalIndent(buildJSONEvent(0, event), "", "  ")
+	encoded, err := json.MarshalIndent(f.buildJSONEvent(0, event), "", "  ")
 	if err != nil {
 		return "", fmt.Errorf("marshal event json: %w", err)
 	}
@@ -94,7 +97,7 @@ type jsonEvent struct {
 	Attributes map[string]interface{} `json:"attributes,omitempty"`
 }
 
-func buildJSONEvent(index int, event game.Event) jsonEvent {
+func (f *JSONFormatter) buildJSONEvent(index int, event game.Event) jsonEvent {
 	item := jsonEvent{
 		Index:      index,
 		Type:       event.Type().String(),
@@ -126,11 +129,11 @@ func buildJSONEvent(index int, event game.Event) jsonEvent {
 		item.Summary = "card_played"
 		item.Attributes["player"] = e.Player.String()
 		item.Attributes["position"] = e.Position
-		item.Attributes["card"] = buildJSONCard(e.Card)
+		item.Attributes["card"] = f.buildJSONCard(e.Card)
 	case *game.CardDrawnEvent:
 		item.Summary = "card_drawn"
 		item.Attributes["player"] = e.Player.String()
-		item.Attributes["card"] = buildJSONCard(e.Card)
+		item.Attributes["card"] = f.buildJSONCard(e.Card)
 	case *game.AttackEvent:
 		item.Summary = "attack"
 		item.Attributes["attacker_entity_id"] = e.AttackerEntityID
@@ -168,23 +171,106 @@ func buildJSONEvent(index int, event game.Event) jsonEvent {
 }
 
 type jsonCard struct {
-	ID       string `json:"id"`
-	EntityID int    `json:"entity_id"`
-	Owner    string `json:"owner,omitempty"`
-	Zone     string `json:"zone,omitempty"`
-	Position int    `json:"position"`
+	ID         string        `json:"id"`
+	Name       string        `json:"name,omitempty"`
+	EntityID   int           `json:"entity_id"`
+	Owner      string        `json:"owner,omitempty"`
+	Controller string        `json:"controller,omitempty"`
+	Zone       string        `json:"zone,omitempty"`
+	Position   int           `json:"position"`
+	CreatedBy  string        `json:"created_by,omitempty"`
+	Info       *jsonCardInfo `json:"info,omitempty"`
 }
 
-func buildJSONCard(c *card.Card) *jsonCard {
+type jsonCardInfo struct {
+	ID          string `json:"id"`
+	DBFID       int    `json:"dbf_id"`
+	Name        string `json:"name"`
+	Text        string `json:"text"`
+	Cost        int    `json:"cost"`
+	Attack      int    `json:"attack"`
+	Health      int    `json:"health"`
+	Type        string `json:"type"`
+	Rarity      string `json:"rarity"`
+	CardClass   string `json:"card_class"`
+	Race        string `json:"race"`
+	Set         string `json:"set"`
+	Collectible bool   `json:"collectible"`
+}
+
+func (f *JSONFormatter) buildJSONCard(c *card.Card) *jsonCard {
 	if c == nil {
 		return nil
 	}
 
+	info := f.resolveCardInfo(c)
+
 	return &jsonCard{
-		ID:       c.ID,
-		EntityID: c.EntityID,
-		Owner:    c.Owner.String(),
-		Zone:     string(c.Zone),
-		Position: c.Position,
+		ID:         c.ID,
+		Name:       f.resolveCardName(c, info),
+		EntityID:   c.EntityID,
+		Owner:      c.Owner.String(),
+		Controller: c.Controller.String(),
+		Zone:       string(c.Zone),
+		Position:   c.Position,
+		CreatedBy:  c.CreatedBy,
+		Info:       buildJSONCardInfo(info),
+	}
+}
+
+func (f *JSONFormatter) resolveCardInfo(c *card.Card) *carddb.CardInfo {
+	if c == nil {
+		return nil
+	}
+
+	switch info := c.Info.(type) {
+	case *carddb.CardInfo:
+		return info
+	case carddb.CardInfo:
+		resolved := info
+		return &resolved
+	}
+
+	if f == nil || f.cardDB == nil || c.ID == "" {
+		return nil
+	}
+
+	info, ok := f.cardDB.GetCard(c.ID)
+	if !ok {
+		return nil
+	}
+
+	return info
+}
+
+func (f *JSONFormatter) resolveCardName(c *card.Card, info *carddb.CardInfo) string {
+	if info != nil && info.Name != "" {
+		return info.Name
+	}
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func buildJSONCardInfo(info *carddb.CardInfo) *jsonCardInfo {
+	if info == nil {
+		return nil
+	}
+
+	return &jsonCardInfo{
+		ID:          info.ID,
+		DBFID:       info.DBFID,
+		Name:        info.Name,
+		Text:        info.Text,
+		Cost:        info.Cost,
+		Attack:      info.Attack,
+		Health:      info.Health,
+		Type:        string(info.Type),
+		Rarity:      string(info.Rarity),
+		CardClass:   string(info.Class),
+		Race:        string(info.Race),
+		Set:         info.Set,
+		Collectible: info.Collectible,
 	}
 }

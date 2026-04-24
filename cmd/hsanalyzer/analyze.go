@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/formatter"
 	"hsanalyzer/internal/state"
 
@@ -123,6 +124,7 @@ func saveTimelineJSON(cfg interface {
 	GetLogsPath() string
 	GetOutputDestination() string
 	GetOutputFilePath() string
+	GetCardDatabase() carddb.CardDatabase
 }, gameState *state.State) (string, error) {
 	if gameState == nil {
 		return "", fmt.Errorf("game state is nil")
@@ -136,7 +138,7 @@ func saveTimelineJSON(cfg interface {
 		return "", fmt.Errorf("create timeline directory: %w", err)
 	}
 
-	formatter := formatter.NewJSONFormatter()
+	formatter := formatter.NewJSONFormatter(cfg.GetCardDatabase())
 	content, err := formatter.Format(gameState)
 	if err != nil {
 		return "", fmt.Errorf("format timeline json: %w", err)
