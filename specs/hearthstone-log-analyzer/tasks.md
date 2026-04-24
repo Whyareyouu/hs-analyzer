@@ -270,21 +270,21 @@
     - Написать integration тесты
     - _Requirements: 2.5, 11.2, 11.3, 11.4_
 
-- [ ] 9. Реализация Formatter
+- [x] 9. Реализация Formatter
 
-  - [ ] 9.1 Создать Formatter интерфейс
+  - [x] 9.1 Создать Formatter интерфейс
 
     - Определить Formatter интерфейс в internal/formatter/formatter.go
     - Добавить методы Format и FormatEvent
     - _Requirements: 8.1_
 
-  - [ ] 9.2 Реализовать TextFormatter - базовая структура
+  - [x] 9.2 Реализовать TextFormatter - базовая структура
 
     - Создать TextFormatter в internal/formatter/text_formatter.go
     - Добавить конфигурацию для языка и verbose режима
     - _Requirements: 8.2, 8.3, 8.5_
 
-  - [ ] 9.3 TextFormatter - форматирование ходов
+  - [x] 9.3 TextFormatter - форматирование ходов
 
     - Реализовать форматирование начала/конца хода
     - Добавить отображение номера хода и игрока
@@ -292,7 +292,7 @@
     - Написать unit тесты
     - _Requirements: 8.2, 8.5_
 
-  - [ ] 9.4 TextFormatter - форматирование карт
+  - [x] 9.4 TextFormatter - форматирование карт
 
     - Реализовать форматирование розыгрыша карт
     - Добавить отображение характеристик карт
@@ -300,35 +300,35 @@
     - Написать unit тесты
     - _Requirements: 8.3, 8.4, 8.6_
 
-  - [ ] 9.5 TextFormatter - форматирование боя
+  - [x] 9.5 TextFormatter - форматирование боя
 
     - Реализовать форматирование атак
     - Добавить отображение урона и смертей
     - Написать unit тесты
     - _Requirements: 8.4_
 
-  - [ ] 9.6 TextFormatter - форматирование эффектов
+  - [x] 9.6 TextFormatter - форматирование эффектов
 
     - Реализовать форматирование эффектов карт
     - Добавить отображение Discover опций
     - Написать unit тесты
     - _Requirements: 8.3_
 
-  - [ ] 9.7 TextFormatter - форматирование состояния руки
+  - [x] 9.7 TextFormatter - форматирование состояния руки
 
     - Реализовать отображение карт в руке игрока
     - Добавить группировку по ходам
     - Написать unit тесты
     - _Requirements: 8.4, 8.5_
 
-  - [ ] 9.8 TextFormatter - итоговый вывод
+  - [x] 9.8 TextFormatter - итоговый вывод
 
     - Реализовать форматирование результата игры
     - Добавить общую статистику
     - Написать unit тесты
     - _Requirements: 8.7_
 
-  - [ ] 9.9 Создать FormatterRegistry
+  - [x] 9.9 Создать FormatterRegistry
     - Создать Registry в internal/formatter/registry.go
     - Зарегистрировать TextFormatter
     - Написать unit тесты
