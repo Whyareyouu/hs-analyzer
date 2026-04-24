@@ -126,15 +126,15 @@
     - Написать unit тесты
     - _Requirements: 12.3_
 
-- [ ] 6. Реализация LogReader
+- [x] 6. Реализация LogReader
 
-  - [ ] 6.1 Создать интерфейс LogReader
+  - [x] 6.1 Создать интерфейс LogReader
 
     - Определить LogReader интерфейс в internal/logreader/reader.go
     - Добавить методы для чтения логов построчно
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-  - [ ] 6.2 Реализовать FileReader
+  - [x] 6.2 Реализовать FileReader
     - Создать FileReader в internal/logreader/file_reader.go
     - Использовать bufio.Scanner для эффективного чтения
     - Добавить обработку ошибок чтения файлов
