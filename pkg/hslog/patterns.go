@@ -12,4 +12,5 @@ var (
 	PowerBlockStartPattern          = regexp.MustCompile(`BLOCK_START BlockType=([A-Z_]+)`)
 	PowerEntityPattern              = regexp.MustCompile(`Entity=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
 	PowerTargetPattern              = regexp.MustCompile(`Target=\[entityName=(.+?) id=(\d+) zone=([A-Z_]+) zonePos=(\d+) cardId=([^ ]*) player=(\d+)\]`)
+	PowerTriggerKeywordPattern      = regexp.MustCompile(`TriggerKeyword=([A-Z0-9_]+)`)
 )

@@ -22,6 +22,7 @@ type PowerParser struct {
 	pendingPlays      map[int]pendingPlay
 	emittedPlays      map[int]struct{}
 	damageTotals      map[int]int
+	statValues        map[int]map[string]int
 }
 
 type pendingPlay struct {
@@ -109,6 +110,7 @@ func (p *PowerParser) reset() {
 	p.pendingPlays = make(map[int]pendingPlay)
 	p.emittedPlays = make(map[int]struct{})
 	p.damageTotals = make(map[int]int)
+	p.statValues = make(map[int]map[string]int)
 }
 
 func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, error) {
@@ -172,6 +174,25 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		return []game.Event{
 			game.NewDeathEvent(logged.entityID),
 		}, nil
+	case "ATK", "HEALTH":
+		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		if err != nil || !ok {
+			return nil, err
+		}
+
+		statValue, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, nil
+		}
+
+		if _, ok := p.statValues[logged.entityID]; !ok {
+			p.statValues[logged.entityID] = make(map[string]int)
+		}
+		p.statValues[logged.entityID][tag] = statValue
+
+		return []game.Event{
+			game.NewEffectTriggeredEvent(logged.entityID, fmt.Sprintf("%s_CHANGE:%d", tag, statValue)),
+		}, nil
 	default:
 		return nil, nil
 	}
@@ -213,6 +234,28 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 
 		return []game.Event{
 			game.NewAttackEvent(entity.entityID, target.entityID),
+		}, nil
+	case "TRIGGER":
+		if strings.Contains(line, "PowerTaskList.DebugPrintPower()") {
+			return nil, nil
+		}
+
+		keywordMatch := hslog.PowerTriggerKeywordPattern.FindStringSubmatch(line)
+		if keywordMatch == nil {
+			return nil, nil
+		}
+		keyword := keywordMatch[1]
+		if keyword == "TAG_NOT_SET" {
+			return nil, nil
+		}
+
+		sourceEntityID := 0
+		if ok {
+			sourceEntityID = entity.entityID
+		}
+
+		return []game.Event{
+			game.NewEffectTriggeredEvent(sourceEntityID, keyword),
 		}, nil
 	case hslog.BlockTypePlay:
 		p.pendingPlays[entity.entityID] = pendingPlay{

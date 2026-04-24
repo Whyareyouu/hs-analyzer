@@ -222,3 +222,47 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 		t.Fatalf("unexpected second death event: %d", deathTwo.EntityID)
 	}
 }
+
+func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
+	t.Parallel()
+
+	triggerLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - BLOCK_START BlockType=TRIGGER Entity=[entityName=Сумеречное яйцо id=95 zone=PLAY zonePos=1 cardId=CATA_210 player=2]")
+	statLine := findLogLine(t, "Power.log", "TAG_CHANGE Entity=[entityName=Гаррош Адский Крик id=64 zone=PLAY zonePos=0 cardId=HERO_01 player=1] tag=ATK value=0")
+
+	input := strings.Join([]string{
+		triggerLine,
+		statLine,
+	}, "\n")
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+
+	if len(events) != 2 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	triggerEvent, ok := events[0].(*game.EffectTriggeredEvent)
+	if !ok {
+		t.Fatalf("unexpected first event type: %T", events[0])
+	}
+	if triggerEvent.SourceEntityID != 95 {
+		t.Fatalf("unexpected trigger source: %d", triggerEvent.SourceEntityID)
+	}
+	if triggerEvent.EffectName != "TRIGGER_VISUAL" {
+		t.Fatalf("unexpected trigger effect name: %s", triggerEvent.EffectName)
+	}
+
+	statEvent, ok := events[1].(*game.EffectTriggeredEvent)
+	if !ok {
+		t.Fatalf("unexpected second event type: %T", events[1])
+	}
+	if statEvent.SourceEntityID != 64 {
+		t.Fatalf("unexpected stat change source: %d", statEvent.SourceEntityID)
+	}
+	if statEvent.EffectName != "ATK_CHANGE:0" {
+		t.Fatalf("unexpected stat effect name: %s", statEvent.EffectName)
+	}
+}

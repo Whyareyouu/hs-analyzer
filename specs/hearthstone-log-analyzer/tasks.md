@@ -206,7 +206,7 @@
     - Написать unit тесты
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.6_
 
-  - [ ] 7.9 PowerParser - парсинг эффектов
+  - [x] 7.9 PowerParser - парсинг эффектов
 
     - Добавить парсинг TRIGGER и POWER событий
     - Генерировать EffectTriggeredEvent
