@@ -167,6 +167,9 @@ func (a *Analyzer) readLogContent(path string) (string, error) {
 	}()
 
 	var builder strings.Builder
+	if info, err := os.Stat(path); err == nil && info.Size() > 0 {
+		builder.Grow(int(info.Size()) + 1)
+	}
 	for {
 		line, err := reader.Next()
 		if err == nil {

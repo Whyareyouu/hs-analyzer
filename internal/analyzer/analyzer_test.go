@@ -477,3 +477,36 @@ func TestAnalyzerApplyEventsBuildsInitialStateAndProcessesPipeline(t *testing.T)
 		t.Fatalf("unexpected event count: %d", gameState.GetEventCount())
 	}
 }
+
+func BenchmarkAnalyzerAnalyzeFixtureLogs(b *testing.B) {
+	logsDir := filepath.Join("..", "..", "tests", "testdata", "standard_game_1", "logs")
+	cfg := &config.Config{
+		LogsPath:    logsDir,
+		CardsDBPath: filepath.Join("..", "..", "tests", "testdata", "cards", "cards_sample.json"),
+		Performance: config.PerformanceConfig{BufferSize: 128},
+	}
+
+	db := carddb.NewJSONDatabase()
+	registry := parser.NewRegistry()
+	registry.MustRegister(parser.NewLoadingScreenParser())
+	registry.MustRegister(parser.NewPowerParser())
+	registry.MustRegister(parser.NewZoneParser())
+
+	pipeline := NewPipeline()
+	if err := pipeline.RegisterHandler(NewApplyEventHandler()); err != nil {
+		b.Fatalf("register apply handler: %v", err)
+	}
+
+	analyzer, err := NewAnalyzer(cfg, db, registry, pipeline, nil)
+	if err != nil {
+		b.Fatalf("new analyzer: %v", err)
+	}
+
+	ctx := context.Background()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := analyzer.Analyze(ctx); err != nil {
+			b.Fatalf("analyze: %v", err)
+		}
+	}
+}

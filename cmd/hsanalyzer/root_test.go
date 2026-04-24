@@ -219,6 +219,44 @@ func TestRootCommandRejectsInvalidLogLevel(t *testing.T) {
 	}
 }
 
+func TestAnalyzeCommandRejectsMissingCardsDatabase(t *testing.T) {
+	t.Parallel()
+
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{
+		"analyze",
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", filepath.Join(t.TempDir(), "missing-cards.json"),
+	})
+
+	err := cmd.Execute()
+	if err == nil {
+		t.Fatalf("expected missing cards db error")
+	}
+	if !strings.Contains(err.Error(), "invalid cards database path") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestAnalyzeCommandRejectsMissingLogsDirectory(t *testing.T) {
+	t.Parallel()
+
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{
+		"analyze",
+		"--logs-path", filepath.Join(t.TempDir(), "missing-logs"),
+		"--cards-db-path", fixtureCardsPath(),
+	})
+
+	err := cmd.Execute()
+	if err == nil {
+		t.Fatalf("expected missing logs error")
+	}
+	if !strings.Contains(err.Error(), "invalid logs path") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func containsTimelineJSON(entries []os.DirEntry) bool {
 	names := make([]string, 0, len(entries))
 	for _, entry := range entries {
