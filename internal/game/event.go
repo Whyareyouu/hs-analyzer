@@ -261,14 +261,26 @@ func (e *CardDrawnEvent) Apply(gameState *state.State) error {
 type AttackEvent struct {
 	BaseEvent
 	AttackerEntityID int
+	AttackerCardID   string
+	AttackerName     string
 	TargetEntityID   int
+	TargetCardID     string
+	TargetName       string
 }
 
 func NewAttackEvent(attackerEntityID, targetEntityID int) *AttackEvent {
+	return NewDetailedAttackEvent(attackerEntityID, "", "", targetEntityID, "", "")
+}
+
+func NewDetailedAttackEvent(attackerEntityID int, attackerCardID, attackerName string, targetEntityID int, targetCardID, targetName string) *AttackEvent {
 	return &AttackEvent{
 		BaseEvent:        NewBaseEvent(types.EventTypeAttack),
 		AttackerEntityID: attackerEntityID,
+		AttackerCardID:   attackerCardID,
+		AttackerName:     attackerName,
 		TargetEntityID:   targetEntityID,
+		TargetCardID:     targetCardID,
+		TargetName:       targetName,
 	}
 }
 
@@ -283,13 +295,21 @@ func (e *AttackEvent) Apply(gameState *state.State) error {
 type DamageEvent struct {
 	BaseEvent
 	TargetEntityID int
+	TargetCardID   string
+	TargetName     string
 	Amount         int
 }
 
 func NewDamageEvent(targetEntityID, amount int) *DamageEvent {
+	return NewDetailedDamageEvent(targetEntityID, "", "", amount)
+}
+
+func NewDetailedDamageEvent(targetEntityID int, targetCardID, targetName string, amount int) *DamageEvent {
 	return &DamageEvent{
 		BaseEvent:      NewBaseEvent(types.EventTypeDamage),
 		TargetEntityID: targetEntityID,
+		TargetCardID:   targetCardID,
+		TargetName:     targetName,
 		Amount:         amount,
 	}
 }
@@ -310,13 +330,21 @@ func (e *DamageEvent) Apply(gameState *state.State) error {
 type HealEvent struct {
 	BaseEvent
 	TargetEntityID int
+	TargetCardID   string
+	TargetName     string
 	Amount         int
 }
 
 func NewHealEvent(targetEntityID, amount int) *HealEvent {
+	return NewDetailedHealEvent(targetEntityID, "", "", amount)
+}
+
+func NewDetailedHealEvent(targetEntityID int, targetCardID, targetName string, amount int) *HealEvent {
 	return &HealEvent{
 		BaseEvent:      NewBaseEvent(types.EventTypeHeal),
 		TargetEntityID: targetEntityID,
+		TargetCardID:   targetCardID,
+		TargetName:     targetName,
 		Amount:         amount,
 	}
 }
@@ -337,12 +365,20 @@ func (e *HealEvent) Apply(gameState *state.State) error {
 type DeathEvent struct {
 	BaseEvent
 	EntityID int
+	CardID   string
+	Name     string
 }
 
 func NewDeathEvent(entityID int) *DeathEvent {
+	return NewDetailedDeathEvent(entityID, "", "")
+}
+
+func NewDetailedDeathEvent(entityID int, cardID, name string) *DeathEvent {
 	return &DeathEvent{
 		BaseEvent: NewBaseEvent(types.EventTypeDeath),
 		EntityID:  entityID,
+		CardID:    cardID,
+		Name:      name,
 	}
 }
 

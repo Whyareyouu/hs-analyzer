@@ -189,6 +189,12 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 	if attack.AttackerEntityID != 103 || attack.TargetEntityID != 27 {
 		t.Fatalf("unexpected attack event: attacker=%d target=%d", attack.AttackerEntityID, attack.TargetEntityID)
 	}
+	if attack.AttackerCardID != "CATA_210" || attack.AttackerName != "Сумеречное яйцо" {
+		t.Fatalf("unexpected attacker details: %s %s", attack.AttackerCardID, attack.AttackerName)
+	}
+	if attack.TargetCardID != "EDR_456" || attack.TargetName != "Темный наездник" {
+		t.Fatalf("unexpected target details: %s %s", attack.TargetCardID, attack.TargetName)
+	}
 
 	damageOne, ok := events[1].(*game.DamageEvent)
 	if !ok {
@@ -196,6 +202,9 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 	}
 	if damageOne.TargetEntityID != 27 || damageOne.Amount != 2 {
 		t.Fatalf("unexpected first damage event: target=%d amount=%d", damageOne.TargetEntityID, damageOne.Amount)
+	}
+	if damageOne.TargetCardID != "EDR_456" || damageOne.TargetName != "Темный наездник" {
+		t.Fatalf("unexpected first damage target details: %s %s", damageOne.TargetCardID, damageOne.TargetName)
 	}
 
 	damageTwo, ok := events[2].(*game.DamageEvent)
@@ -205,6 +214,9 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 	if damageTwo.TargetEntityID != 103 || damageTwo.Amount != 2 {
 		t.Fatalf("unexpected second damage event: target=%d amount=%d", damageTwo.TargetEntityID, damageTwo.Amount)
 	}
+	if damageTwo.TargetCardID != "CATA_210" || damageTwo.TargetName != "Сумеречное яйцо" {
+		t.Fatalf("unexpected second damage target details: %s %s", damageTwo.TargetCardID, damageTwo.TargetName)
+	}
 
 	deathOne, ok := events[3].(*game.DeathEvent)
 	if !ok {
@@ -213,6 +225,9 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 	if deathOne.EntityID != 27 {
 		t.Fatalf("unexpected first death event: %d", deathOne.EntityID)
 	}
+	if deathOne.CardID != "EDR_456" || deathOne.Name != "Темный наездник" {
+		t.Fatalf("unexpected first death details: %s %s", deathOne.CardID, deathOne.Name)
+	}
 
 	deathTwo, ok := events[4].(*game.DeathEvent)
 	if !ok {
@@ -220,6 +235,9 @@ func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) 
 	}
 	if deathTwo.EntityID != 103 {
 		t.Fatalf("unexpected second death event: %d", deathTwo.EntityID)
+	}
+	if deathTwo.CardID != "CATA_210" || deathTwo.Name != "Сумеречное яйцо" {
+		t.Fatalf("unexpected second death details: %s %s", deathTwo.CardID, deathTwo.Name)
 	}
 }
 

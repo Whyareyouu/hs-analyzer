@@ -187,7 +187,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		}
 
 		return []game.Event{
-			game.NewDamageEvent(logged.entityID, damageTotal-previous),
+			game.NewDetailedDamageEvent(logged.entityID, logged.cardID, logged.name, damageTotal-previous),
 		}, nil
 	case hslog.TagZone:
 		if value != string(card.ZoneGraveyard) {
@@ -200,7 +200,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		}
 
 		return []game.Event{
-			game.NewDeathEvent(logged.entityID),
+			game.NewDetailedDeathEvent(logged.entityID, logged.cardID, logged.name),
 		}, nil
 	case "ATK", "HEALTH":
 		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
@@ -368,7 +368,7 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 		}
 
 		return []game.Event{
-			game.NewAttackEvent(entity.entityID, target.entityID),
+			game.NewDetailedAttackEvent(entity.entityID, entity.cardID, entity.name, target.entityID, target.cardID, target.name),
 		}, nil
 	case "TRIGGER":
 		if strings.Contains(line, "PowerTaskList.DebugPrintPower()") {

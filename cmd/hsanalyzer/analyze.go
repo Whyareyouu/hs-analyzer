@@ -162,5 +162,28 @@ func resolveTimelineOutputDir(cfg interface {
 	if err != nil {
 		return "", fmt.Errorf("get working directory: %w", err)
 	}
-	return filepath.Join(workingDir, "output"), nil
+
+	projectRoot, err := findProjectRoot(workingDir)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(projectRoot, "output"), nil
+}
+
+func findProjectRoot(startDir string) (string, error) {
+	current := filepath.Clean(startDir)
+
+	for {
+		if _, err := os.Stat(filepath.Join(current, "go.mod")); err == nil {
+			return current, nil
+		}
+
+		parent := filepath.Dir(current)
+		if parent == current {
+			return "", fmt.Errorf("project root not found from %s", startDir)
+		}
+
+		current = parent
+	}
 }

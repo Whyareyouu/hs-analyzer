@@ -60,7 +60,7 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 		}
 	}
 
-	entries, err := os.ReadDir("output")
+	entries, err := os.ReadDir(projectOutputDirForTest())
 	if err != nil {
 		t.Fatalf("read output dir: %v", err)
 	}
@@ -172,7 +172,35 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
 		t.Fatalf("expected played card info type in json output")
 	}
 
-	outputEntries, err := os.ReadDir("output")
+	attack, ok, err := findFirstAttackEvent(data)
+	if err != nil {
+		t.Fatalf("find first attack event: %v", err)
+	}
+	if !ok {
+		t.Fatalf("expected at least one attack event in json output")
+	}
+	if attack.Attacker == nil || attack.Attacker.Name == "" {
+		t.Fatalf("expected human-readable attacker in attack event")
+	}
+	if attack.Target == nil || attack.Target.Name == "" {
+		t.Fatalf("expected human-readable target in attack event")
+	}
+
+	discover, ok, err := findFirstDiscoverEvent(data)
+	if err != nil {
+		t.Fatalf("find first discover event: %v", err)
+	}
+	if !ok {
+		t.Fatalf("expected at least one discover event in json output")
+	}
+	if len(discover.OptionCards) == 0 || discover.OptionCards[0].Name == "" {
+		t.Fatalf("expected human-readable discover options in json output")
+	}
+	if discover.ChosenCardInfo == nil || discover.ChosenCardInfo.Name == "" {
+		t.Fatalf("expected human-readable chosen discover card in json output")
+	}
+
+	outputEntries, err := os.ReadDir(projectOutputDirForTest())
 	if err != nil {
 		t.Fatalf("read output dir: %v", err)
 	}
@@ -219,6 +247,10 @@ func containsTimelineJSON(entries []os.DirEntry) bool {
 	})
 }
 
+func projectOutputDirForTest() string {
+	return filepath.Clean(filepath.Join("..", "..", "output"))
+}
+
 type jsonTimelineTurn struct {
 	Events []jsonTimelineEvent `json:"events"`
 }
@@ -226,6 +258,22 @@ type jsonTimelineTurn struct {
 type jsonTimelineEvent struct {
 	Type       string                     `json:"type"`
 	Attributes map[string]json.RawMessage `json:"attributes"`
+}
+
+type jsonTimelineAttackEvent struct {
+	Attacker *jsonTimelineEntity `json:"attacker"`
+	Target   *jsonTimelineEntity `json:"target"`
+}
+
+type jsonTimelineDiscoverEvent struct {
+	OptionCards    []jsonTimelineCard `json:"option_cards"`
+	ChosenCardInfo *jsonTimelineCard  `json:"chosen_card_info"`
+}
+
+type jsonTimelineEntity struct {
+	EntityID int    `json:"entity_id"`
+	Name     string `json:"name"`
+	CardID   string `json:"card_id"`
 }
 
 type jsonTimelineCard struct {
@@ -267,4 +315,66 @@ func findFirstPlayedCard(data []byte) (*jsonTimelineCard, bool, error) {
 	}
 
 	return nil, false, nil
+}
+
+func findFirstAttackEvent(data []byte) (*jsonTimelineAttackEvent, bool, error) {
+	var turns []jsonTimelineTurn
+	if err := json.Unmarshal(data, &turns); err != nil {
+		return nil, false, err
+	}
+
+	for _, turn := range turns {
+		for _, event := range turn.Events {
+			if event.Type != "attack" {
+				continue
+			}
+
+			payload, err := marshalEventAttributes(event.Attributes)
+			if err != nil {
+				return nil, false, err
+			}
+
+			var attack jsonTimelineAttackEvent
+			if err := json.Unmarshal(payload, &attack); err != nil {
+				return nil, false, err
+			}
+
+			return &attack, true, nil
+		}
+	}
+
+	return nil, false, nil
+}
+
+func findFirstDiscoverEvent(data []byte) (*jsonTimelineDiscoverEvent, bool, error) {
+	var turns []jsonTimelineTurn
+	if err := json.Unmarshal(data, &turns); err != nil {
+		return nil, false, err
+	}
+
+	for _, turn := range turns {
+		for _, event := range turn.Events {
+			if event.Type != "discover" {
+				continue
+			}
+
+			payload, err := marshalEventAttributes(event.Attributes)
+			if err != nil {
+				return nil, false, err
+			}
+
+			var discover jsonTimelineDiscoverEvent
+			if err := json.Unmarshal(payload, &discover); err != nil {
+				return nil, false, err
+			}
+
+			return &discover, true, nil
+		}
+	}
+
+	return nil, false, nil
+}
+
+func marshalEventAttributes(attributes map[string]json.RawMessage) ([]byte, error) {
+	return json.Marshal(attributes)
 }

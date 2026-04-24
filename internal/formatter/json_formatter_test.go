@@ -227,3 +227,120 @@ func TestJSONFormatterHumanizesEffectAndCardText(t *testing.T) {
 		t.Fatalf("unexpected card text: %s", raw)
 	}
 }
+
+func TestJSONFormatterAddsHumanReadableDataForEntityAndDiscoverEvents(t *testing.T) {
+	t.Parallel()
+
+	formatter := NewJSONFormatter(&stubCardDatabase{
+		cards: map[string]*carddb.CardInfo{
+			"ATTACKER_001": {
+				ID:     "ATTACKER_001",
+				Name:   "Учебный атакующий",
+				Text:   "Наносит урон.",
+				Cost:   3,
+				Attack: 4,
+				Health: 5,
+				Type:   carddb.CardTypeMinion,
+			},
+			"TARGET_001": {
+				ID:     "TARGET_001",
+				Name:   "Учебная цель",
+				Text:   "Получает урон.",
+				Cost:   2,
+				Attack: 2,
+				Health: 3,
+				Type:   carddb.CardTypeMinion,
+			},
+			"DISCOVER_001": {
+				ID:   "DISCOVER_001",
+				Name: "Первая находка",
+				Text: "Первая карта для выбора.",
+				Type: carddb.CardTypeSpell,
+			},
+			"DISCOVER_002": {
+				ID:   "DISCOVER_002",
+				Name: "Вторая находка",
+				Text: "Вторая карта для выбора.",
+				Type: carddb.CardTypeSpell,
+			},
+		},
+	})
+
+	gameState := state.New("game-1", state.GameModeStandard)
+	turnStart := game.NewTurnStartEvent(types.PlayerTypePlayer)
+	if err := turnStart.Apply(gameState); err != nil {
+		t.Fatalf("apply turn start: %v", err)
+	}
+	gameState.AddEvent(turnStart)
+
+	attacker := card.New("ATTACKER_001", 10, types.PlayerTypePlayer)
+	attacker.MoveTo(card.ZonePlay, 0)
+	gameState.Player.Board.AddCardAt(attacker, 0)
+	attackerEntity := gameState.TrackCardEntity(attacker)
+	attackerEntity.SetStats(4, 5)
+
+	target := card.New("TARGET_001", 20, types.PlayerTypeOpponent)
+	target.MoveTo(card.ZonePlay, 1)
+	gameState.Opponent.Board.AddCardAt(target, 1)
+	targetEntity := gameState.TrackCardEntity(target)
+	targetEntity.SetStats(2, 3)
+
+	attackEvent := game.NewAttackEvent(10, 20)
+	gameState.AddEvent(attackEvent)
+
+	damageEvent := game.NewDamageEvent(20, 4)
+	gameState.AddEvent(damageEvent)
+
+	deathEvent := game.NewDeathEvent(20)
+	gameState.AddEvent(deathEvent)
+
+	discoverEvent := game.NewDiscoverEvent(types.PlayerTypePlayer, []string{"DISCOVER_001", "DISCOVER_002"}, "DISCOVER_002", 20)
+	gameState.AddEvent(discoverEvent)
+
+	raw, err := formatter.Format(gameState)
+	if err != nil {
+		t.Fatalf("format state: %v", err)
+	}
+
+	if !strings.Contains(raw, `"attacker"`) || !strings.Contains(raw, `"Учебный атакующий"`) {
+		t.Fatalf("expected human-readable attacker in json: %s", raw)
+	}
+	if !strings.Contains(raw, `"target"`) || !strings.Contains(raw, `"Учебная цель"`) {
+		t.Fatalf("expected human-readable target in json: %s", raw)
+	}
+	if !strings.Contains(raw, `"chosen_card_info"`) || !strings.Contains(raw, `"Вторая находка"`) {
+		t.Fatalf("expected human-readable discover result in json: %s", raw)
+	}
+	if !strings.Contains(raw, `"option_cards"`) || !strings.Contains(raw, `"Первая находка"`) {
+		t.Fatalf("expected human-readable discover options in json: %s", raw)
+	}
+}
+
+func TestJSONFormatterAddsDeckListCards(t *testing.T) {
+	t.Parallel()
+
+	formatter := NewJSONFormatter(&stubCardDatabase{
+		cards: map[string]*carddb.CardInfo{
+			"DECK_001": {
+				ID:   "DECK_001",
+				Name: "Карта из колоды",
+				Text: "Описание карты колоды.",
+				Cost: 1,
+				Type: carddb.CardTypeSpell,
+			},
+		},
+	})
+
+	cardInDeck := card.New("DECK_001", 0, types.PlayerTypePlayer)
+	raw, err := formatter.FormatEvent(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{cardInDeck}, "Учебная колода", "deck-1", "code"))
+	if err != nil {
+		t.Fatalf("format event: %v", err)
+	}
+
+	if !strings.Contains(raw, `"cards"`) {
+		t.Fatalf("expected cards list in deck event: %s", raw)
+	}
+	if !strings.Contains(raw, `"Карта из колоды"`) {
+		t.Fatalf("expected human-readable deck card in json: %s", raw)
+	}
+}
