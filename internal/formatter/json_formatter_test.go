@@ -198,3 +198,32 @@ func TestJSONFormatterRejectsNilInputs(t *testing.T) {
 		t.Fatalf("expected nil event error")
 	}
 }
+
+func TestJSONFormatterHumanizesEffectAndCardText(t *testing.T) {
+	t.Parallel()
+
+	formatter := NewJSONFormatter(&stubCardDatabase{
+		cards: map[string]*carddb.CardInfo{
+			"TLC_515": {
+				ID:   "TLC_515",
+				Name: "Карта сектантов",
+				Text: "[x]Вы <b>раскапываете</b> карту\nиз колоды.",
+			},
+		},
+	})
+
+	raw, err := formatter.FormatEvent(game.NewDetailedEffectTriggeredEvent(60, "TLC_515", "Карта сектантов", "TRIGGER_VISUAL"))
+	if err != nil {
+		t.Fatalf("format event: %v", err)
+	}
+
+	if strings.Contains(raw, `\u003c`) {
+		t.Fatalf("html should not be escaped: %s", raw)
+	}
+	if !strings.Contains(raw, `"summary": "Срабатывание эффекта"`) {
+		t.Fatalf("unexpected summary: %s", raw)
+	}
+	if !strings.Contains(raw, `"source_card_text": "Вы раскапываете карту\nиз колоды."`) {
+		t.Fatalf("unexpected card text: %s", raw)
+	}
+}

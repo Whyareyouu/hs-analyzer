@@ -1,7 +1,6 @@
 package formatter
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -59,12 +58,12 @@ func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
 		timeline = append(timeline, item)
 	}
 
-	encoded, err := json.MarshalIndent(timeline, "", "  ")
+	encoded, err := marshalIndentedJSON(timeline)
 	if err != nil {
 		return "", fmt.Errorf("marshal turns json: %w", err)
 	}
 
-	return string(encoded), nil
+	return encoded, nil
 }
 
 func (f *JSONFormatter) FormatEvent(event game.Event) (string, error) {
@@ -72,12 +71,12 @@ func (f *JSONFormatter) FormatEvent(event game.Event) (string, error) {
 		return "", fmt.Errorf("event is nil")
 	}
 
-	encoded, err := json.MarshalIndent(f.buildJSONEvent(0, event), "", "  ")
+	encoded, err := marshalIndentedJSON(f.buildJSONEvent(0, event))
 	if err != nil {
 		return "", fmt.Errorf("marshal event json: %w", err)
 	}
 
-	return string(encoded), nil
+	return encoded, nil
 }
 
 type jsonTurn struct {
@@ -150,9 +149,24 @@ func (f *JSONFormatter) buildJSONEvent(index int, event game.Event) jsonEvent {
 		item.Summary = "death"
 		item.Attributes["entity_id"] = e.EntityID
 	case *game.EffectTriggeredEvent:
-		item.Summary = "effect_triggered"
+		sourceName, sourceText := f.resolveEffectSource(e)
+		details := describeEffect(e.EffectName, sourceName, sourceText, "ru")
+		item.Summary = details.Label
 		item.Attributes["source_entity_id"] = e.SourceEntityID
 		item.Attributes["effect_name"] = e.EffectName
+		item.Attributes["effect_label"] = details.Label
+		if details.Description != "" {
+			item.Attributes["effect_description"] = details.Description
+		}
+		if e.SourceCardID != "" {
+			item.Attributes["source_card_id"] = e.SourceCardID
+		}
+		if sourceName != "" {
+			item.Attributes["source_name"] = sourceName
+		}
+		if sourceText != "" {
+			item.Attributes["source_card_text"] = sourceText
+		}
 	case *game.DiscoverEvent:
 		item.Summary = "discover"
 		item.Attributes["player"] = e.Player.String()
@@ -262,7 +276,7 @@ func buildJSONCardInfo(info *carddb.CardInfo) *jsonCardInfo {
 		ID:          info.ID,
 		DBFID:       info.DBFID,
 		Name:        info.Name,
-		Text:        info.Text,
+		Text:        cleanCardText(info.Text),
 		Cost:        info.Cost,
 		Attack:      info.Attack,
 		Health:      info.Health,
@@ -273,4 +287,19 @@ func buildJSONCardInfo(info *carddb.CardInfo) *jsonCardInfo {
 		Set:         info.Set,
 		Collectible: info.Collectible,
 	}
+}
+
+func (f *JSONFormatter) resolveEffectSource(event *game.EffectTriggeredEvent) (string, string) {
+	if event == nil {
+		return "", ""
+	}
+
+	if f != nil && f.cardDB != nil && event.SourceCardID != "" {
+		info, ok := f.cardDB.GetCard(event.SourceCardID)
+		if ok && info != nil {
+			return info.Name, cleanCardText(info.Text)
+		}
+	}
+
+	return event.SourceName, ""
 }
