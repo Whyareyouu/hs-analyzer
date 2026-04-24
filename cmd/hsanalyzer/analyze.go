@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
+
+	"hsanalyzer/internal/formatter"
+	"hsanalyzer/internal/state"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -75,11 +79,18 @@ func runAnalyze(ctx context.Context, cmd *cobra.Command, options analyzeOptions)
 		return err
 	}
 
+	timelinePath, err := saveTimelineJSON(container, gameState)
+	if err != nil {
+		logger.Error("failed to save timeline json", zap.Error(err))
+		return fmt.Errorf("save timeline json: %w", err)
+	}
+
 	logger.Info("analysis completed",
 		zap.Int("turns", gameState.GetTurnCount()),
 		zap.Int("events", gameState.GetEventCount()),
 		zap.String("output_destination", container.config.Output.Destination),
 		zap.String("output_format", container.config.Output.Format),
+		zap.String("timeline_json", timelinePath),
 	)
 
 	return nil
@@ -106,4 +117,48 @@ func writeOutput(cmd *cobra.Command, destination, filePath, content string) erro
 	default:
 		return fmt.Errorf("unsupported output destination %q", destination)
 	}
+}
+
+func saveTimelineJSON(cfg interface {
+	GetLogsPath() string
+	GetOutputDestination() string
+	GetOutputFilePath() string
+}, gameState *state.State) (string, error) {
+	if gameState == nil {
+		return "", fmt.Errorf("game state is nil")
+	}
+
+	outputDir, err := resolveTimelineOutputDir(cfg)
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(outputDir, 0o755); err != nil {
+		return "", fmt.Errorf("create timeline directory: %w", err)
+	}
+
+	formatter := formatter.NewJSONFormatter()
+	content, err := formatter.Format(gameState)
+	if err != nil {
+		return "", fmt.Errorf("format timeline json: %w", err)
+	}
+
+	fileName := fmt.Sprintf("timeline_%s.json", time.Now().Format("20060102150405"))
+	path := filepath.Join(outputDir, fileName)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		return "", fmt.Errorf("write timeline json: %w", err)
+	}
+
+	return path, nil
+}
+
+func resolveTimelineOutputDir(cfg interface {
+	GetLogsPath() string
+	GetOutputDestination() string
+	GetOutputFilePath() string
+}) (string, error) {
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("get working directory: %w", err)
+	}
+	return filepath.Join(workingDir, "output"), nil
 }

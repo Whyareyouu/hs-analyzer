@@ -19,6 +19,27 @@ type appContainer struct {
 	formatter formatter.Formatter
 }
 
+func (c *appContainer) GetLogsPath() string {
+	if c == nil || c.config == nil {
+		return ""
+	}
+	return c.config.LogsPath
+}
+
+func (c *appContainer) GetOutputDestination() string {
+	if c == nil || c.config == nil {
+		return ""
+	}
+	return c.config.Output.Destination
+}
+
+func (c *appContainer) GetOutputFilePath() string {
+	if c == nil || c.config == nil {
+		return ""
+	}
+	return c.config.Output.FilePath
+}
+
 func buildContainer(options analyzeOptions) (*appContainer, error) {
 	cfg, err := loadCLIConfig(options.configPath)
 	if err != nil {

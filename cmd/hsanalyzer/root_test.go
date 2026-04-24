@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -56,6 +57,14 @@ func TestAnalyzeCommandPrintsFormattedResultFromRealLogs(t *testing.T) {
 		if !strings.Contains(output, want) {
 			t.Fatalf("output does not contain %q:\n%s", want, output)
 		}
+	}
+
+	entries, err := os.ReadDir("output")
+	if err != nil {
+		t.Fatalf("read output dir: %v", err)
+	}
+	if !containsTimelineJSON(entries) {
+		t.Fatalf("expected auto-saved timeline json in output")
 	}
 }
 
@@ -135,6 +144,14 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFile(t *testing.T) {
 	if !strings.Contains(string(data), `"number"`) || !strings.Contains(string(data), `"events"`) || !strings.Contains(string(data), `"player"`) {
 		t.Fatalf("unexpected json file output:\n%s", string(data))
 	}
+
+	outputEntries, err := os.ReadDir("output")
+	if err != nil {
+		t.Fatalf("read output dir: %v", err)
+	}
+	if !containsTimelineJSON(outputEntries) {
+		t.Fatalf("expected auto-saved timeline json in output")
+	}
 }
 
 func TestRootCommandRejectsInvalidLogLevel(t *testing.T) {
@@ -162,4 +179,15 @@ func copyFileForTest(t *testing.T, src, dst string) {
 	if err := os.WriteFile(dst, data, 0o644); err != nil {
 		t.Fatalf("write %s: %v", dst, err)
 	}
+}
+
+func containsTimelineJSON(entries []os.DirEntry) bool {
+	names := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		names = append(names, entry.Name())
+	}
+
+	return slices.ContainsFunc(names, func(name string) bool {
+		return strings.HasPrefix(name, "timeline_") && strings.HasSuffix(name, ".json")
+	})
 }
