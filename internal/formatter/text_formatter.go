@@ -221,7 +221,17 @@ func (f *TextFormatter) deathLine(event *game.DeathEvent) string {
 }
 
 func (f *TextFormatter) effectLine(event *game.EffectTriggeredEvent) string {
-	return fmt.Sprintf("✨ %s #%d (%s)", f.label("Эффект:", "Effect:"), event.SourceEntityID, event.EffectName)
+	details := describeEffect(event.EffectName, event.SourceName, "", f.config.Language)
+
+	source := fmt.Sprintf("#%d", event.SourceEntityID)
+	if event.SourceName != "" {
+		source = fmt.Sprintf("%s (#%d)", event.SourceName, event.SourceEntityID)
+	}
+	if details.Description != "" {
+		return fmt.Sprintf("✨ %s %s. %s", f.label("Эффект:", "Effect:"), source, details.Description)
+	}
+
+	return fmt.Sprintf("✨ %s %s (%s)", f.label("Эффект:", "Effect:"), source, details.Label)
 }
 
 func (f *TextFormatter) discoverLine(event *game.DiscoverEvent) string {

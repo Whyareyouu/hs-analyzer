@@ -219,7 +219,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		p.statValues[logged.entityID][tag] = statValue
 
 		return []game.Event{
-			game.NewEffectTriggeredEvent(logged.entityID, fmt.Sprintf("%s_CHANGE:%d", tag, statValue)),
+			game.NewDetailedEffectTriggeredEvent(logged.entityID, logged.cardID, logged.name, fmt.Sprintf("%s_CHANGE:%d", tag, statValue)),
 		}, nil
 	default:
 		return nil, nil
@@ -390,7 +390,7 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 		}
 
 		return []game.Event{
-			game.NewEffectTriggeredEvent(sourceEntityID, keyword),
+			game.NewDetailedEffectTriggeredEvent(sourceEntityID, entity.cardID, entity.name, keyword),
 		}, nil
 	case hslog.BlockTypePlay:
 		p.pendingPlays[entity.entityID] = pendingPlay{
@@ -433,6 +433,7 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 
 type loggedEntity struct {
 	entityID int
+	name     string
 	zone     card.ZoneType
 	zonePos  int
 	cardID   string
@@ -482,6 +483,7 @@ func buildLoggedEntity(matches []string) (loggedEntity, bool, error) {
 
 	return loggedEntity{
 		entityID: entityID,
+		name:     matches[1],
 		zone:     card.ZoneType(matches[3]),
 		zonePos:  zonePos,
 		cardID:   matches[5],

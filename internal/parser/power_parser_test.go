@@ -251,6 +251,12 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 	if triggerEvent.SourceEntityID != 95 {
 		t.Fatalf("unexpected trigger source: %d", triggerEvent.SourceEntityID)
 	}
+	if triggerEvent.SourceCardID != "CATA_210" {
+		t.Fatalf("unexpected trigger source card: %s", triggerEvent.SourceCardID)
+	}
+	if triggerEvent.SourceName != "Сумеречное яйцо" {
+		t.Fatalf("unexpected trigger source name: %s", triggerEvent.SourceName)
+	}
 	if triggerEvent.EffectName != "TRIGGER_VISUAL" {
 		t.Fatalf("unexpected trigger effect name: %s", triggerEvent.EffectName)
 	}
@@ -261,6 +267,12 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 	}
 	if statEvent.SourceEntityID != 64 {
 		t.Fatalf("unexpected stat change source: %d", statEvent.SourceEntityID)
+	}
+	if statEvent.SourceCardID != "HERO_01" {
+		t.Fatalf("unexpected stat source card: %s", statEvent.SourceCardID)
+	}
+	if statEvent.SourceName != "Гаррош Адский Крик" {
+		t.Fatalf("unexpected stat source name: %s", statEvent.SourceName)
 	}
 	if statEvent.EffectName != "ATK_CHANGE:0" {
 		t.Fatalf("unexpected stat effect name: %s", statEvent.EffectName)

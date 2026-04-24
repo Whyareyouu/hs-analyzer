@@ -38,7 +38,8 @@ func TestTextFormatterFormatEventTurnCardCombatAndEffects(t *testing.T) {
 		{name: "attack", event: game.NewAttackEvent(10, 20), expect: "#10"},
 		{name: "damage", event: game.NewDamageEvent(20, 5), expect: "5"},
 		{name: "death", event: game.NewDeathEvent(20), expect: "Смерть"},
-		{name: "effect", event: game.NewEffectTriggeredEvent(9, "BATTLECRY"), expect: "BATTLECRY"},
+		{name: "effect", event: game.NewDetailedEffectTriggeredEvent(9, "CARD_001", "Учебный дракон", "BATTLECRY"), expect: "Учебный дракон"},
+		{name: "effect desc", event: game.NewEffectTriggeredEvent(9, "BATTLECRY"), expect: "Эффект"},
 		{name: "discover", event: game.NewDiscoverEvent(types.PlayerTypePlayer, []string{"A", "B", "C"}, "B", 77), expect: "A, B, C"},
 	}
 

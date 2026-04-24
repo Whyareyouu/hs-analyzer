@@ -369,13 +369,21 @@ func (e *DeathEvent) Apply(gameState *state.State) error {
 type EffectTriggeredEvent struct {
 	BaseEvent
 	SourceEntityID int
+	SourceCardID   string
+	SourceName     string
 	EffectName     string
 }
 
 func NewEffectTriggeredEvent(sourceEntityID int, effectName string) *EffectTriggeredEvent {
+	return NewDetailedEffectTriggeredEvent(sourceEntityID, "", "", effectName)
+}
+
+func NewDetailedEffectTriggeredEvent(sourceEntityID int, sourceCardID, sourceName, effectName string) *EffectTriggeredEvent {
 	return &EffectTriggeredEvent{
 		BaseEvent:      NewBaseEvent(types.EventTypeEffectTriggered),
 		SourceEntityID: sourceEntityID,
+		SourceCardID:   sourceCardID,
+		SourceName:     sourceName,
 		EffectName:     effectName,
 	}
 }
