@@ -156,6 +156,15 @@ func validateOutput(cfg OutputConfig) error {
 		return fmt.Errorf("unsupported format %q", cfg.Format)
 	}
 
+	if strings.TrimSpace(cfg.JSONMode) == "" {
+		cfg.JSONMode = DefaultJSONMode
+	}
+	switch cfg.JSONMode {
+	case "replay", "human":
+	default:
+		return fmt.Errorf("unsupported json_mode %q", cfg.JSONMode)
+	}
+
 	switch cfg.Language {
 	case "ru", "en":
 	default:

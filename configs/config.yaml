@@ -1,14 +1,17 @@
 # Hearthstone Log Analyzer configuration
 
 # Directory with Hearthstone log files.
-logs_path: ./logs
+logs_path: logs
 
 # Path to cards database JSON.
-cards_db_path: ./data/cards.json
+cards_db_path: data/cards.json
 
 output:
   # Output format: text or json
   format: text
+
+  # JSON mode: replay or human
+  json_mode: replay
 
   # Destination: stdout or file
   destination: stdout

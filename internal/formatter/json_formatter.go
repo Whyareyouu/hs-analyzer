@@ -21,7 +21,7 @@ func NewJSONFormatter(cardDB carddb.CardDatabase) *JSONFormatter {
 }
 
 func (f *JSONFormatter) Name() string {
-	return "json"
+	return "json-human"
 }
 
 func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
@@ -29,6 +29,25 @@ func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
 		return "", fmt.Errorf("game state is nil")
 	}
 
+	matchStates := extractMatchStates(gameState)
+	documents := make([]map[string]interface{}, 0, len(matchStates))
+	for _, matchState := range matchStates {
+		if matchState == nil {
+			continue
+		}
+		documents = append(documents, f.buildHumanMatchDocument(matchState))
+	}
+
+	encoded, err := marshalIndentedJSON(wrapMatchDocuments("human", documents))
+	if err != nil {
+		return "", fmt.Errorf("marshal human json: %w", err)
+	}
+
+	return encoded, nil
+}
+
+func (f *JSONFormatter) buildHumanMatchDocument(gameState *state.State) map[string]interface{} {
+	openingHands, _ := collectReplayTurnOpenings(f, gameState)
 	timeline := make([]jsonTurn, 0, len(gameState.Turns))
 	for _, turn := range gameState.Turns {
 		if turn == nil {
@@ -36,11 +55,15 @@ func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
 		}
 
 		item := jsonTurn{
-			Number:     turn.Number,
-			Player:     turn.Player.String(),
-			StartedAt:  turn.StartTime.Format(time.RFC3339Nano),
-			EventCount: len(turn.Events),
-			Events:     make([]jsonEvent, 0, len(turn.Events)),
+			Number:      turn.Number,
+			Player:      turn.Player.String(),
+			StartedAt:   turn.StartTime.Format(time.RFC3339Nano),
+			EventCount:  len(turn.Events),
+			Events:      make([]jsonEvent, 0, len(turn.Events)),
+			OpeningHand: openingHands[turn.Number],
+		}
+		if item.OpeningHand == nil {
+			item.OpeningHand = make([]*jsonCard, 0)
 		}
 		if turn.EndTime != nil {
 			item.EndedAt = turn.EndTime.Format(time.RFC3339Nano)
@@ -58,12 +81,16 @@ func (f *JSONFormatter) Format(gameState *state.State) (string, error) {
 		timeline = append(timeline, item)
 	}
 
-	encoded, err := marshalIndentedJSON(timeline)
-	if err != nil {
-		return "", fmt.Errorf("marshal turns json: %w", err)
+	return map[string]interface{}{
+		"game": map[string]interface{}{
+			"id":          gameState.GameID,
+			"mode":        gameState.GameMode,
+			"winner":      winnerString(gameState),
+			"turn_count":  gameState.GetTurnCount(),
+			"event_count": gameState.GetEventCount(),
+		},
+		"turns": timeline,
 	}
-
-	return encoded, nil
 }
 
 func (f *JSONFormatter) FormatEvent(event game.Event) (string, error) {
@@ -80,12 +107,13 @@ func (f *JSONFormatter) FormatEvent(event game.Event) (string, error) {
 }
 
 type jsonTurn struct {
-	Number     int         `json:"number"`
-	Player     string      `json:"player"`
-	StartedAt  string      `json:"started_at"`
-	EndedAt    string      `json:"ended_at,omitempty"`
-	EventCount int         `json:"event_count"`
-	Events     []jsonEvent `json:"events"`
+	Number      int         `json:"number"`
+	Player      string      `json:"player"`
+	StartedAt   string      `json:"started_at"`
+	EndedAt     string      `json:"ended_at,omitempty"`
+	EventCount  int         `json:"event_count"`
+	OpeningHand []*jsonCard `json:"opening_hand"`
+	Events      []jsonEvent `json:"events"`
 }
 
 type jsonEvent struct {
@@ -154,6 +182,12 @@ func (f *JSONFormatter) buildJSONEvent(index int, event game.Event, gameState *s
 		item.Summary = "death"
 		item.Attributes["entity_id"] = e.EntityID
 		item.Attributes["entity"] = f.buildJSONEventEntityRef(gameState, e.EntityID, e.CardID, e.Name)
+	case *game.CardCostChangedEvent:
+		item.Summary = "card_cost_changed"
+		item.Attributes["entity_id"] = e.EntityID
+		item.Attributes["card_id"] = e.CardID
+		item.Attributes["cost"] = e.Cost
+		item.Attributes["card"] = f.buildJSONEventEntityRef(gameState, e.EntityID, e.CardID, e.Name)
 	case *game.EffectTriggeredEvent:
 		sourceName, sourceText := f.resolveEffectSource(e)
 		details := describeEffect(e.EffectName, sourceName, sourceText, "ru")
@@ -207,6 +241,7 @@ type jsonCard struct {
 	Zone       string        `json:"zone,omitempty"`
 	Position   int           `json:"position"`
 	CreatedBy  string        `json:"created_by,omitempty"`
+	Cost       int           `json:"cost"`
 	Info       *jsonCardInfo `json:"info,omitempty"`
 }
 
@@ -262,6 +297,7 @@ func (f *JSONFormatter) buildJSONCard(c *card.Card) *jsonCard {
 		Zone:       string(c.Zone),
 		Position:   c.Position,
 		CreatedBy:  c.CreatedBy,
+		Cost:       currentCardCost(c, info),
 		Info:       buildJSONCardInfo(info),
 	}
 }
@@ -395,6 +431,26 @@ func buildJSONCardInfo(info *carddb.CardInfo) *jsonCardInfo {
 		Set:         info.Set,
 		Collectible: info.Collectible,
 	}
+}
+
+func currentCardCost(c *card.Card, info *carddb.CardInfo) int {
+	if c == nil {
+		return 0
+	}
+	if c.Cost > 0 {
+		return c.Cost
+	}
+	if info != nil {
+		return info.Cost
+	}
+	return 0
+}
+
+func winnerString(gameState *state.State) string {
+	if gameState == nil || gameState.Winner == nil {
+		return ""
+	}
+	return gameState.Winner.String()
 }
 
 func (f *JSONFormatter) buildJSONEntityRef(gameState *state.State, entityID int) *jsonEntityRef {

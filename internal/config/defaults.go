@@ -4,6 +4,7 @@ const (
 	DefaultLogsPath          = "logs"
 	DefaultCardsDBPath       = "data/cards.json"
 	DefaultOutputFormat      = "text"
+	DefaultJSONMode          = "replay"
 	DefaultOutputDestination = "stdout"
 	DefaultOutputLanguage    = "ru"
 	DefaultPerformanceWorker = 1
@@ -17,6 +18,7 @@ func DefaultConfig() Config {
 		CardsDBPath: DefaultCardsDBPath,
 		Output: OutputConfig{
 			Format:      DefaultOutputFormat,
+			JSONMode:    DefaultJSONMode,
 			Destination: DefaultOutputDestination,
 			Language:    DefaultOutputLanguage,
 			Verbose:     false,

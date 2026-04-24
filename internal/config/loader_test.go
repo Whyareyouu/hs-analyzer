@@ -24,6 +24,9 @@ func TestDefaultConfig(t *testing.T) {
 	if cfg.Output.Destination != DefaultOutputDestination {
 		t.Fatalf("unexpected output destination: %s", cfg.Output.Destination)
 	}
+	if cfg.Output.JSONMode != DefaultJSONMode {
+		t.Fatalf("unexpected output json mode: %s", cfg.Output.JSONMode)
+	}
 	if cfg.Output.Language != DefaultOutputLanguage {
 		t.Fatalf("unexpected output language: %s", cfg.Output.Language)
 	}
@@ -95,6 +98,7 @@ logs_path: ../custom-logs
 cards_db_path: ../assets/cards.json
 output:
   format: json
+  json_mode: human
   destination: file
   file_path: ../output/result.txt
   language: en
@@ -130,6 +134,9 @@ performance:
 	}
 	if cfg.Output.Format != "json" {
 		t.Fatalf("unexpected output format: %s", cfg.Output.Format)
+	}
+	if cfg.Output.JSONMode != "human" {
+		t.Fatalf("unexpected json mode: %s", cfg.Output.JSONMode)
 	}
 	if !cfg.Output.Verbose {
 		t.Fatalf("expected verbose output")

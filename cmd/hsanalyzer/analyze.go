@@ -20,6 +20,7 @@ type analyzeOptions struct {
 	logsPath    string
 	cardsDBPath string
 	format      string
+	jsonMode    string
 	output      string
 	outputFile  string
 	language    string
@@ -41,6 +42,7 @@ func newAnalyzeCmd() *cobra.Command {
 	cmd.Flags().StringVar(&options.logsPath, "logs-path", "", "Path to logs directory")
 	cmd.Flags().StringVar(&options.cardsDBPath, "cards-db-path", "", "Path to cards database")
 	cmd.Flags().StringVar(&options.format, "format", "", "Output format")
+	cmd.Flags().StringVar(&options.jsonMode, "json-mode", "", "JSON mode: replay or human")
 	cmd.Flags().StringVar(&options.output, "output", "", "Output destination: stdout or file")
 	cmd.Flags().StringVar(&options.outputFile, "output-file", "", "Output file path when destination=file")
 	cmd.Flags().StringVar(&options.language, "lang", "", "Output language: ru or en")
@@ -124,6 +126,7 @@ func saveTimelineJSON(cfg interface {
 	GetLogsPath() string
 	GetOutputDestination() string
 	GetOutputFilePath() string
+	GetJSONMode() string
 	GetCardDatabase() carddb.CardDatabase
 }, gameState *state.State) (string, error) {
 	if gameState == nil {
@@ -138,13 +141,18 @@ func saveTimelineJSON(cfg interface {
 		return "", fmt.Errorf("create timeline directory: %w", err)
 	}
 
-	formatter := formatter.NewJSONFormatter(cfg.GetCardDatabase())
+	formatter := formatter.NewReplayJSONFormatter(cfg.GetCardDatabase())
 	content, err := formatter.Format(gameState)
 	if err != nil {
 		return "", fmt.Errorf("format timeline json: %w", err)
 	}
 
-	fileName := fmt.Sprintf("timeline_%s.json", time.Now().Format("20060102150405"))
+	jsonMode := cfg.GetJSONMode()
+	if jsonMode == "" {
+		jsonMode = "replay"
+	}
+
+	fileName := fmt.Sprintf("timeline_%s_%s.json", time.Now().Format("20060102150405"), jsonMode)
 	path := filepath.Join(outputDir, fileName)
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", fmt.Errorf("write timeline json: %w", err)

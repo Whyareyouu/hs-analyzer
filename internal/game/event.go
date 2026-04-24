@@ -401,6 +401,42 @@ func (e *DeathEvent) Apply(gameState *state.State) error {
 	return nil
 }
 
+// CardCostChangedEvent обозначает изменение текущей стоимости карты.
+type CardCostChangedEvent struct {
+	BaseEvent
+	EntityID int
+	CardID   string
+	Name     string
+	Cost     int
+}
+
+func NewCardCostChangedEvent(entityID int, cost int) *CardCostChangedEvent {
+	return NewDetailedCardCostChangedEvent(entityID, "", "", cost)
+}
+
+func NewDetailedCardCostChangedEvent(entityID int, cardID, name string, cost int) *CardCostChangedEvent {
+	return &CardCostChangedEvent{
+		BaseEvent: NewBaseEvent(types.EventTypeCardCostChanged),
+		EntityID:  entityID,
+		CardID:    cardID,
+		Name:      name,
+		Cost:      cost,
+	}
+}
+
+func (e *CardCostChangedEvent) Apply(gameState *state.State) error {
+	if gameState == nil {
+		return errors.New("game state is nil")
+	}
+
+	target := gameState.GetCard(e.EntityID)
+	if target == nil {
+		return nil
+	}
+	target.SetCost(e.Cost)
+	return nil
+}
+
 // EffectTriggeredEvent обозначает срабатывание эффекта.
 type EffectTriggeredEvent struct {
 	BaseEvent

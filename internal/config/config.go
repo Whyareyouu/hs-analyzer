@@ -12,6 +12,7 @@ type Config struct {
 // OutputConfig описывает настройки вывода.
 type OutputConfig struct {
 	Format      string `yaml:"format" mapstructure:"format"`
+	JSONMode    string `yaml:"json_mode" mapstructure:"json_mode"`
 	Destination string `yaml:"destination" mapstructure:"destination"`
 	FilePath    string `yaml:"file_path,omitempty" mapstructure:"file_path"`
 	Language    string `yaml:"language" mapstructure:"language"`

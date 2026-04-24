@@ -40,6 +40,14 @@ type SessionBounds struct {
 	HasEnd     bool
 }
 
+// MatchResult содержит восстановленное состояние одного матча и его границы в исходном потоке событий.
+type MatchResult struct {
+	Index  int
+	State  *state.State
+	Bounds SessionBounds
+	Events []game.Event
+}
+
 // NewAnalyzer создает основной analyzer и валидирует его зависимости.
 func NewAnalyzer(
 	cfg *config.Config,
@@ -91,12 +99,22 @@ func (a *Analyzer) Analyze(ctx context.Context) (*state.State, error) {
 	}
 
 	events, bounds := a.MergeAndSortEvents(events)
-
-	gameState, err := a.ApplyEvents(ctx, events)
+	matches, err := a.ApplyMatches(ctx, events)
 	if err != nil {
 		return nil, err
 	}
+
+	gameState := buildAggregateState(matches)
+	if gameState == nil {
+		gameState, err = a.ApplyEvents(ctx, events)
+		if err != nil {
+			return nil, err
+		}
+	}
 	gameState.SetMetadata("session_bounds", bounds)
+	gameState.SetMetadata("matches", collectMatchStates(matches))
+	gameState.SetMetadata("match_results", matches)
+	gameState.SetMetadata("match_count", len(matches))
 
 	return gameState, nil
 }
@@ -211,6 +229,38 @@ func (a *Analyzer) ApplyEvents(ctx context.Context, events []game.Event) (*state
 	return gameState, nil
 }
 
+// ApplyMatches сегментирует общий поток событий на отдельные матчи и строит состояние для каждого.
+func (a *Analyzer) ApplyMatches(ctx context.Context, events []game.Event) ([]MatchResult, error) {
+	if a == nil {
+		return nil, fmt.Errorf("analyzer is nil")
+	}
+
+	sessions := splitEventsIntoMatches(events)
+	if len(sessions) == 0 {
+		return nil, nil
+	}
+
+	results := make([]MatchResult, 0, len(sessions))
+	for index, sessionEvents := range sessions {
+		gameState, err := a.ApplyEvents(ctx, sessionEvents)
+		if err != nil {
+			return nil, fmt.Errorf("process match %d: %w", index, err)
+		}
+
+		bounds := determineSessionBounds(sessionEvents)
+		gameState.SetMetadata("session_bounds", bounds)
+		gameState.SetMetadata("match_index", index)
+		results = append(results, MatchResult{
+			Index:  index,
+			State:  gameState,
+			Bounds: bounds,
+			Events: append([]game.Event(nil), sessionEvents...),
+		})
+	}
+
+	return results, nil
+}
+
 func mergeEvents(eventGroups ...[]game.Event) []game.Event {
 	total := 0
 	for _, group := range eventGroups {
@@ -260,6 +310,87 @@ func determineSessionBounds(events []game.Event) SessionBounds {
 	}
 
 	return bounds
+}
+
+func splitEventsIntoMatches(events []game.Event) [][]game.Event {
+	if len(events) == 0 {
+		return nil
+	}
+
+	sessions := make([][]game.Event, 0)
+	pending := make([]game.Event, 0)
+	current := make([]game.Event, 0)
+
+	flushCurrent := func() {
+		if len(current) == 0 {
+			return
+		}
+		sessions = append(sessions, append([]game.Event(nil), current...))
+		current = current[:0]
+	}
+
+	for _, event := range events {
+		if event == nil {
+			continue
+		}
+
+		switch event.Type() {
+		case types.EventTypeGameStart:
+			if len(current) > 0 {
+				flushCurrent()
+			}
+			current = append(current[:0], pending...)
+			current = append(current, event)
+			pending = pending[:0]
+		case types.EventTypeGameEnd:
+			if len(current) == 0 {
+				current = append(current, pending...)
+				pending = pending[:0]
+			}
+			current = append(current, event)
+			flushCurrent()
+		default:
+			if len(current) > 0 {
+				current = append(current, event)
+			} else {
+				pending = append(pending, event)
+			}
+		}
+	}
+
+	if len(current) > 0 {
+		flushCurrent()
+	} else if len(pending) > 0 {
+		sessions = append(sessions, append([]game.Event(nil), pending...))
+	}
+
+	return sessions
+}
+
+func collectMatchStates(results []MatchResult) []*state.State {
+	if len(results) == 0 {
+		return nil
+	}
+
+	matches := make([]*state.State, 0, len(results))
+	for _, result := range results {
+		if result.State != nil {
+			matches = append(matches, result.State)
+		}
+	}
+	return matches
+}
+
+func buildAggregateState(results []MatchResult) *state.State {
+	if len(results) == 0 {
+		return nil
+	}
+
+	last := results[len(results)-1].State
+	if last == nil {
+		return nil
+	}
+	return last
 }
 
 func logFileCandidates(logType parser.LogType) []string {

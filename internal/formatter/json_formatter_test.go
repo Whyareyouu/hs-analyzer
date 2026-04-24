@@ -63,20 +63,92 @@ func TestJSONFormatterFormatStateAsTurnsArray(t *testing.T) {
 		t.Fatalf("format state: %v", err)
 	}
 
-	var turns []map[string]interface{}
-	if err := json.Unmarshal([]byte(raw), &turns); err != nil {
+	var document struct {
+		Mode    string `json:"mode"`
+		Matches []struct {
+			Turns []map[string]interface{} `json:"turns"`
+		} `json:"matches"`
+	}
+	if err := json.Unmarshal([]byte(raw), &document); err != nil {
 		t.Fatalf("unmarshal json: %v", err)
 	}
 
-	if len(turns) != 1 {
-		t.Fatalf("unexpected turns count: %d", len(turns))
+	if document.Mode != "human" {
+		t.Fatalf("unexpected mode: %s", document.Mode)
 	}
-	if turns[0]["number"].(float64) != 1 {
-		t.Fatalf("unexpected turn number: %#v", turns[0]["number"])
+	if len(document.Matches) != 1 {
+		t.Fatalf("unexpected matches count: %d", len(document.Matches))
 	}
-	events, ok := turns[0]["events"].([]interface{})
+	if len(document.Matches[0].Turns) != 1 {
+		t.Fatalf("unexpected turns count: %d", len(document.Matches[0].Turns))
+	}
+	if document.Matches[0].Turns[0]["number"].(float64) != 1 {
+		t.Fatalf("unexpected turn number: %#v", document.Matches[0].Turns[0]["number"])
+	}
+	events, ok := document.Matches[0].Turns[0]["events"].([]interface{})
 	if !ok || len(events) != 3 {
-		t.Fatalf("unexpected turn events: %#v", turns[0]["events"])
+		t.Fatalf("unexpected turn events: %#v", document.Matches[0].Turns[0]["events"])
+	}
+}
+
+func TestJSONFormatterOpeningHandIncludesTurnDraw(t *testing.T) {
+	t.Parallel()
+
+	formatter := NewJSONFormatter(&stubCardDatabase{
+		cards: map[string]*carddb.CardInfo{
+			"HAND_001": {ID: "HAND_001", Name: "Первая карта", Cost: 1},
+			"DRAW_001": {ID: "DRAW_001", Name: "Добор на ход", Cost: 2},
+		},
+	})
+	gameState := state.New("game-1", state.GameModeStandard)
+
+	initialDraw := card.New("HAND_001", 10, types.PlayerTypePlayer)
+	initialDrawEvent := game.NewCardDrawnEvent(types.PlayerTypePlayer, initialDraw)
+	if err := initialDrawEvent.Apply(gameState); err != nil {
+		t.Fatalf("apply initial draw: %v", err)
+	}
+	gameState.AddEvent(initialDrawEvent)
+
+	turnStart := game.NewTurnStartEvent(types.PlayerTypePlayer)
+	if err := turnStart.Apply(gameState); err != nil {
+		t.Fatalf("apply turn start: %v", err)
+	}
+	gameState.AddEvent(turnStart)
+
+	drawnCard := card.New("DRAW_001", 11, types.PlayerTypePlayer)
+	drawEvent := game.NewCardDrawnEvent(types.PlayerTypePlayer, drawnCard)
+	if err := drawEvent.Apply(gameState); err != nil {
+		t.Fatalf("apply draw: %v", err)
+	}
+	gameState.AddEvent(drawEvent)
+
+	raw, err := formatter.Format(gameState)
+	if err != nil {
+		t.Fatalf("format state: %v", err)
+	}
+
+	var document struct {
+		Matches []struct {
+			Turns []struct {
+				OpeningHand []jsonCard `json:"opening_hand"`
+			} `json:"turns"`
+		} `json:"matches"`
+	}
+	if err := json.Unmarshal([]byte(raw), &document); err != nil {
+		t.Fatalf("unmarshal json: %v", err)
+	}
+
+	if len(document.Matches) != 1 {
+		t.Fatalf("unexpected matches count: %d", len(document.Matches))
+	}
+	if len(document.Matches[0].Turns) != 1 {
+		t.Fatalf("unexpected turns count: %d", len(document.Matches[0].Turns))
+	}
+	if len(document.Matches[0].Turns[0].OpeningHand) != 2 {
+		t.Fatalf("unexpected opening hand count: %d", len(document.Matches[0].Turns[0].OpeningHand))
+	}
+	if document.Matches[0].Turns[0].OpeningHand[0].ID != "HAND_001" || document.Matches[0].Turns[0].OpeningHand[1].ID != "DRAW_001" {
+		t.Fatalf("unexpected opening hand: %#v", document.Matches[0].Turns[0].OpeningHand)
 	}
 }
 

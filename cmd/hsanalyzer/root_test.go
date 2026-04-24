@@ -116,6 +116,7 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFileFromFixtureLogs(t *testing.T) {
 		"--logs-path", fixtureLogsDir("standard_game_1"),
 		"--cards-db-path", fixtureCardsPath(),
 		"--format", "json",
+		"--json-mode", "replay",
 		"--output", "file",
 		"--output-file", outputPath,
 	})
@@ -128,7 +129,7 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFileFromFixtureLogs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read output file: %v", err)
 	}
-	if !strings.Contains(string(data), `"number"`) || !strings.Contains(string(data), `"events"`) || !strings.Contains(string(data), `"player"`) {
+	if !strings.Contains(string(data), `"mode": "replay"`) || !strings.Contains(string(data), `"opening_state"`) || !strings.Contains(string(data), `"state_after"`) {
 		t.Fatalf("unexpected json file output:\n%s", string(data))
 	}
 
@@ -179,11 +180,22 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFileFromFixtureLogs(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected at least one discover event in json output")
 	}
-	if len(discover.OptionCards) == 0 || discover.OptionCards[0].Name == "" {
+	if len(discover.Options) == 0 || discover.Options[0].Name == "" {
 		t.Fatalf("expected human-readable discover options in json output")
 	}
-	if discover.ChosenCardInfo == nil || discover.ChosenCardInfo.Name == "" {
+	if discover.ChosenCard == nil || discover.ChosenCard.Name == "" {
 		t.Fatalf("expected human-readable chosen discover card in json output")
+	}
+
+	var replayDocument jsonTimelineDocument
+	if err := json.Unmarshal(data, &replayDocument); err != nil {
+		t.Fatalf("unmarshal replay document: %v", err)
+	}
+	if replayDocument.Mode != "replay" {
+		t.Fatalf("unexpected mode: %s", replayDocument.Mode)
+	}
+	if len(replayDocument.Matches) == 0 || len(replayDocument.Matches[0].Turns) == 0 {
+		t.Fatalf("expected matches in replay json")
 	}
 	for _, want := range strings.Split(readFixtureFile(t, fixtureExpectedPath("standard_game_1_json_contains.txt")), "\n") {
 		want = strings.TrimSpace(want)
@@ -201,6 +213,37 @@ func TestAnalyzeCommandWritesJSONTurnsArrayToFileFromFixtureLogs(t *testing.T) {
 	}
 	if !containsTimelineJSON(outputEntries) {
 		t.Fatalf("expected auto-saved timeline json in output")
+	}
+	if !containsTimelineJSONMode(outputEntries, "replay") {
+		t.Fatalf("expected replay auto-saved timeline json in output")
+	}
+}
+
+func TestAnalyzeCommandWritesHumanJSONToFile(t *testing.T) {
+	t.Parallel()
+
+	outputPath := filepath.Join(t.TempDir(), "timeline-human.json")
+	cmd := newRootCmd()
+	cmd.SetArgs([]string{
+		"analyze",
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", fixtureCardsPath(),
+		"--format", "json",
+		"--json-mode", "human",
+		"--output", "file",
+		"--output-file", outputPath,
+	})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute analyze: %v", err)
+	}
+
+	data, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatalf("read output file: %v", err)
+	}
+	if !strings.Contains(string(data), `"mode": "human"`) || !strings.Contains(string(data), `"opening_hand"`) {
+		t.Fatalf("unexpected human json output:\n%s", string(data))
 	}
 }
 
@@ -268,16 +311,39 @@ func containsTimelineJSON(entries []os.DirEntry) bool {
 	})
 }
 
+func containsTimelineJSONMode(entries []os.DirEntry, mode string) bool {
+	names := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		names = append(names, entry.Name())
+	}
+
+	suffix := "_" + mode + ".json"
+	return slices.ContainsFunc(names, func(name string) bool {
+		return strings.HasPrefix(name, "timeline_") && strings.HasSuffix(name, suffix)
+	})
+}
+
 func projectOutputDirForTest() string {
 	return filepath.Clean(filepath.Join("..", "..", "output"))
 }
 
+type jsonTimelineDocument struct {
+	Mode    string              `json:"mode"`
+	Matches []jsonTimelineMatch `json:"matches"`
+}
+
+type jsonTimelineMatch struct {
+	Turns []jsonTimelineTurn `json:"turns"`
+}
+
 type jsonTimelineTurn struct {
-	Events []jsonTimelineEvent `json:"events"`
+	OpeningHand []jsonTimelineCard  `json:"opening_hand"`
+	Events      []jsonTimelineEvent `json:"events"`
 }
 
 type jsonTimelineEvent struct {
 	Type       string                     `json:"type"`
+	Action     map[string]json.RawMessage `json:"action"`
 	Attributes map[string]json.RawMessage `json:"attributes"`
 }
 
@@ -287,8 +353,8 @@ type jsonTimelineAttackEvent struct {
 }
 
 type jsonTimelineDiscoverEvent struct {
-	OptionCards    []jsonTimelineCard `json:"option_cards"`
-	ChosenCardInfo *jsonTimelineCard  `json:"chosen_card_info"`
+	Options    []jsonTimelineCard `json:"options"`
+	ChosenCard *jsonTimelineCard  `json:"chosen_card"`
 }
 
 type jsonTimelineEntity struct {
@@ -310,28 +376,30 @@ type jsonTimelineCardInfo struct {
 }
 
 func findFirstPlayedCard(data []byte) (*jsonTimelineCard, bool, error) {
-	var turns []jsonTimelineTurn
-	if err := json.Unmarshal(data, &turns); err != nil {
+	var document jsonTimelineDocument
+	if err := json.Unmarshal(data, &document); err != nil {
 		return nil, false, err
 	}
 
-	for _, turn := range turns {
-		for _, event := range turn.Events {
-			if event.Type != "card_played" {
-				continue
-			}
+	for _, match := range document.Matches {
+		for _, turn := range match.Turns {
+			for _, event := range turn.Events {
+				if event.Type != "card_played" {
+					continue
+				}
 
-			rawCard, ok := event.Attributes["card"]
-			if !ok {
-				continue
-			}
+				rawCard, ok := firstAvailableField(event, "card")
+				if !ok {
+					continue
+				}
 
-			var card jsonTimelineCard
-			if err := json.Unmarshal(rawCard, &card); err != nil {
-				return nil, false, err
-			}
+				var card jsonTimelineCard
+				if err := json.Unmarshal(rawCard, &card); err != nil {
+					return nil, false, err
+				}
 
-			return &card, true, nil
+				return &card, true, nil
+			}
 		}
 	}
 
@@ -339,28 +407,30 @@ func findFirstPlayedCard(data []byte) (*jsonTimelineCard, bool, error) {
 }
 
 func findFirstAttackEvent(data []byte) (*jsonTimelineAttackEvent, bool, error) {
-	var turns []jsonTimelineTurn
-	if err := json.Unmarshal(data, &turns); err != nil {
+	var document jsonTimelineDocument
+	if err := json.Unmarshal(data, &document); err != nil {
 		return nil, false, err
 	}
 
-	for _, turn := range turns {
-		for _, event := range turn.Events {
-			if event.Type != "attack" {
-				continue
-			}
+	for _, match := range document.Matches {
+		for _, turn := range match.Turns {
+			for _, event := range turn.Events {
+				if event.Type != "attack" {
+					continue
+				}
 
-			payload, err := marshalEventAttributes(event.Attributes)
-			if err != nil {
-				return nil, false, err
-			}
+				payload, err := marshalEventPayload(event)
+				if err != nil {
+					return nil, false, err
+				}
 
-			var attack jsonTimelineAttackEvent
-			if err := json.Unmarshal(payload, &attack); err != nil {
-				return nil, false, err
-			}
+				var attack jsonTimelineAttackEvent
+				if err := json.Unmarshal(payload, &attack); err != nil {
+					return nil, false, err
+				}
 
-			return &attack, true, nil
+				return &attack, true, nil
+			}
 		}
 	}
 
@@ -368,34 +438,49 @@ func findFirstAttackEvent(data []byte) (*jsonTimelineAttackEvent, bool, error) {
 }
 
 func findFirstDiscoverEvent(data []byte) (*jsonTimelineDiscoverEvent, bool, error) {
-	var turns []jsonTimelineTurn
-	if err := json.Unmarshal(data, &turns); err != nil {
+	var document jsonTimelineDocument
+	if err := json.Unmarshal(data, &document); err != nil {
 		return nil, false, err
 	}
 
-	for _, turn := range turns {
-		for _, event := range turn.Events {
-			if event.Type != "discover" {
-				continue
-			}
+	for _, match := range document.Matches {
+		for _, turn := range match.Turns {
+			for _, event := range turn.Events {
+				if event.Type != "discover" {
+					continue
+				}
 
-			payload, err := marshalEventAttributes(event.Attributes)
-			if err != nil {
-				return nil, false, err
-			}
+				payload, err := marshalEventPayload(event)
+				if err != nil {
+					return nil, false, err
+				}
 
-			var discover jsonTimelineDiscoverEvent
-			if err := json.Unmarshal(payload, &discover); err != nil {
-				return nil, false, err
-			}
+				var discover jsonTimelineDiscoverEvent
+				if err := json.Unmarshal(payload, &discover); err != nil {
+					return nil, false, err
+				}
 
-			return &discover, true, nil
+				return &discover, true, nil
+			}
 		}
 	}
 
 	return nil, false, nil
 }
 
-func marshalEventAttributes(attributes map[string]json.RawMessage) ([]byte, error) {
-	return json.Marshal(attributes)
+func marshalEventPayload(event jsonTimelineEvent) ([]byte, error) {
+	if len(event.Action) > 0 {
+		return json.Marshal(event.Action)
+	}
+	return json.Marshal(event.Attributes)
+}
+
+func firstAvailableField(event jsonTimelineEvent, key string) (json.RawMessage, bool) {
+	if raw, ok := event.Action[key]; ok {
+		return raw, true
+	}
+	if raw, ok := event.Attributes[key]; ok {
+		return raw, true
+	}
+	return nil, false
 }

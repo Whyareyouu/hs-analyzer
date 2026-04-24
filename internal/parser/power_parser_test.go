@@ -246,10 +246,12 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 
 	triggerLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - BLOCK_START BlockType=TRIGGER Entity=[entityName=Сумеречное яйцо id=95 zone=PLAY zonePos=1 cardId=CATA_210 player=2]")
 	statLine := findLogLine(t, "Power.log", "TAG_CHANGE Entity=[entityName=Гаррош Адский Крик id=64 zone=PLAY zonePos=0 cardId=HERO_01 player=1] tag=ATK value=0")
+	costLine := findLogLine(t, "Power.log", "TAG_CHANGE Entity=[entityName=Комментатор на стадионе id=124 zone=SETASIDE zonePos=0 cardId=TIME_034 player=2] tag=COST value=0")
 
 	input := strings.Join([]string{
 		triggerLine,
 		statLine,
+		costLine,
 	}, "\n")
 
 	parser := NewPowerParser()
@@ -258,7 +260,7 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 		t.Fatalf("parse power log: %v", err)
 	}
 
-	if len(events) != 2 {
+	if len(events) != 3 {
 		t.Fatalf("unexpected events count: %d", len(events))
 	}
 
@@ -294,6 +296,20 @@ func TestPowerParserParseEffectsFromRealLogFragments(t *testing.T) {
 	}
 	if statEvent.EffectName != "ATK_CHANGE:0" {
 		t.Fatalf("unexpected stat effect name: %s", statEvent.EffectName)
+	}
+
+	costEvent, ok := events[2].(*game.CardCostChangedEvent)
+	if !ok {
+		t.Fatalf("unexpected third event type: %T", events[2])
+	}
+	if costEvent.EntityID != 124 {
+		t.Fatalf("unexpected cost source: %d", costEvent.EntityID)
+	}
+	if costEvent.CardID != "TIME_034" {
+		t.Fatalf("unexpected cost card id: %s", costEvent.CardID)
+	}
+	if costEvent.Cost != 0 {
+		t.Fatalf("unexpected cost value: %d", costEvent.Cost)
 	}
 }
 

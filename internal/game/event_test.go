@@ -177,6 +177,18 @@ func TestCombatEventsApplyToTrackedMinion(t *testing.T) {
 func TestEffectEventsApply(t *testing.T) {
 	s := state.New("game-id", state.GameModeStandard)
 
+	costedCard := card.New("CARD_COST", 1, types.PlayerTypePlayer)
+	costedCard.Zone = card.ZoneHand
+	s.Player.Hand.AddCard(costedCard)
+
+	costEvent := NewDetailedCardCostChangedEvent(1, "CARD_COST", "Стоимость", 2)
+	if err := costEvent.Apply(s); err != nil {
+		t.Fatalf("card cost changed apply failed: %v", err)
+	}
+	if costedCard.Cost != 2 {
+		t.Fatalf("expected cost 2, got %d", costedCard.Cost)
+	}
+
 	effect := NewEffectTriggeredEvent(1, "battlecry")
 	if err := effect.Apply(s); err != nil {
 		t.Fatalf("effect apply failed: %v", err)

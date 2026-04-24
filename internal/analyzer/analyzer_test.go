@@ -478,6 +478,98 @@ func TestAnalyzerApplyEventsBuildsInitialStateAndProcessesPipeline(t *testing.T)
 	}
 }
 
+func TestSplitEventsIntoMatchesSeparatesMultipleGames(t *testing.T) {
+	t.Parallel()
+
+	t0 := time.Unix(100, 0)
+	t1 := time.Unix(101, 0)
+	t2 := time.Unix(102, 0)
+	t3 := time.Unix(103, 0)
+	t4 := time.Unix(104, 0)
+	t5 := time.Unix(105, 0)
+
+	sessions := splitEventsIntoMatches([]game.Event{
+		testEvent{eventType: types.EventTypeGameStart, timestamp: t0},
+		testEvent{eventType: types.EventTypeTurnStart, timestamp: t1},
+		testEvent{eventType: types.EventTypeGameEnd, timestamp: t2},
+		testEvent{eventType: types.EventTypeGameStart, timestamp: t3},
+		testEvent{eventType: types.EventTypeTurnStart, timestamp: t4},
+		testEvent{eventType: types.EventTypeGameEnd, timestamp: t5},
+	})
+
+	if len(sessions) != 2 {
+		t.Fatalf("unexpected sessions count: %d", len(sessions))
+	}
+	if len(sessions[0]) != 3 || len(sessions[1]) != 3 {
+		t.Fatalf("unexpected session sizes: %d %d", len(sessions[0]), len(sessions[1]))
+	}
+	if sessions[0][0].Type() != types.EventTypeGameStart || sessions[1][0].Type() != types.EventTypeGameStart {
+		t.Fatalf("unexpected session starts: %v %v", sessions[0][0].Type(), sessions[1][0].Type())
+	}
+}
+
+func TestAnalyzerAnalyzeStoresMatchesMetadataAndReturnsLastMatchState(t *testing.T) {
+	t.Parallel()
+
+	logsDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(logsDir, "Power.log"), []byte("power line"), 0o644); err != nil {
+		t.Fatalf("write Power.log: %v", err)
+	}
+
+	cfg := &config.Config{
+		LogsPath:    logsDir,
+		CardsDBPath: filepath.Join(logsDir, "cards.json"),
+		Performance: config.PerformanceConfig{BufferSize: 128},
+	}
+
+	registry := parser.NewRegistry()
+	if err := registry.Register(stubParser{
+		name:    "power_stub",
+		logType: parser.LogTypePower,
+		parseFn: func(_ context.Context, _ io.Reader) ([]game.Event, error) {
+			return []game.Event{
+				game.NewGameStartEvent("game-1", state.GameModeStandard),
+				game.NewTurnStartEvent(types.PlayerTypePlayer),
+				game.NewGameEndEvent(types.PlayerTypePlayer),
+				game.NewGameStartEvent("game-2", state.GameModeWild),
+				game.NewTurnStartEvent(types.PlayerTypeOpponent),
+				game.NewGameEndEvent(types.PlayerTypeOpponent),
+			}, nil
+		},
+	}); err != nil {
+		t.Fatalf("register parser: %v", err)
+	}
+
+	pipeline := NewPipeline()
+	if err := pipeline.RegisterHandler(NewApplyEventHandler()); err != nil {
+		t.Fatalf("register apply handler: %v", err)
+	}
+
+	analyzer, err := NewAnalyzer(cfg, &stubCardDatabase{}, registry, pipeline, nil)
+	if err != nil {
+		t.Fatalf("new analyzer: %v", err)
+	}
+
+	gameState, err := analyzer.Analyze(context.Background())
+	if err != nil {
+		t.Fatalf("analyze: %v", err)
+	}
+
+	if gameState.GameID != "game-2" {
+		t.Fatalf("expected last match state, got %s", gameState.GameID)
+	}
+	if got := gameState.GetMetadata("match_count"); got != 2 {
+		t.Fatalf("unexpected match count metadata: %#v", got)
+	}
+	matches, ok := gameState.GetMetadata("matches").([]*state.State)
+	if !ok || len(matches) != 2 {
+		t.Fatalf("unexpected matches metadata: %#v", gameState.GetMetadata("matches"))
+	}
+	if matches[0].GameID != "game-1" || matches[1].GameID != "game-2" {
+		t.Fatalf("unexpected match ids: %s %s", matches[0].GameID, matches[1].GameID)
+	}
+}
+
 func BenchmarkAnalyzerAnalyzeFixtureLogs(b *testing.B) {
 	logsDir := filepath.Join("..", "..", "tests", "testdata", "standard_game_1", "logs")
 	cfg := &config.Config{

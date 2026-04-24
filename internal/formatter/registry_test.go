@@ -83,11 +83,28 @@ func TestRegistryCanRegisterJSONFormatter(t *testing.T) {
 		t.Fatalf("register json formatter: %v", err)
 	}
 
-	got, ok := registry.Get("json")
+	got, ok := registry.Get("json-human")
 	if !ok {
 		t.Fatalf("expected json formatter")
 	}
-	if got.Name() != "json" {
+	if got.Name() != "json-human" {
+		t.Fatalf("unexpected formatter name: %s", got.Name())
+	}
+}
+
+func TestRegistryCanRegisterReplayJSONFormatter(t *testing.T) {
+	t.Parallel()
+
+	registry := NewRegistry()
+	if err := registry.Register(NewReplayJSONFormatter(nil)); err != nil {
+		t.Fatalf("register replay json formatter: %v", err)
+	}
+
+	got, ok := registry.Get("json-replay")
+	if !ok {
+		t.Fatalf("expected replay json formatter")
+	}
+	if got.Name() != "json-replay" {
 		t.Fatalf("unexpected formatter name: %s", got.Name())
 	}
 }

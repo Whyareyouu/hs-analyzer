@@ -48,6 +48,13 @@ func (c *appContainer) GetCardDatabase() carddb.CardDatabase {
 	return c.cardDB
 }
 
+func (c *appContainer) GetJSONMode() string {
+	if c == nil || c.config == nil {
+		return ""
+	}
+	return c.config.Output.JSONMode
+}
+
 func buildContainer(options analyzeOptions) (*appContainer, error) {
 	cfg, err := loadCLIConfig(options.configPath)
 	if err != nil {
@@ -85,10 +92,16 @@ func buildContainer(options analyzeOptions) (*appContainer, error) {
 		Verbose:  cfg.Output.Verbose,
 	}))
 	formatterRegistry.MustRegister(formatter.NewJSONFormatter(db))
+	formatterRegistry.MustRegister(formatter.NewReplayJSONFormatter(db))
 
-	selectedFormatter, ok := formatterRegistry.Get(cfg.Output.Format)
+	selectedFormatterName := cfg.Output.Format
+	if cfg.Output.Format == "json" {
+		selectedFormatterName = "json-" + cfg.Output.JSONMode
+	}
+
+	selectedFormatter, ok := formatterRegistry.Get(selectedFormatterName)
 	if !ok {
-		return nil, fmt.Errorf("formatter %q is not registered", cfg.Output.Format)
+		return nil, fmt.Errorf("formatter %q is not registered", selectedFormatterName)
 	}
 
 	return &appContainer{
@@ -147,6 +160,9 @@ func applyAnalyzeOverrides(cfg *config.Config, options analyzeOptions) error {
 	if strings.TrimSpace(options.format) != "" {
 		cfg.Output.Format = options.format
 	}
+	if strings.TrimSpace(options.jsonMode) != "" {
+		cfg.Output.JSONMode = options.jsonMode
+	}
 	if strings.TrimSpace(options.output) != "" {
 		cfg.Output.Destination = options.output
 	}
@@ -169,6 +185,9 @@ func validateCLIConfig(cfg *config.Config) error {
 	}
 	if cfg.Output.Format != "text" && cfg.Output.Format != "json" {
 		return fmt.Errorf("unsupported output format %q", cfg.Output.Format)
+	}
+	if cfg.Output.JSONMode != "replay" && cfg.Output.JSONMode != "human" {
+		return fmt.Errorf("unsupported json mode %q", cfg.Output.JSONMode)
 	}
 	switch cfg.Output.Language {
 	case "ru", "en":

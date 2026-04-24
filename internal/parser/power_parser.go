@@ -221,6 +221,20 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		return []game.Event{
 			game.NewDetailedEffectTriggeredEvent(logged.entityID, logged.cardID, logged.name, fmt.Sprintf("%s_CHANGE:%d", tag, statValue)),
 		}, nil
+	case "COST":
+		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		if err != nil || !ok {
+			return nil, err
+		}
+
+		costValue, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, nil
+		}
+
+		return []game.Event{
+			game.NewDetailedCardCostChangedEvent(logged.entityID, logged.cardID, logged.name, costValue),
+		}, nil
 	default:
 		return nil, nil
 	}

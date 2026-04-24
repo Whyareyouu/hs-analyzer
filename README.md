@@ -1,6 +1,6 @@
 # Hearthstone Log Analyzer
 
-`hsanalyzer` — CLI-инструмент на Go для разбора логов Hearthstone, сборки игровой хронологии и вывода результата в `text` и `json`.
+`hsanalyzer` — CLI-инструмент на Go для разбора логов Hearthstone, восстановления хронологии матчей и экспорта результата в `text` и `json`.
 
 ## Текущий статус
 
@@ -8,16 +8,19 @@
 
 - чтение конфигурации через `yaml` и `viper`
 - загрузка базы карт из `data/cards.json`
-- парсеры для `Decks.log`, `Power.log`, `LoadingScreen.log` / `LoadingScreen_old.log`
-- `Analyzer` и `Pipeline` для объединения, сортировки и применения событий
+- парсеры для `Decks.log`, `Power.log`, `LoadingScreen.log` / `LoadingScreen_old.log` и `Zone.log`
+- `Analyzer` и `Pipeline` для объединения, сортировки, сегментации и применения событий
+- автоматическое разбиение общего набора логов на массив матчей
 - текстовый formatter с поддержкой `ru` и `en`
+- два JSON-режима: `human` и `replay`
 - CLI на `cobra`
 - structured logging через `zap`
 
 Ограничения текущей версии:
 
-- `Zone.log` поддержан на уровне analyzer, но если файла нет, он просто пропускается
-- поля `filters` и часть `performance` в конфиге пока зарезервированы и не влияют на итоговый анализ
+- `GameEndEvent` пока не восстанавливается из логов автоматически для всех сценариев
+- часть эффектов `effect_triggered` уже человекочитаема, но словарь расшифровки еще не полный
+- поля `filters.*` и `performance.workers` пока зарезервированы и не влияют на итоговый анализ
 
 ## Требования
 
@@ -70,6 +73,7 @@ go run ./cmd/hsanalyzer analyze --help
 - `--logs-path` — путь к каталогу с логами
 - `--cards-db-path` — путь к `cards.json`
 - `--format` — формат вывода: `text` или `json`
+- `--json-mode` — режим JSON: `replay` или `human`
 - `--output` — `stdout` или `file`
 - `--output-file` — путь к файлу результата, если `--output file`
 - `--lang` — `ru` или `en`
@@ -81,15 +85,25 @@ go run ./cmd/hsanalyzer analyze --help
 go run ./cmd/hsanalyzer analyze --logs-path logs --cards-db-path data/cards.json
 
 go run ./cmd/hsanalyzer analyze \
+  --logs-path logs \
+  --cards-db-path data/cards.json \
+  --format text \
+  --lang ru \
+  --json-mode replay
+
+go run ./cmd/hsanalyzer analyze \
   --logs-path "C:\\Program Files (x86)\\Hearthstone\\Logs" \
   --cards-db-path data/cards.json \
+  --json-mode human \
   --lang ru \
   --verbose
 
 go run ./cmd/hsanalyzer analyze \
-  --config .\config.yaml \
+  --config .\configs\config.yaml \
+  --format json \
+  --json-mode replay \
   --output file \
-  --output-file .\result.txt
+  --output-file .\result.json
 ```
 
 ### update-cards
@@ -119,11 +133,12 @@ https://api.hearthstonejson.com/v1/latest/<locale>/cards.json
 Пример `config.yaml`:
 
 ```yaml
-logs_path: ./logs
-cards_db_path: ./data/cards.json
+logs_path: logs
+cards_db_path: data/cards.json
 
 output:
   format: text
+  json_mode: replay
   destination: stdout
   file_path: ""
   language: ru
@@ -146,6 +161,7 @@ performance:
 - `logs_path`
 - `cards_db_path`
 - `output.format`
+- `output.json_mode`
 - `output.destination`
 - `output.file_path`
 - `output.language`
@@ -177,14 +193,17 @@ CLI и analyzer сейчас работают со следующими файл
 Сейчас реализован парсинг следующих событий:
 
 - начало игры и режим
+- конец игры как доменная модель события
 - список карт колоды
 - начало и конец ходов
 - розыгрыш карт
 - добор карт
 - атаки
 - урон
+- лечение
 - смерти
-- триггеры и изменения характеристик
+- срабатывание эффектов
+- изменение стоимости карт
 - `Discover`
 
 ## Формат вывода
@@ -204,7 +223,50 @@ CLI и analyzer сейчас работают со следующими файл
 - `ru`
 - `en`
 
-`JSONFormatter` формирует хронологию по ходам с массивом `events`, карточной информацией, Discover-опциями и человекочитаемыми описаниями `effect_triggered`.
+JSON-вывод поддерживает два режима:
+
+- `human` — компактный человекочитаемый JSON для просмотра и отладки
+- `replay` — подробный JSON для клиентского восстановления матча
+
+Оба JSON-режима теперь отдают верхнеуровневый документ с массивом матчей:
+
+```json
+{
+  "schema_version": "0.0.1",
+  "mode": "replay",
+  "match_count": 2,
+  "matches": [
+    {
+      "game": {
+        "id": "game-1",
+        "mode": "STANDARD"
+      },
+      "turns": []
+    }
+  ]
+}
+```
+
+`human`-режим содержит:
+
+- краткую структуру по ходам
+- `opening_hand` в начале каждого хода
+- человекочитаемые события и карточную информацию
+- удобный формат для чтения глазами
+
+`replay`-режим содержит:
+
+- `opening_state` в начале каждого хода
+- `action`, `delta`, `state_before`, `state_after` для ключевых событий
+- ресурсы игроков: `mana`, `max_mana`, `overload`
+- зоны и их содержимое: `hand`, `board`, `graveyard`, `known_deck`, `deck_list`
+- `final_state` по каждому матчу
+
+Автосохранение timeline всегда пишет `replay`-JSON в каталог `output/` проекта с именем:
+
+```text
+timeline_<timestamp>_replay.json
+```
 
 Пример текстового вывода:
 
@@ -220,17 +282,63 @@ ID игры: n/a
   🃏 Розыгрыш: TLC_515 [TLC_515] 💎0
 ```
 
-Пример JSON-фрагмента:
+Пример JSON-фрагмента (`human`):
 
 ```json
 {
-  "type": "effect_triggered",
-  "summary": "Срабатывание эффекта",
-  "attributes": {
-    "effect_description": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
-    "source_name": "Сумеречное яйцо",
-    "source_card_id": "CATA_210"
-  }
+  "mode": "human",
+  "match_count": 1,
+  "matches": [
+    {
+      "turns": [
+        {
+          "number": 1,
+          "opening_hand": [],
+          "events": [
+            {
+              "type": "effect_triggered",
+              "summary": "Срабатывание эффекта"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Пример JSON-фрагмента (`replay`):
+
+```json
+{
+  "mode": "replay",
+  "matches": [
+    {
+      "turns": [
+        {
+          "opening_state": {
+            "players": {
+              "PLAYER": {
+                "mana": 1,
+                "max_mana": 1,
+                "hand_count": 3
+              }
+            }
+          },
+          "events": [
+            {
+              "type": "card_played",
+              "action": {
+                "player": "PLAYER"
+              },
+              "state_before": {},
+              "state_after": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -239,7 +347,8 @@ ID игры: n/a
 - `GameEndEvent` пока не восстанавливается из логов автоматически, поэтому победитель определяется только если событие будет добавлено отдельным парсером.
 - Для части эффектов `effect_triggered` уже есть человекочитаемая расшифровка, но покрытие словаря `TriggerKeyword` еще не полное.
 - Фильтры `filters.*` и `performance.workers` пока зарезервированы и не влияют на итоговый анализ.
-- Автосохранение `timeline_*.json` всегда пишет файл в каталог `output/` проекта.
+- Автосохранение `timeline_*_{mode}.json` всегда пишет файл в каталог `output/` проекта.
+- Текстовый вывод сейчас ориентирован на последний восстановленный матч, тогда как JSON уже отдает массив `matches`.
 
 ## Тестовые данные
 
@@ -263,7 +372,7 @@ hsanalyzer/
 ├── internal/analyzer/     # Analyzer и Pipeline
 ├── internal/carddb/       # База карт и update-cards
 ├── internal/config/       # Конфигурация
-├── internal/formatter/    # Formatter и TextFormatter
+├── internal/formatter/    # Text / JSON human / JSON replay formatters
 ├── internal/logreader/    # Postrочное чтение логов
 ├── internal/parser/       # Парсеры логов
 ├── internal/state/        # Состояние игры
@@ -300,13 +409,6 @@ make test
 - `make test-unit`
 - `make coverage`
 - `make lint`
-
-## Известные ограничения
-
-- analyzer пока не покрывает все кейсы восстановления сущностей из `Power.log`
-- formatter реализован только в текстовом виде
-- JSON output и web/UI еще не реализованы
-- интеграция `zap` есть только на уровне CLI
 
 ## Лицензия
 
