@@ -13,6 +13,7 @@ import (
 	"hsanalyzer/internal/config"
 	"hsanalyzer/internal/game"
 	"hsanalyzer/internal/logreader"
+	"hsanalyzer/internal/monitor"
 	"hsanalyzer/internal/parser"
 	"hsanalyzer/internal/state"
 	"hsanalyzer/internal/types"
@@ -328,51 +329,19 @@ func splitEventsIntoMatches(events []game.Event) [][]game.Event {
 		return nil
 	}
 
+	detector := monitor.NewSessionDetector()
 	sessions := make([][]game.Event, 0)
-	pending := make([]game.Event, 0)
-	current := make([]game.Event, 0)
-
-	flushCurrent := func() {
-		if len(current) == 0 {
-			return
-		}
-		sessions = append(sessions, append([]game.Event(nil), current...))
-		current = current[:0]
-	}
 
 	for _, event := range events {
-		if event == nil {
-			continue
-		}
-
-		switch event.Type() {
-		case types.EventTypeGameStart:
-			if len(current) > 0 {
-				flushCurrent()
-			}
-			current = append(current[:0], pending...)
-			current = append(current, event)
-			pending = pending[:0]
-		case types.EventTypeGameEnd:
-			if len(current) == 0 {
-				current = append(current, pending...)
-				pending = pending[:0]
-			}
-			current = append(current, event)
-			flushCurrent()
-		default:
-			if len(current) > 0 {
-				current = append(current, event)
-			} else {
-				pending = append(pending, event)
+		for _, session := range detector.Process(event) {
+			if len(session.Events) > 0 {
+				sessions = append(sessions, append([]game.Event(nil), session.Events...))
 			}
 		}
 	}
 
-	if len(current) > 0 {
-		flushCurrent()
-	} else if len(pending) > 0 {
-		sessions = append(sessions, append([]game.Event(nil), pending...))
+	if session, ok := detector.Flush(monitor.CompletionReasonStreamEnd); ok && len(session.Events) > 0 {
+		sessions = append(sessions, append([]game.Event(nil), session.Events...))
 	}
 
 	return sessions
