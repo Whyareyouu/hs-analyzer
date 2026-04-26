@@ -19,6 +19,42 @@
 1. WHEN программа запускается в live-monitoring режиме THEN она SHALL продолжать работу до явного завершения пользователем или фатальной ошибки
 2. WHEN live-monitoring режим активен THEN система SHALL ожидать новые записи в логах без повторного запуска процесса
 3. WHEN программа завершается штатно THEN она SHALL освобождать ресурсы watcher-ов и reader-ов корректно
+4. WHEN live-monitoring работает длительное время THEN система SHALL не требовать периодического ручного перезапуска для штатной эксплуатации
+5. WHEN система не получает новых строк в течение длительного времени THEN она SHALL оставаться в корректном режиме ожидания, а не завершаться как batch-процесс
+
+### Requirement 1.1: Runtime ограничения long-running режима
+
+**User Story:** Как разработчик и оператор, я хочу заранее определить runtime-требования для long-running процесса, чтобы дальнейший выбор watcher-стратегии и recovery-механики был измеримым и проверяемым.
+
+#### Acceptance Criteria
+
+1. WHEN проектируется live-monitoring режим THEN система SHALL иметь зафиксированные требования к непрерывной работе после запуска
+2. WHEN проектируется live-monitoring режим THEN система SHALL иметь зафиксированные требования к graceful shutdown
+3. WHEN проектируется live-monitoring режим THEN система SHALL иметь зафиксированные требования к восстановлению после перезапуска приложения или Hearthstone
+4. WHEN сравниваются runtime стратегии THEN система SHALL иметь зафиксированные ограничения по CPU, памяти и latency обработки новых строк
+5. WHEN оценивается поведение live-monitoring режима THEN система SHALL иметь определенный набор benchmark и soak-test criteria
+
+### Requirement 1.2: Модель запуска long-running процесса
+
+**User Story:** Как разработчик, я хочу иметь явную модель запуска live-monitoring режима, чтобы процессом было просто управлять, диагностировать и завершать его без отдельной сервисной инфраструктуры.
+
+#### Acceptance Criteria
+
+1. WHEN выбирается модель запуска live-monitoring режима THEN система SHALL иметь явно зафиксированный preferred launch model
+2. WHEN live-monitoring запускается пользователем из CLI THEN preferred launch model SHALL работать как долгоживущий foreground process
+3. WHEN preferred launch model использует внутренние worker/supervisor loops THEN они SHALL быть управляемы через общий lifecycle и graceful shutdown
+4. WHEN сравниваются альтернативы launch model THEN выбранная модель SHALL быть обоснована простотой эксплуатации, дебага и интеграции с текущим CLI
+
+### Requirement 3.1: Выбор стратегии мониторинга файлов
+
+**User Story:** Как разработчик, я хочу выбрать основную стратегию отслеживания изменений `Power.log`, чтобы live-monitoring был устойчивым на Windows и не зависел от хрупкого единственного механизма наблюдения.
+
+#### Acceptance Criteria
+
+1. WHEN сравниваются file monitoring стратегии THEN система SHALL оценивать `file system watch`, `polling`, `hybrid` и `tail-like` подходы
+2. WHEN выбирается стратегия THEN она SHALL учитывать `truncate`, `recreate`, `rename to *_old`, idle waiting и delayed writes
+3. WHEN выбирается стратегия THEN она SHALL учитывать Windows как основную среду эксплуатации
+4. WHEN стратегия утверждена THEN она SHALL иметь зафиксированные acceptance tests для append, idle, truncate, recreate, rename и reopen сценариев
 
 ### Requirement 2: Обнаружение логов Hearthstone
 
@@ -32,6 +68,18 @@
 4. IF путь или лог не найден THEN система SHALL вывести диагностически полезное сообщение об ошибке
 5. WHEN в каталоге одновременно присутствуют `Power.log` и `Power_old.log` THEN система SHALL считать `Power.log` активным логом текущей сессии, а `Power_old.log` - архивом предыдущей
 6. WHEN в каталоге присутствуют другие `*_old.log` файлы THEN система SHALL не использовать их как primary live stream активной сессии
+
+### Requirement 2.1: Явный путь как developer override
+
+**User Story:** Как разработчик, я хочу иметь возможность при запуске программы задать точный путь к каталогу логов или к конкретному активному логу, чтобы не зависеть только от auto-discovery.
+
+#### Acceptance Criteria
+
+1. WHEN разработчик передает явный путь при запуске программы THEN система SHALL использовать его как приоритетный override над auto-discovery
+2. WHEN передан путь к каталогу логов THEN система SHALL искать активный `Power.log` и связанные логи внутри этого каталога
+3. WHEN передан путь к конкретному `Power.log` THEN система SHALL использовать именно этот файл как активный источник мониторинга
+4. IF переданный явный путь некорректен THEN система SHALL завершаться с понятной диагностической ошибкой, а не молча переключаться на auto-discovery
+5. WHEN используется явный путь THEN система SHALL явно отражать это в статусном выводе и structured logs
 
 ### Requirement 3: Наблюдение за растущим `Power.log`
 
@@ -96,6 +144,7 @@
 1. WHEN live-monitoring режим работает THEN система SHALL писать структурированные диагностические логи о watcher-е, session detector и persistence pipeline
 2. WHEN система деградирует THEN она SHALL уметь сообщить, что именно деградировало: path discovery, log reader, active session или storage
 3. WHEN пользователь наблюдает за процессом THEN он SHALL иметь минимальный понятный status output
+4. WHEN система находится в long-running режиме THEN она SHALL иметь наблюдаемые runtime состояния для watcher-а, active session и persistence pipeline
 
 ### Requirement 9: Отказоустойчивость и восстановление
 
