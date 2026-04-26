@@ -1,6 +1,9 @@
 package logreader
 
-import "io"
+import (
+	"context"
+	"io"
+)
 
 const defaultScannerBufferSize = 1024 * 1024
 
@@ -9,6 +12,22 @@ type LogReader interface {
 	Open(path string) error
 	Next() (string, error)
 	Close() error
+}
+
+// LiveLogReader defines a reader for growing log files.
+type LiveLogReader interface {
+	Open(path string) error
+	Next(ctx context.Context) (string, error)
+	State() LiveReaderState
+	Close() error
+}
+
+// LiveReaderState exposes the current read position and wait state.
+type LiveReaderState struct {
+	Path         string
+	Offset       int64
+	PendingBytes int
+	Waiting      bool
 }
 
 // Ensure interface expectations remain explicit at compile time.

@@ -2,11 +2,12 @@ package config
 
 // Config содержит конфигурацию приложения.
 type Config struct {
-	LogsPath    string            `yaml:"logs_path" mapstructure:"logs_path"`
-	CardsDBPath string            `yaml:"cards_db_path" mapstructure:"cards_db_path"`
-	Output      OutputConfig      `yaml:"output" mapstructure:"output"`
-	Filters     FilterConfig      `yaml:"filters" mapstructure:"filters"`
-	Performance PerformanceConfig `yaml:"performance" mapstructure:"performance"`
+	LogsPath     string            `yaml:"logs_path" mapstructure:"logs_path"`
+	PowerLogPath string            `yaml:"power_log_path,omitempty" mapstructure:"power_log_path"`
+	CardsDBPath  string            `yaml:"cards_db_path" mapstructure:"cards_db_path"`
+	Output       OutputConfig      `yaml:"output" mapstructure:"output"`
+	Filters      FilterConfig      `yaml:"filters" mapstructure:"filters"`
+	Performance  PerformanceConfig `yaml:"performance" mapstructure:"performance"`
 }
 
 // OutputConfig описывает настройки вывода.

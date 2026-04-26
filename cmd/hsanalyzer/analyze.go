@@ -39,7 +39,7 @@ func newAnalyzeCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&options.configPath, "config", "", "Path to config file")
-	cmd.Flags().StringVar(&options.logsPath, "logs-path", "", "Path to logs directory")
+	cmd.Flags().StringVar(&options.logsPath, "logs-path", "", "Path to logs directory or active Power.log file")
 	cmd.Flags().StringVar(&options.cardsDBPath, "cards-db-path", "", "Path to cards database")
 	cmd.Flags().StringVar(&options.format, "format", "", "Output format")
 	cmd.Flags().StringVar(&options.jsonMode, "json-mode", "", "JSON mode: replay or human")

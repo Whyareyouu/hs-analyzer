@@ -146,6 +146,51 @@ performance:
 	}
 }
 
+func TestLoaderLoadFromYAMLWithExplicitPowerLogPath(t *testing.T) {
+	t.Parallel()
+
+	workspace := t.TempDir()
+	configDir := filepath.Join(workspace, "configs")
+	logsDir := filepath.Join(workspace, "custom-logs")
+	dataDir := filepath.Join(workspace, "assets")
+	cardsPath := filepath.Join(dataDir, "cards.json")
+	configPath := filepath.Join(configDir, "config.yaml")
+	powerLogPath := filepath.Join(logsDir, "Power.log")
+
+	for _, dir := range []string{configDir, logsDir, dataDir} {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			t.Fatalf("create dir %s: %v", dir, err)
+		}
+	}
+	if err := os.WriteFile(cardsPath, []byte("[]"), 0o600); err != nil {
+		t.Fatalf("write cards db: %v", err)
+	}
+	if err := os.WriteFile(powerLogPath, []byte("power"), 0o600); err != nil {
+		t.Fatalf("write power log: %v", err)
+	}
+
+	yaml := strings.TrimSpace(`
+logs_path: ../custom-logs/Power.log
+cards_db_path: ../assets/cards.json
+`)
+	if err := os.WriteFile(configPath, []byte(yaml), 0o600); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	loader := &Loader{workingDir: workspace}
+	cfg, err := loader.Load(configPath)
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+
+	if cfg.LogsPath != logsDir {
+		t.Fatalf("unexpected logs dir: %s", cfg.LogsPath)
+	}
+	if cfg.PowerLogPath != powerLogPath {
+		t.Fatalf("unexpected power log path: %s", cfg.PowerLogPath)
+	}
+}
+
 func TestLoaderLoadRejectsInvalidPaths(t *testing.T) {
 	t.Parallel()
 

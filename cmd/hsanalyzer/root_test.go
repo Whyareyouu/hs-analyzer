@@ -90,6 +90,34 @@ func TestAnalyzeCommandWritesOutputToFile(t *testing.T) {
 	}
 }
 
+func TestAnalyzeCommandAcceptsExplicitPowerLogPathViaLogsPathFlag(t *testing.T) {
+	t.Parallel()
+
+	var stdout bytes.Buffer
+	powerLogPath := filepath.Join(fixtureLogsDir("standard_game_1"), "Power.log")
+
+	cmd := newRootCmd()
+	cmd.SetOut(&stdout)
+	cmd.SetErr(&stdout)
+	cmd.SetArgs([]string{
+		"analyze",
+		"--logs-path", powerLogPath,
+		"--cards-db-path", fixtureCardsPath(),
+		"--format", "text",
+		"--lang", "ru",
+	})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute analyze: %v", err)
+	}
+
+	output := strings.TrimSpace(stdout.String())
+	expected := strings.TrimSpace(readFixtureFile(t, fixtureExpectedPath("standard_game_1_text.txt")))
+	if output != expected {
+		t.Fatalf("unexpected output:\n--- got ---\n%s\n--- want ---\n%s", output, expected)
+	}
+}
+
 func TestBuildContainerRejectsUnsupportedFormat(t *testing.T) {
 	t.Parallel()
 

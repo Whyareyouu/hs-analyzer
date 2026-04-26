@@ -44,6 +44,8 @@ func (l *Loader) Load(configPath string) (*Config, error) {
 
 	cfg := DefaultConfig()
 	baseDir := l.workingDir
+	logsPathExplicit := false
+	powerLogPathExplicit := false
 
 	if configPath != "" {
 		absoluteConfigPath, err := filepath.Abs(configPath)
@@ -64,9 +66,18 @@ func (l *Loader) Load(configPath string) (*Config, error) {
 		}
 
 		baseDir = filepath.Dir(absoluteConfigPath)
+		logsPathExplicit = v.IsSet("logs_path")
+		powerLogPathExplicit = v.IsSet("power_log_path")
 	}
 
 	l.resolvePaths(&cfg, baseDir)
+	if err := NormalizeLogSource(&cfg, LogSourceOptions{
+		LogsPathExplicit:     logsPathExplicit,
+		PowerLogPathExplicit: powerLogPathExplicit,
+		AllowAutoDiscovery:   true,
+	}); err != nil {
+		return nil, fmt.Errorf("%w: %v", errInvalidLogsPath, err)
+	}
 
 	if err := l.validate(&cfg); err != nil {
 		return nil, err
@@ -77,6 +88,7 @@ func (l *Loader) Load(configPath string) (*Config, error) {
 
 func (l *Loader) resolvePaths(cfg *Config, baseDir string) {
 	cfg.LogsPath = resolvePath(baseDir, cfg.LogsPath)
+	cfg.PowerLogPath = resolvePath(baseDir, cfg.PowerLogPath)
 	cfg.CardsDBPath = resolvePath(baseDir, cfg.CardsDBPath)
 
 	if cfg.Output.Destination == "file" {
@@ -85,7 +97,7 @@ func (l *Loader) resolvePaths(cfg *Config, baseDir string) {
 }
 
 func (l *Loader) validate(cfg *Config) error {
-	if err := validateDirectory(cfg.LogsPath); err != nil {
+	if err := validateResolvedLogSource(cfg); err != nil {
 		return fmt.Errorf("%w: %v", errInvalidLogsPath, err)
 	}
 
@@ -106,6 +118,22 @@ func (l *Loader) validate(cfg *Config) error {
 	}
 
 	return nil
+}
+
+func validateResolvedLogSource(cfg *Config) error {
+	if cfg == nil {
+		return errors.New("config is nil")
+	}
+	if strings.TrimSpace(cfg.LogsPath) == "" {
+		return errors.New("path is empty")
+	}
+	if err := validateDirectory(cfg.LogsPath); err != nil {
+		return err
+	}
+	if strings.TrimSpace(cfg.PowerLogPath) == "" {
+		return nil
+	}
+	return validatePowerLogFile(cfg.PowerLogPath)
 }
 
 func resolvePath(baseDir, path string) string {

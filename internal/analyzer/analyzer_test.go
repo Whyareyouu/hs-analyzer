@@ -274,6 +274,37 @@ func TestAnalyzerReadAndParseLogsUsesLoadingFallbackAndSkipsMissingLogs(t *testi
 	}
 }
 
+func TestAnalyzerResolveLogPathUsesExplicitPowerLogPath(t *testing.T) {
+	t.Parallel()
+
+	logsDir := t.TempDir()
+	powerLogPath := filepath.Join(logsDir, "Power.log")
+	if err := os.WriteFile(powerLogPath, []byte("power"), 0o644); err != nil {
+		t.Fatalf("write Power.log: %v", err)
+	}
+
+	cfg := &config.Config{
+		LogsPath:     logsDir,
+		PowerLogPath: powerLogPath,
+	}
+
+	analyzer, err := NewAnalyzer(cfg, &stubCardDatabase{}, parser.NewRegistry(), NewPipeline(), nil)
+	if err != nil {
+		t.Fatalf("new analyzer: %v", err)
+	}
+
+	path, ok, err := analyzer.resolveLogPath(parser.LogTypePower)
+	if err != nil {
+		t.Fatalf("resolve log path: %v", err)
+	}
+	if !ok {
+		t.Fatalf("expected explicit Power.log to be resolved")
+	}
+	if path != powerLogPath {
+		t.Fatalf("unexpected power log path: %s", path)
+	}
+}
+
 func TestAnalyzerAnalyzeSortsEventsBeforePipeline(t *testing.T) {
 	t.Parallel()
 

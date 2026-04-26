@@ -158,6 +158,17 @@ func (a *Analyzer) readAndParseLogs(ctx context.Context) ([]game.Event, error) {
 }
 
 func (a *Analyzer) resolveLogPath(logType parser.LogType) (string, bool, error) {
+	if logType == parser.LogTypePower && strings.TrimSpace(a.config.PowerLogPath) != "" {
+		info, err := os.Stat(a.config.PowerLogPath)
+		if err == nil && !info.IsDir() {
+			return a.config.PowerLogPath, true, nil
+		}
+		if err != nil && !os.IsNotExist(err) {
+			return "", false, err
+		}
+		return "", false, nil
+	}
+
 	for _, candidate := range logFileCandidates(logType) {
 		path := filepath.Join(a.config.LogsPath, candidate)
 		info, err := os.Stat(path)

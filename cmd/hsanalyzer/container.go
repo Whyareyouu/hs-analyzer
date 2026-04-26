@@ -153,6 +153,7 @@ func applyAnalyzeOverrides(cfg *config.Config, options analyzeOptions) error {
 
 	if strings.TrimSpace(options.logsPath) != "" {
 		cfg.LogsPath = resolveCLIPath(workingDir, options.logsPath)
+		cfg.PowerLogPath = ""
 	}
 	if strings.TrimSpace(options.cardsDBPath) != "" {
 		cfg.CardsDBPath = resolveCLIPath(workingDir, options.cardsDBPath)
@@ -174,6 +175,13 @@ func applyAnalyzeOverrides(cfg *config.Config, options analyzeOptions) error {
 	}
 	if options.verbose {
 		cfg.Output.Verbose = true
+	}
+
+	if err := config.NormalizeLogSource(cfg, config.LogSourceOptions{
+		LogsPathExplicit:   strings.TrimSpace(options.logsPath) != "",
+		AllowAutoDiscovery: true,
+	}); err != nil {
+		return fmt.Errorf("invalid logs path: %w", err)
 	}
 
 	return nil
@@ -204,7 +212,7 @@ func validateCLIConfig(cfg *config.Config) error {
 		return fmt.Errorf("unsupported output destination %q", cfg.Output.Destination)
 	}
 
-	if err := validateDirectory(cfg.LogsPath); err != nil {
+	if err := validateResolvedLogsConfig(cfg); err != nil {
 		return fmt.Errorf("invalid logs path: %w", err)
 	}
 	if err := validateFile(cfg.CardsDBPath); err != nil {
@@ -212,6 +220,19 @@ func validateCLIConfig(cfg *config.Config) error {
 	}
 
 	return nil
+}
+
+func validateResolvedLogsConfig(cfg *config.Config) error {
+	if cfg == nil {
+		return fmt.Errorf("config is nil")
+	}
+	if err := validateDirectory(cfg.LogsPath); err != nil {
+		return err
+	}
+	if strings.TrimSpace(cfg.PowerLogPath) == "" {
+		return nil
+	}
+	return validateFile(cfg.PowerLogPath)
 }
 
 func validateDirectory(path string) error {
