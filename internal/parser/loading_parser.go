@@ -12,10 +12,14 @@ import (
 )
 
 // LoadingScreenParser извлекает начало игры и режим из LoadingScreen.log.
-type LoadingScreenParser struct{}
+type LoadingScreenParser struct {
+	currentMode state.GameMode
+}
 
 func NewLoadingScreenParser() *LoadingScreenParser {
-	return &LoadingScreenParser{}
+	return &LoadingScreenParser{
+		currentMode: state.GameModeUnknown,
+	}
 }
 
 func (p *LoadingScreenParser) Name() string {
@@ -34,8 +38,8 @@ func (p *LoadingScreenParser) Parse(ctx context.Context, reader io.Reader) ([]ga
 	scanner := bufio.NewScanner(reader)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
 
+	p.reset()
 	events := make([]game.Event, 0)
-	currentMode := state.GameModeUnknown
 
 	for scanner.Scan() {
 		select {
@@ -44,26 +48,11 @@ func (p *LoadingScreenParser) Parse(ctx context.Context, reader io.Reader) ([]ga
 		default:
 		}
 
-		line := scanner.Text()
-
-		if matches := hslog.LoadingScreenBoardPattern.FindStringSubmatch(line); matches != nil {
-			currentMode = mapBoardToGameMode(matches[1])
-			continue
+		parsedEvents, err := p.ParseLine(scanner.Text())
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", p.Name(), err)
 		}
-
-		matches := hslog.LoadingScreenSceneLoadedPattern.FindStringSubmatch(line)
-		if matches == nil {
-			continue
-		}
-
-		prevMode := matches[1]
-		nextMode := matches[2]
-		if nextMode != hslog.SceneModeGameplay || prevMode == hslog.SceneModeGameplay {
-			continue
-		}
-
-		events = append(events, game.NewGameStartEvent("", currentMode))
-		currentMode = state.GameModeUnknown
+		events = append(events, parsedEvents...)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -71,6 +60,41 @@ func (p *LoadingScreenParser) Parse(ctx context.Context, reader io.Reader) ([]ga
 	}
 
 	return events, nil
+}
+
+// ParseLine parses one LoadingScreen.log line incrementally.
+func (p *LoadingScreenParser) ParseLine(line string) ([]game.Event, error) {
+	if p == nil {
+		return nil, fmt.Errorf("loading screen parser is nil")
+	}
+
+	if matches := hslog.LoadingScreenBoardPattern.FindStringSubmatch(line); matches != nil {
+		p.currentMode = mapBoardToGameMode(matches[1])
+		return nil, nil
+	}
+
+	matches := hslog.LoadingScreenSceneLoadedPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, nil
+	}
+
+	prevMode := matches[1]
+	nextMode := matches[2]
+	if nextMode != hslog.SceneModeGameplay || prevMode == hslog.SceneModeGameplay {
+		return nil, nil
+	}
+
+	event := game.NewGameStartEvent("", p.currentMode)
+	p.currentMode = state.GameModeUnknown
+
+	return []game.Event{event}, nil
+}
+
+func (p *LoadingScreenParser) reset() {
+	if p == nil {
+		return
+	}
+	p.currentMode = state.GameModeUnknown
 }
 
 func mapBoardToGameMode(board string) state.GameMode {

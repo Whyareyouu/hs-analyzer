@@ -355,3 +355,36 @@ func TestPowerParserParseDiscoverFromRealLogFragments(t *testing.T) {
 		t.Fatalf("unexpected chosen entity id: %d", discover.ChosenCardID)
 	}
 }
+
+func TestPowerParserParseLineSupportsIncrementalStream(t *testing.T) {
+	t.Parallel()
+
+	playStartLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Карта сектантов id=60")
+	playResolveLine := findLogLine(t, "Power.log", "PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Карта сектантов id=60 zone=PLAY")
+
+	parser := NewPowerParser()
+
+	events, err := parser.ParseLine(playStartLine)
+	if err != nil {
+		t.Fatalf("parse start line: %v", err)
+	}
+	if len(events) != 0 {
+		t.Fatalf("unexpected events count after start: %d", len(events))
+	}
+
+	events, err = parser.ParseLine(playResolveLine)
+	if err != nil {
+		t.Fatalf("parse resolve line: %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count after resolve: %d", len(events))
+	}
+
+	cardPlayed, ok := events[0].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
+	}
+	if cardPlayed.Card == nil || cardPlayed.Card.ID != "TLC_515" {
+		t.Fatalf("unexpected played card: %#v", cardPlayed.Card)
+	}
+}

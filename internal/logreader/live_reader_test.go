@@ -245,6 +245,35 @@ func TestLiveFileReaderCanBeCanceledWhileWaiting(t *testing.T) {
 	}
 }
 
+func TestLiveFileReaderStartsFromConfiguredOffset(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "Power.log")
+	if err := os.WriteFile(logPath, []byte("skip-me\nread-me\n"), 0o644); err != nil {
+		t.Fatalf("write log: %v", err)
+	}
+
+	reader := NewLiveFileReader(LiveReaderConfig{
+		PollInterval: 10 * time.Millisecond,
+		StartOffset:  int64(len("skip-me\n")),
+	})
+	if err := reader.Open(logPath); err != nil {
+		t.Fatalf("open live reader: %v", err)
+	}
+	defer func() {
+		_ = reader.Close()
+	}()
+
+	line, err := reader.Next(context.Background())
+	if err != nil {
+		t.Fatalf("next: %v", err)
+	}
+	if line != "read-me" {
+		t.Fatalf("unexpected line: %q", line)
+	}
+}
+
 func appendToFile(path, content string) error {
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
 	if err != nil {

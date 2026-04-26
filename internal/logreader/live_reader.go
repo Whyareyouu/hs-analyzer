@@ -21,6 +21,7 @@ var errLiveReaderNotOpened = errors.New("live log reader is not opened")
 type LiveReaderConfig struct {
 	BufferSize   int
 	PollInterval time.Duration
+	StartOffset  int64
 }
 
 // LiveFileReader incrementally reads appended lines from a growing file.
@@ -32,6 +33,7 @@ type LiveReaderConfig struct {
 type LiveFileReader struct {
 	bufferSize   int
 	pollInterval time.Duration
+	startOffset  int64
 
 	path    string
 	offset  int64
@@ -59,6 +61,7 @@ func NewLiveFileReader(cfg LiveReaderConfig) *LiveFileReader {
 	return &LiveFileReader{
 		bufferSize:   bufferSize,
 		pollInterval: pollInterval,
+		startOffset:  cfg.StartOffset,
 	}
 }
 
@@ -89,7 +92,10 @@ func (r *LiveFileReader) Open(path string) error {
 	}
 
 	r.path = cleaned
-	r.offset = 0
+	r.offset = r.startOffset
+	if r.offset < 0 {
+		r.offset = 0
+	}
 	r.pending = ""
 	r.waiting = false
 	r.anchor = nil

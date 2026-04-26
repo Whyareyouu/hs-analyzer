@@ -33,6 +33,7 @@ func newRootCmd() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&options.logLevel, "log-level", options.logLevel, "Log level: debug, info, warn, error")
 	cmd.AddCommand(newAnalyzeCmd())
 	cmd.AddCommand(newUpdateCardsCmd())
+	cmd.AddCommand(newMonitorCmd())
 
 	return cmd
 }

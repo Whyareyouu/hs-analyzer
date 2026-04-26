@@ -40,7 +40,9 @@ type discoverChoice struct {
 }
 
 func NewPowerParser() *PowerParser {
-	return &PowerParser{}
+	parser := &PowerParser{}
+	parser.reset()
+	return parser
 }
 
 func (p *PowerParser) Name() string {
@@ -69,12 +71,7 @@ func (p *PowerParser) Parse(ctx context.Context, reader io.Reader) ([]game.Event
 		default:
 		}
 
-		line := scanner.Text()
-		if !p.isRelevantLine(line) {
-			continue
-		}
-
-		parsedEvents, err := p.parseLine(line)
+		parsedEvents, err := p.ParseLine(scanner.Text())
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", p.Name(), err)
 		}
@@ -86,6 +83,20 @@ func (p *PowerParser) Parse(ctx context.Context, reader io.Reader) ([]game.Event
 	}
 
 	return events, nil
+}
+
+// ParseLine parses one Power.log line incrementally without resetting parser state.
+//
+// This method is used by live monitoring, where the parser instance is kept
+// across appended lines from a growing file.
+func (p *PowerParser) ParseLine(line string) ([]game.Event, error) {
+	p.ensureState()
+
+	if !p.isRelevantLine(line) {
+		return nil, nil
+	}
+
+	return p.parseLine(line)
 }
 
 func (p *PowerParser) isRelevantLine(line string) bool {
@@ -139,6 +150,16 @@ func (p *PowerParser) reset() {
 	p.discoverChoices = make(map[int]discoverChoice)
 	p.activeChoiceID = 0
 	p.collectChoiceID = 0
+}
+
+func (p *PowerParser) ensureState() {
+	if p.pendingPlays == nil ||
+		p.emittedPlays == nil ||
+		p.damageTotals == nil ||
+		p.statValues == nil ||
+		p.discoverChoices == nil {
+		p.reset()
+	}
 }
 
 func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, error) {

@@ -127,41 +127,46 @@
     - Описать retry/idempotency стратегию
     - Подготовить tests на успешную запись, retry и защиту от duplicate save
 
-- [ ] 7. Спроектировать и реализовать режимы запуска CLI
+- [x] 7. Спроектировать и реализовать режимы запуска CLI
 
-  - [ ] 7.1 Определить CLI/command model
+  - [x] 7.1 Определить CLI/command model
 
     - Выбрать, будет ли это новый subcommand, режим `analyze --watch` или отдельный daemon-like command
     - Зафиксировать флаги для auto-discovery, verbose status, output policy и storage behavior
     - Подготовить acceptance tests для CLI surface
+    - Реализовано через subcommand `monitor` в `cmd/hsanalyzer/monitor.go` и тесты `cmd/hsanalyzer/root_test.go`
 
-  - [ ] 7.2 Реализовать live-monitoring команду
+  - [x] 7.2 Реализовать live-monitoring команду
 
     - Добавить команду/режим для постоянного наблюдения за логами Hearthstone
     - Добавить статусный вывод: найденные логи, активная сессия, завершение матча, результат записи
     - Подготовить command integration tests
+    - Реализовано в `cmd/hsanalyzer/monitor.go` с live чтением `Power.log`/`LoadingScreen.log`, status output и finalize/persist reporting
 
-  - [ ] 7.3 Реализовать graceful shutdown
+  - [x] 7.3 Реализовать graceful shutdown
 
     - Обработать `Ctrl+C` и штатное завершение процесса
     - Зафиксировать, что незавершенная сессия либо сохраняется как incomplete, либо откатывается по правилам проекта
     - Подготовить shutdown tests
+    - Реализовано через `signal.NotifyContext`, flush `SessionDetector` и `PostGamePipeline` при остановке
 
-- [ ] 8. Спроектировать observability для live режима
+- [x] 8. Спроектировать observability для live режима
 
-  - [ ] 8.1 Определить logging и status model
+  - [x] 8.1 Определить logging и status model
 
     - Определить обязательные structured logs для watcher-а, session detector и persistence pipeline
     - Определить пользовательский статусный вывод для long-running режима
     - Подготовить tests на наличие ключевых диагностических сообщений
+    - Реализовано в `cmd/hsanalyzer/monitor.go`: structured status logs через zap + расширенный status output (`watcher`, `storage`, `healthy`)
 
-  - [ ] 8.2 Определить health и self-diagnostics
+  - [x] 8.2 Определить health и self-diagnostics
 
     - Зафиксировать признаки “watcher healthy”, “log path missing”, “session active”, “storage degraded”
     - Описать минимальный self-check flow
     - Подготовить tests на health state transitions
+    - Реализовано в `internal/monitor/observability.go` и тестах `internal/monitor/observability_test.go`
 
-- [ ] 9. Подготовить стратегию отказоустойчивости и восстановления
+- [x] 9. Подготовить стратегию отказоустойчивости и восстановления
 
   - Описать поведение при временном исчезновении `Power.log`
   - Описать поведение при перезапуске Hearthstone
@@ -169,23 +174,26 @@
   - Описать поведение при падении самого monitor процесса
   - Описать стратегию восстановления offsets, active session state и pending persistence
   - Подготовить recovery tests и long-running soak tests
+  - Реализовано в `cmd/hsanalyzer/monitor.go`, `cmd/hsanalyzer/monitor_state.go`, `internal/logreader/live_reader.go`; покрыто тестами `cmd/hsanalyzer/root_test.go`, `cmd/hsanalyzer/monitor_state_test.go`, `internal/logreader/live_reader_test.go`
 
-- [ ] 10. Подготовить стратегию тестирования live-monitoring подсистемы
+- [x] 10. Подготовить стратегию тестирования live-monitoring подсистемы
 
   - Определить unit-тесты для path discovery, watcher, session detector и finalizer
   - Определить integration-тесты для полного цикла `log append -> session detect -> match finalize -> persist`
   - Определить regression-тесты на сценарии truncate/recreate/restart
   - Определить soak-тесты на длительное наблюдение и серию последовательных матчей
   - Зафиксировать, что прохождение этого набора тестов является обязательным gate для приемки каждой завершенной реализации
+  - Результат зафиксирован в `specs/live-log-monitoring-roadmap/testing-strategy.md`
 
-- [ ] 11. Подготовить стратегию производительности для live режима
+- [x] 11. Подготовить стратегию производительности для live режима
 
   - Определить допустимые пределы CPU, памяти и задержки обработки новых строк
   - Определить допустимую задержку между завершением матча и записью в БД
   - Сформировать performance acceptance criteria для long-running режима
   - Подготовить benchmark tests
+  - Результат зафиксирован в `specs/live-log-monitoring-roadmap/performance-strategy.md`
 
-- [ ] 12. Подготовить поэтапный план реализации
+- [x] 12. Подготовить поэтапный план реализации
 
   - Этап 1: архитектурно зафиксировать live-monitoring режим и его связь с match storage
   - Этап 2: реализовать auto-discovery логов и live reader для `Power.log`
@@ -194,3 +202,4 @@
   - Этап 5: добавить CLI режим постоянного наблюдения и graceful shutdown
   - Этап 6: закрыть observability, recovery и soak/performance acceptance
   - Для каждого этапа определить обязательный набор тестов и зафиксировать, что этап не принимается без их успешного прохождения
+  - Результат зафиксирован в `specs/live-log-monitoring-roadmap/phased-plan.md`

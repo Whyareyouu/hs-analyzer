@@ -23,10 +23,34 @@ func TestRootCommandContainsExpectedSubcommands(t *testing.T) {
 		t.Fatalf("expected at least two subcommands")
 	}
 
-	names := []string{subcommands[0].Name(), subcommands[1].Name()}
+	names := make([]string, 0, len(subcommands))
+	for _, subcommand := range subcommands {
+		names = append(names, subcommand.Name())
+	}
+
 	joined := strings.Join(names, ",")
 	if !strings.Contains(joined, "analyze") || !strings.Contains(joined, "update-cards") {
 		t.Fatalf("unexpected subcommands: %v", names)
+	}
+}
+
+func TestRootCommandContainsMonitorSubcommand(t *testing.T) {
+	t.Parallel()
+
+	cmd := newRootCmd()
+	if cmd == nil {
+		t.Fatalf("expected root command")
+	}
+
+	hasMonitor := false
+	for _, subcommand := range cmd.Commands() {
+		if subcommand.Name() == "monitor" {
+			hasMonitor = true
+			break
+		}
+	}
+	if !hasMonitor {
+		t.Fatalf("expected monitor subcommand")
 	}
 }
 
@@ -325,6 +349,57 @@ func TestAnalyzeCommandRejectsMissingLogsDirectory(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid logs path") {
 		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
+	t.Parallel()
+
+	var stdout bytes.Buffer
+	stateFile := filepath.Join(t.TempDir(), "monitor-state.json")
+	cmd := newRootCmd()
+	cmd.SetOut(&stdout)
+	cmd.SetErr(&stdout)
+	cmd.SetArgs([]string{
+		"monitor",
+		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--state-file", stateFile,
+		"--run-for", "200ms",
+		"--poll-interval", "10ms",
+		"--status-interval", "50ms",
+		"--persist-incomplete-flush",
+	})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute monitor: %v", err)
+	}
+
+	output := stdout.String()
+	if !strings.Contains(output, "monitoring started") {
+		t.Fatalf("unexpected monitor output, missing start marker:\n%s", output)
+	}
+	if !strings.Contains(output, "status:") {
+		t.Fatalf("unexpected monitor output, missing status marker:\n%s", output)
+	}
+	if !strings.Contains(output, "watcher=") {
+		t.Fatalf("unexpected monitor output, missing watcher health marker:\n%s", output)
+	}
+	if !strings.Contains(output, "storage=") {
+		t.Fatalf("unexpected monitor output, missing storage health marker:\n%s", output)
+	}
+	if !strings.Contains(output, "healthy=") {
+		t.Fatalf("unexpected monitor output, missing self-check marker:\n%s", output)
+	}
+	if !strings.Contains(output, "monitoring stopped") {
+		t.Fatalf("unexpected monitor output, missing stop marker:\n%s", output)
+	}
+
+	stateBytes, err := os.ReadFile(stateFile)
+	if err != nil {
+		t.Fatalf("read monitor state file: %v", err)
+	}
+	if !bytes.Contains(stateBytes, []byte(`"readers"`)) {
+		t.Fatalf("unexpected monitor state file:\n%s", string(stateBytes))
 	}
 }
 
