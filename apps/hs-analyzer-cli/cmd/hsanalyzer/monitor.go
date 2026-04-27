@@ -11,6 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"hsanalyzer/apps/hs-analyzer-cli/internal/delivery"
+	"hsanalyzer/apps/hs-analyzer-cli/internal/matchpackage"
 	"hsanalyzer/internal/analyzer"
 	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/config"
@@ -33,6 +35,8 @@ type monitorOptions struct {
 	cardsDBPath            string
 	stateFile              string
 	liveCardStatsFile      string
+	matchUploadURL         string
+	matchSpoolDir          string
 	pollInterval           time.Duration
 	statusInterval         time.Duration
 	persistIncompleteFlush bool
@@ -60,6 +64,8 @@ func newMonitorCmd() *cobra.Command {
 	cmd.Flags().StringVar(&options.cardsDBPath, "cards-db-path", "", "Path to cards database")
 	cmd.Flags().StringVar(&options.stateFile, "state-file", "", "Path to monitor runtime state file for restart recovery")
 	cmd.Flags().StringVar(&options.liveCardStatsFile, "live-card-stats-file", "", "Path to live card stats snapshot file")
+	cmd.Flags().StringVar(&options.matchUploadURL, "match-upload-url", "", "Backend URL for POST /api/v1/matches")
+	cmd.Flags().StringVar(&options.matchSpoolDir, "match-spool-dir", "", "Directory for durable pending match uploads")
 	cmd.Flags().DurationVar(&options.pollInterval, "poll-interval", 250*time.Millisecond, "Live polling interval for growing log files")
 	cmd.Flags().DurationVar(&options.statusInterval, "status-interval", defaultMonitorStatusInterval, "Interval for status output")
 	cmd.Flags().BoolVar(&options.persistIncompleteFlush, "persist-incomplete-flush", false, "Persist incomplete session on shutdown flush")
@@ -130,7 +136,10 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		return fmt.Errorf("create state builder: %w", err)
 	}
 
-	persister := &runtimeMatchPersister{logger: logger}
+	persister, err := newMonitorMatchPersister(options, logger)
+	if err != nil {
+		return err
+	}
 	postGame, err := monitor.NewPostGamePipeline(builder, persister, monitor.PostGamePipelineOptions{
 		PersistIncompleteFlush: options.persistIncompleteFlush,
 	})
@@ -535,6 +544,43 @@ type runtimeMatchPersister struct {
 	saved int
 }
 
+type monitorMatchPersister interface {
+	monitor.MatchPersister
+	SavedCount() int
+}
+
+func newMonitorMatchPersister(options monitorOptions, logger *zap.Logger) (monitorMatchPersister, error) {
+	if strings.TrimSpace(options.matchUploadURL) == "" {
+		return &runtimeMatchPersister{logger: logger}, nil
+	}
+
+	spoolDir := strings.TrimSpace(options.matchSpoolDir)
+	if spoolDir == "" {
+		workingDir, err := os.Getwd()
+		if err != nil {
+			return nil, fmt.Errorf("get working directory: %w", err)
+		}
+		projectRoot, err := findProjectRoot(workingDir)
+		if err != nil {
+			return nil, err
+		}
+		spoolDir = filepath.Join(projectRoot, "output", "match_upload_spool")
+	}
+
+	spool, err := delivery.NewFileSpool(spoolDir, time.Now)
+	if err != nil {
+		return nil, fmt.Errorf("create match upload spool: %w", err)
+	}
+
+	return &deliveryMatchPersister{
+		logger: logger,
+		spool:  spool,
+		uploader: delivery.HTTPUploader{
+			Endpoint: options.matchUploadURL,
+		},
+	}, nil
+}
+
 func (p *runtimeMatchPersister) SaveMatch(_ context.Context, match monitor.PersistedMatch) error {
 	if p == nil {
 		return fmt.Errorf("runtime match persister is nil")
@@ -562,4 +608,59 @@ func (p *runtimeMatchPersister) SavedCount() int {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	return p.saved
+}
+
+type deliveryMatchPersister struct {
+	logger   *zap.Logger
+	spool    *delivery.FileSpool
+	uploader delivery.Uploader
+
+	mu        sync.Mutex
+	delivered int
+}
+
+func (p *deliveryMatchPersister) SaveMatch(ctx context.Context, match monitor.PersistedMatch) error {
+	if p == nil {
+		return fmt.Errorf("delivery match persister is nil")
+	}
+
+	payload := matchpackage.BuildMatchUploadPayload(match, appVersion)
+	item, err := p.spool.Enqueue(payload)
+	if err != nil {
+		return fmt.Errorf("enqueue match upload: %w", err)
+	}
+
+	results, err := p.spool.Deliver(ctx, p.uploader)
+	if err != nil {
+		return fmt.Errorf("deliver match uploads: %w", err)
+	}
+	for _, result := range results {
+		if result.SpoolID != item.SpoolID {
+			continue
+		}
+		if result.Status == delivery.StatusDelivered {
+			p.mu.Lock()
+			p.delivered++
+			delivered := p.delivered
+			p.mu.Unlock()
+			p.logger.Info("uploaded live match",
+				zap.Int("uploaded_total", delivered),
+				zap.String("match_key", match.Key),
+				zap.String("idempotency_key", item.IdempotencyKey),
+			)
+			return nil
+		}
+		return fmt.Errorf("match upload not delivered: status=%s err=%s", result.Status, result.LastError)
+	}
+
+	return fmt.Errorf("match upload result not found for %s", item.SpoolID)
+}
+
+func (p *deliveryMatchPersister) SavedCount() int {
+	if p == nil {
+		return 0
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.delivered
 }

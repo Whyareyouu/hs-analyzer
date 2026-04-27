@@ -107,7 +107,7 @@
 #### Acceptance Criteria
 
 1. WHEN проект реорганизуется THEN локальное приложение SHALL находиться в `apps/hs-analyzer-cli`
-2. WHEN backend добавляется THEN сервер SHALL находиться в `services/hs-analyzer-be`
+2. WHEN backend добавляется THEN сервер SHALL находиться в `apps/hs-analyzer-be`
 3. WHEN CLI и backend разделяют DTO THEN общие контракты SHALL находиться в `pkg/contracts`
 4. WHEN package относится только к CLI THEN он SHALL не импортироваться backend-ом без явной причины
 5. WHEN package относится только к backend storage/analytics THEN он SHALL не импортироваться CLI
@@ -123,4 +123,3 @@
 3. WHEN tests падают THEN task SHALL считаться незавершенным
 4. WHEN меняется upload contract THEN contract tests SHALL быть обновлены до implementation
 5. WHEN меняется delivery buffer THEN recovery/retry tests SHALL покрывать crash и server unavailable scenarios
-

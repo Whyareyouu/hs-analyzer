@@ -19,7 +19,7 @@ apps/
       parser-runtime/
       session/
 
-services/
+apps/
   hs-analyzer-be/
     cmd/
     internal/
@@ -53,7 +53,7 @@ Current local app code maps to `apps/hs-analyzer-cli`:
 - `internal/formatter` -> local debug/export formatter until backend materialization is implemented
 - `internal/carddb` -> CLI card metadata lookup for local enrichment; backend can later own a server-side card dictionary separately
 
-New backend code maps to `services/hs-analyzer-be`.
+New backend code maps to `apps/hs-analyzer-be`.
 
 Shared upload DTOs and protocol errors map to `pkg/contracts`.
 
@@ -67,10 +67,10 @@ Contracts should contain DTOs, enum constants and validation helpers that are sa
 
 ## Migration Strategy
 
-The move to `apps/` and `services/` should be phased:
+The move to `apps/` should be phased:
 
 1. Add shared contracts without moving runtime code.
-2. Introduce backend service in `services/hs-analyzer-be`.
+2. Introduce backend service in `apps/hs-analyzer-be`.
 3. Introduce CLI uploader and delivery buffer.
 4. Move current `cmd/hsanalyzer` into `apps/hs-analyzer-cli`.
 5. Move CLI-owned internal packages under `apps/hs-analyzer-cli/internal` only after imports and tests are stable.
@@ -85,4 +85,3 @@ Required tests and checks:
 3. `TestSharedContractsHaveNoRuntimeDependencies`
 4. `go test ./...`
 5. Static import check for forbidden dependency direction
-

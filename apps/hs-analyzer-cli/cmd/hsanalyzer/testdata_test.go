@@ -8,8 +8,29 @@ import (
 )
 
 func fixturePath(parts ...string) string {
-	all := append([]string{"..", "..", "tests", "testdata"}, parts...)
+	all := append([]string{projectRootForTest(nil), "tests", "testdata"}, parts...)
 	return filepath.Join(all...)
+}
+
+func projectRootForTest(t *testing.T) string {
+	if t != nil {
+		t.Helper()
+	}
+	workingDir, err := os.Getwd()
+	if err != nil {
+		if t != nil {
+			t.Fatalf("get working directory: %v", err)
+		}
+		panic(err)
+	}
+	projectRoot, err := findProjectRoot(workingDir)
+	if err != nil {
+		if t != nil {
+			t.Fatalf("find project root: %v", err)
+		}
+		panic(err)
+	}
+	return projectRoot
 }
 
 func fixtureLogsDir(name string) string {

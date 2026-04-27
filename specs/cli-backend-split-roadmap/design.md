@@ -26,7 +26,7 @@ apps/hs-analyzer-cli
       |
       | POST /api/v1/matches
       v
-services/hs-analyzer-be
+apps/hs-analyzer-be
   ingestion API
   payload validation
   idempotency
@@ -139,4 +139,3 @@ The split architecture is accepted only when:
 - server unavailability does not lose a completed match
 - storage/projection code is backend-owned
 - tests cover contract, retry, idempotency and recovery behavior
-

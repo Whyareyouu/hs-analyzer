@@ -165,8 +165,8 @@ func TestBuildContainerRejectsUnsupportedFormat(t *testing.T) {
 	t.Parallel()
 
 	_, err := buildContainer(analyzeOptions{
-		logsPath:    filepath.Join("..", "..", "logs"),
-		cardsDBPath: filepath.Join("..", "..", "data", "cards.json"),
+		logsPath:    filepath.Join(projectRootForTest(t), "logs"),
+		cardsDBPath: filepath.Join(projectRootForTest(t), "data", "cards.json"),
 		format:      "xml",
 	})
 	if err == nil {
@@ -506,7 +506,7 @@ func containsTimelineJSONMode(entries []os.DirEntry, mode string) bool {
 }
 
 func projectOutputDirForTest() string {
-	return filepath.Clean(filepath.Join("..", "..", "output"))
+	return filepath.Join(projectRootForTest(nil), "output")
 }
 
 type jsonTimelineDocument struct {

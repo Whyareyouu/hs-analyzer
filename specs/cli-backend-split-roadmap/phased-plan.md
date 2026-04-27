@@ -26,7 +26,7 @@
 
 ## Phase 4: Backend Ingestion Service
 
-- Create `services/hs-analyzer-be`
+- Create `apps/hs-analyzer-be`
 - Add `POST /api/v1/matches`
 - Validate `match_upload/v1`
 - Implement idempotency behavior
@@ -58,4 +58,3 @@
 ## Rollout Rule
 
 Each phase must keep `go test ./...` passing and must not break existing one-shot analyze or live-monitoring behavior.
-
