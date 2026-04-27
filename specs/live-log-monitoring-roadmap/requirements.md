@@ -167,3 +167,18 @@
 2. WHEN реализация считается завершенной THEN ее тесты SHALL быть реализованы и успешно проходить
 3. WHEN меняется watcher, session detector, finalization logic или persistence flow THEN regression tests SHALL подтверждать отсутствие непреднамеренных изменений
 4. WHEN принимается этап live-monitoring подсистемы THEN критерием приемки SHALL быть успешное прохождение заранее определенного набора unit, integration, regression, soak и performance tests
+
+### Requirement 11: Live card stats projection для клиента
+
+**User Story:** Как пользователь внешнего клиента, я хочу в live runtime видеть, какие карты уже сыграл я и какие сыграл оппонент, чтобы UI мог показывать компактную и полезную статистику матча без полного replay.
+
+#### Acceptance Criteria
+
+1. WHEN live-monitoring получает `CardPlayedEvent` THEN система SHALL обновлять lightweight client projection без ожидания завершения матча
+2. WHEN карта сыграна игроком или оппонентом THEN система SHALL агрегировать статистику отдельно по bucket-ам `self` и `opponent`
+3. WHEN запись о карте публикуется клиенту THEN она SHALL содержать как минимум `name`, `description` и `image`
+4. WHEN текст карты берется из card database THEN система SHALL публиковать очищенный человекочитаемый `description`, а не сырой HTML-marked text
+5. WHEN изображение карты недоступно через локальную card database THEN система SHALL использовать отдельную image resolution policy с явным fallback
+6. WHEN активный матч начинается заново THEN live card stats projection SHALL быть сброшена для нового match lifecycle
+7. WHEN матч завершается THEN система SHALL сохранять финальный snapshot до старта следующего матча или явного reset
+8. WHEN monitor process перезапускается в середине матча THEN система SHALL либо честно восстановить live projection, либо явно пометить ее как partial/incomplete, но не SHALL silently corrupt statistics

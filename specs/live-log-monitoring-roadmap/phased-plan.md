@@ -35,6 +35,14 @@
 - recovery/state-file strategy
 - soak/performance verification
 
+## Этап 7
+
+- live card stats projection для клиента
+- per-side aggregation (`self` / `opponent`) по сыгранным картам
+- lightweight snapshot delivery без full replay materialization
+- recovery semantics для mid-match restart
+- unit/integration tests на visibility, aggregation и snapshot consistency
+
 ## Gate правило
 
 Каждый этап считается завершенным только после прохождения заранее определенного набора тестов (unit/integration/regression/soak/perf в зависимости от этапа).
