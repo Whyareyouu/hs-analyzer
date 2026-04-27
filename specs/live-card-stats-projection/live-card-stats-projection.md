@@ -16,11 +16,22 @@
 - `description`
 - `image`
 
+## Правило приемки
+
+Каждый пункт этой спецификации считается принятым только тогда, когда для него:
+
+- определены соответствующие тесты
+- тесты реализованы
+- тесты проходят
+
+Ни один пункт не считается завершенным только по факту описания или реализации без подтверждающих тестов.
+
 ## 1. Product Scope
 
 Новая функциональность покрывает только активный матч в live runtime:
 
 - накопление статистики сыгранных карт по двум сторонам: `self` и `opponent`
+- публикацию двух отдельных массивов сыгранных карт: одного для `self`, другого для `opponent`
 - обновление данных сразу после получения live `CardPlayedEvent`
 - enrichment карточных данных через локальную card database
 - публикацию lightweight snapshot для клиента без полной materialization replay/timeline
@@ -210,6 +221,11 @@ Fallback:
 - `unique_cards` - число уникальных `card_id`
 - `cards[]` - агрегированные карточные записи
 
+Явное требование к структуре snapshot:
+
+- `players.self.cards` и `players.opponent.cards` являются двумя разными массивами
+- единый общий массив карт матча с признаком стороны не допускается
+
 ### 6.3 Card Entry
 
 Минимальная агрегированная запись должна содержать:
@@ -354,15 +370,16 @@ Core projection logic должна быть transport-agnostic.
 Обязательный baseline:
 
 1. `TestLiveCardStatsAggregatesBySideAndCardID`
-2. `TestLiveCardStatsIncrementsPlayCountForRepeatedCard`
-3. `TestLiveCardStatsUsesCardDBNameAndCleanDescription`
-4. `TestLiveCardStatsFallsBackWhenCardMetadataMissing`
-5. `TestLiveCardStatsIgnoresEventsWithoutPlayableCardID`
-6. `TestLiveCardStatsResetsOnGameStart`
-7. `TestLiveCardStatsFinalizesOnGameEndWithoutDataLoss`
-8. `TestLiveCardStatsDoesNotLeakHiddenOpponentInformation`
-9. `TestLiveCardStatsSnapshotFileAtomicReplace`
-10. `TestLiveCardStatsRecoveryStatusAfterRestart`
+2. `TestLiveCardStatsKeepsSelfAndOpponentInSeparateArrays`
+3. `TestLiveCardStatsIncrementsPlayCountForRepeatedCard`
+4. `TestLiveCardStatsUsesCardDBNameAndCleanDescription`
+5. `TestLiveCardStatsFallsBackWhenCardMetadataMissing`
+6. `TestLiveCardStatsIgnoresEventsWithoutPlayableCardID`
+7. `TestLiveCardStatsResetsOnGameStart`
+8. `TestLiveCardStatsFinalizesOnGameEndWithoutDataLoss`
+9. `TestLiveCardStatsDoesNotLeakHiddenOpponentInformation`
+10. `TestLiveCardStatsSnapshotFileAtomicReplace`
+11. `TestLiveCardStatsRecoveryStatusAfterRestart`
 
 ## 13. Критерий завершения Task 13
 
@@ -374,3 +391,4 @@ Task `13` считается завершенным, когда:
 4. зафиксирована отдельная image resolution policy
 5. определена честная recovery semantics
 6. определен обязательный набор unit/integration/regression tests
+7. для каждого пункта спецификации написаны и проходят соответствующие тесты
