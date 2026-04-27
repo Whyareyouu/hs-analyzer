@@ -186,12 +186,29 @@ Overlay использует две разные live-модели:
   - `MatchupBreakdown`
   - `DeckCardsGrid`
 
-Визуальный baseline опирается на приложенные референсы:
+Визуальный baseline опирается на dashboard visual reference:
 
 - dark premium background
 - glass-like panels
 - class-colored accents
 - card art strips в списках
+
+Dashboard baseline подробно формализован в `specs/electron-client-roadmap/dashboard-visual-reference.md`.
+
+### Main Shell Layout Baseline
+
+Desktop dashboard v1 должен быть структурирован следующим образом:
+
+1. Слева тяжелая sidebar со списком колод, selected state и краткой статистикой.
+2. Справа hero header выбранной колоды с icon + title + record.
+3. Ниже row из трех summary panels:
+   - общая статистика
+   - матчи
+   - лучшие матчапы
+4. Ниже крупная секция `Карты в колоде` в multi-column dense layout.
+
+Это означает, что реализация не должна упрощать экран до “просто список + одна карточка с текстом”.  
+Нужна композиция, близкая к reference dashboard screen.
 
 ## CLI Changes Required For UI
 

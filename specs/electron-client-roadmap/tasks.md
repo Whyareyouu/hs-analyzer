@@ -162,6 +162,7 @@
   - Построить стартовый экран со списком колод слева
   - Построить deck detail справа
   - Показать summary stats, matchup breakdown и список карт
+  - Сохранить композицию, соответствующую `dashboard-visual-reference.md`
   - Подготовить page/widget integration tests
   - _Requirements: 7, 8, 9, 10, 11_
 
@@ -169,18 +170,21 @@
 
     - Отобразить все колоды пользователя
     - Отобразить краткую статистику рядом с каждой колодой
+    - Реализовать выраженный selected state, соответствующий visual reference
     - Подготовить component tests на selection state
 
   - [ ] 8.2 Реализовать deck detail summary
 
     - Показать wins/losses/winrate/total matches
-    - Показать visual summary без сторонней chart UI library
+    - Показать three-panel summary row без сторонней chart UI library
+    - Реализовать крупный winrate ring как hero element summary блока
     - Подготовить visual regression и component tests
 
   - [ ] 8.3 Реализовать deck cards grid
 
     - Показать карты выбранной колоды
     - Отобразить copies и служебные индикаторы
+    - Сохранить dense multi-column deck-builder presentation из visual reference
     - Подготовить component tests и loading/empty state tests
 
 - [ ] 9. Интегрировать backend данные для dashboard

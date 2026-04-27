@@ -115,6 +115,35 @@ UI должен опираться на игровой companion style:
 }
 ```
 
+### Dashboard Layout Dimensions
+
+```css
+:root {
+  --dashboard-sidebar-width: 320px;
+  --dashboard-panel-gap: 24px;
+  --dashboard-panel-padding: 20px;
+  --dashboard-summary-card-min-height: 220px;
+  --dashboard-deck-row-min-height: 56px;
+  --dashboard-card-grid-columns: 3;
+  --dashboard-winrate-ring-size: 180px;
+}
+```
+
+Эти значения задают baseline для референсного desktop layout и тоже должны регулироваться только через tokens.
+
+## Dashboard Reference Language
+
+Согласно visual reference, dashboard должен иметь:
+
+- выраженную sidebar ширины companion-app класса, а не узкий nav rail
+- крупный hero header с class icon
+- три равновесные summary panels в верхнем ряду
+- крупную нижнюю cards section panel
+- плотные, но не тесные card cells
+
+Это надо сохранять при реализации responsive behavior.  
+Responsive adaptation не должна ломать характер desktop baseline.
+
 ## Tailwind Integration Rule
 
 Tailwind config должен читать tokens как source of truth.  
@@ -134,6 +163,8 @@ Tailwind config должен читать tokens как source of truth.
 - matchup bars
 - summary indicators
 
+Winrate ring должен оставаться визуально весомым элементом summary row, а не деградировать до маленького декоративного donut без информационного центра.
+
 ## Accessibility Baseline
 
 Даже при game-oriented visual style UI должен соблюдать базовый минимум:
@@ -151,3 +182,4 @@ Required tests:
 2. Theme regression tests
 3. Visual regression tests для critical dashboard blocks
 4. Visual regression tests для overlay rows and tooltip
+5. Visual regression tests для sidebar selected state, summary row и deck cards grid against dashboard baseline
