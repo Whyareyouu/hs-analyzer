@@ -356,6 +356,107 @@ func TestPowerParserParseDiscoverFromRealLogFragments(t *testing.T) {
 	}
 }
 
+func TestPowerParserParseGameEndFromPlayStateTransitions(t *testing.T) {
+	t.Parallel()
+
+	input := strings.Join([]string{
+		findLogLine(t, "Power.log", "GameState.DebugPrintPower() - TAG_CHANGE Entity=HappY#23785 tag=PLAYSTATE value=CONCEDED"),
+		findLogLine(t, "Power.log", "GameState.DebugPrintPower() - TAG_CHANGE Entity=UNKNOWN HUMAN PLAYER tag=PLAYSTATE value=WON"),
+		findLogLine(t, "Power.log", "PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=HappY#23785 tag=PLAYSTATE value=CONCEDED"),
+	}, "\n")
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	gameEnd, ok := events[0].(*game.GameEndEvent)
+	if !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
+	}
+	if gameEnd.Winner != types.PlayerTypePlayer {
+		t.Fatalf("unexpected winner: %s", gameEnd.Winner)
+	}
+}
+
+func TestPowerParserResetsMatchScopedStateOnNextGamePlayState(t *testing.T) {
+	t.Parallel()
+
+	playStartLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Карта сектантов id=60")
+	playResolveLine := findLogLine(t, "Power.log", "PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Карта сектантов id=60 zone=PLAY")
+	gameEndLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - TAG_CHANGE Entity=UNKNOWN HUMAN PLAYER tag=PLAYSTATE value=WON")
+	nextGamePlayingLine := findLogLine(t, "Power.log", "GameState.DebugPrintPower() - TAG_CHANGE Entity=2 tag=PLAYSTATE value=PLAYING")
+
+	parser := NewPowerParser()
+
+	events, err := parser.ParseLine(playStartLine)
+	if err != nil {
+		t.Fatalf("parse first play start: %v", err)
+	}
+	if len(events) != 0 {
+		t.Fatalf("unexpected events count after first play start: %d", len(events))
+	}
+
+	events, err = parser.ParseLine(playResolveLine)
+	if err != nil {
+		t.Fatalf("parse first play resolve: %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count after first play resolve: %d", len(events))
+	}
+	if _, ok := events[0].(*game.CardPlayedEvent); !ok {
+		t.Fatalf("unexpected first resolved event type: %T", events[0])
+	}
+
+	events, err = parser.ParseLine(gameEndLine)
+	if err != nil {
+		t.Fatalf("parse game end line: %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count after game end: %d", len(events))
+	}
+	if _, ok := events[0].(*game.GameEndEvent); !ok {
+		t.Fatalf("unexpected game end event type: %T", events[0])
+	}
+
+	events, err = parser.ParseLine(nextGamePlayingLine)
+	if err != nil {
+		t.Fatalf("parse next game playing line: %v", err)
+	}
+	if len(events) != 0 {
+		t.Fatalf("unexpected events count after next game playing: %d", len(events))
+	}
+
+	events, err = parser.ParseLine(playStartLine)
+	if err != nil {
+		t.Fatalf("parse second play start: %v", err)
+	}
+	if len(events) != 0 {
+		t.Fatalf("unexpected events count after second play start: %d", len(events))
+	}
+
+	events, err = parser.ParseLine(playResolveLine)
+	if err != nil {
+		t.Fatalf("parse second play resolve: %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count after second play resolve: %d", len(events))
+	}
+
+	cardPlayed, ok := events[0].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected second resolved event type: %T", events[0])
+	}
+	if cardPlayed.Card == nil || cardPlayed.Card.ID != "TLC_515" {
+		t.Fatalf("unexpected played card after reset: %#v", cardPlayed.Card)
+	}
+}
+
 func TestPowerParserParseLineSupportsIncrementalStream(t *testing.T) {
 	t.Parallel()
 

@@ -19,6 +19,7 @@ type PowerParser struct {
 	currentTurnNumber int
 	currentTurnPlayer types.PlayerType
 	hasActiveTurn     bool
+	gameEnded         bool
 	pendingPlays      map[int]pendingPlay
 	emittedPlays      map[int]struct{}
 	damageTotals      map[int]int
@@ -143,6 +144,7 @@ func (p *PowerParser) reset() {
 	p.currentTurnNumber = 0
 	p.currentTurnPlayer = types.PlayerTypeUnknown
 	p.hasActiveTurn = false
+	p.gameEnded = false
 	p.pendingPlays = make(map[int]pendingPlay)
 	p.emittedPlays = make(map[int]struct{})
 	p.damageTotals = make(map[int]int)
@@ -256,8 +258,34 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 		return []game.Event{
 			game.NewDetailedCardCostChangedEvent(logged.entityID, logged.cardID, logged.name, costValue),
 		}, nil
+	case "PLAYSTATE":
+		return p.parsePlayStateChange(entity, value), nil
 	default:
 		return nil, nil
+	}
+}
+
+func (p *PowerParser) parsePlayStateChange(entity, value string) []game.Event {
+	stateValue := strings.ToUpper(strings.TrimSpace(value))
+
+	switch stateValue {
+	case "PLAYING":
+		p.reset()
+		return nil
+	case "WON", "LOST", "CONCEDED", "TIED":
+		if p.gameEnded {
+			return nil
+		}
+
+		winner, ok := resolveGameEndWinner(entity, stateValue)
+		if !ok {
+			return nil
+		}
+
+		p.gameEnded = true
+		return []game.Event{game.NewGameEndEvent(winner)}
+	default:
+		return nil
 	}
 }
 
@@ -276,6 +304,31 @@ func identifyTurnPlayer(entity string) types.PlayerType {
 	}
 
 	return types.PlayerTypeUnknown
+}
+
+func resolveGameEndWinner(entity, stateValue string) (types.PlayerType, bool) {
+	player := identifyTurnPlayer(entity)
+
+	switch stateValue {
+	case "WON":
+		if player == types.PlayerTypeUnknown {
+			return types.PlayerTypeUnknown, false
+		}
+		return player, true
+	case "LOST", "CONCEDED":
+		switch player {
+		case types.PlayerTypePlayer:
+			return types.PlayerTypeOpponent, true
+		case types.PlayerTypeOpponent:
+			return types.PlayerTypePlayer, true
+		default:
+			return types.PlayerTypeUnknown, false
+		}
+	case "TIED":
+		return types.PlayerTypeUnknown, true
+	default:
+		return types.PlayerTypeUnknown, false
+	}
 }
 
 func (p *PowerParser) parseEntityChoicesHeader(line string) ([]game.Event, error) {
