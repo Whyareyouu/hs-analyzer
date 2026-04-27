@@ -439,6 +439,49 @@ func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
 	}
 }
 
+func TestMonitorCommandAutoDiscoversLogsWhenLogsPathOmitted(t *testing.T) {
+	localAppData := t.TempDir()
+	logsDir := filepath.Join(localAppData, "Blizzard", "Hearthstone", "Logs")
+	if err := os.MkdirAll(logsDir, 0o755); err != nil {
+		t.Fatalf("create auto-discovery logs dir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(logsDir, "Power.log"), []byte(""), 0o644); err != nil {
+		t.Fatalf("write Power.log: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(logsDir, "LoadingScreen.log"), []byte(""), 0o644); err != nil {
+		t.Fatalf("write LoadingScreen.log: %v", err)
+	}
+	t.Setenv("LOCALAPPDATA", localAppData)
+
+	var stdout bytes.Buffer
+	stateFile := filepath.Join(t.TempDir(), "monitor-state.json")
+	liveCardStatsFile := filepath.Join(t.TempDir(), "live-card-stats.json")
+	cmd := newRootCmd()
+	cmd.SetOut(&stdout)
+	cmd.SetErr(&stdout)
+	cmd.SetArgs([]string{
+		"monitor",
+		"--cards-db-path", fixtureCardsPath(),
+		"--state-file", stateFile,
+		"--live-card-stats-file", liveCardStatsFile,
+		"--run-for", "80ms",
+		"--poll-interval", "10ms",
+		"--status-interval", "40ms",
+	})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute monitor with auto-discovery: %v", err)
+	}
+
+	output := stdout.String()
+	if !strings.Contains(output, filepath.Join(logsDir, "Power.log")) {
+		t.Fatalf("expected auto-discovered Power.log path in output:\n%s", output)
+	}
+	if strings.Contains(output, filepath.Join("D:", "self", "hs-analyzer", "logs", "Power.log")) {
+		t.Fatalf("monitor unexpectedly used repository logs path:\n%s", output)
+	}
+}
+
 func containsTimelineJSON(entries []os.DirEntry) bool {
 	names := make([]string, 0, len(entries))
 	for _, entry := range entries {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -114,7 +115,7 @@ func isActivePowerLogPath(path string) bool {
 
 // DiscoverHearthstoneLogsDir tries to find the standard Hearthstone Logs directory on Windows.
 func DiscoverHearthstoneLogsDir() (string, bool) {
-	candidates := make([]string, 0, 2)
+	candidates := make([]string, 0, 8)
 
 	if localAppData := strings.TrimSpace(os.Getenv("LOCALAPPDATA")); localAppData != "" {
 		candidates = append(candidates, filepath.Join(localAppData, "Blizzard", "Hearthstone", "Logs"))
@@ -122,6 +123,14 @@ func DiscoverHearthstoneLogsDir() (string, bool) {
 
 	if homeDir, err := os.UserHomeDir(); err == nil && strings.TrimSpace(homeDir) != "" {
 		candidates = append(candidates, filepath.Join(homeDir, "AppData", "Local", "Blizzard", "Hearthstone", "Logs"))
+	}
+
+	for _, root := range discoverWindowsDriveRoots() {
+		candidates = append(candidates,
+			filepath.Join(root, "Hearthstone", "Logs"),
+			filepath.Join(root, "Games", "Hearthstone", "Logs"),
+			filepath.Join(root, "Blizzard", "Hearthstone", "Logs"),
+		)
 	}
 
 	seen := make(map[string]struct{}, len(candidates))
@@ -132,13 +141,77 @@ func DiscoverHearthstoneLogsDir() (string, bool) {
 		}
 		seen[candidate] = struct{}{}
 
-		if info, err := os.Stat(candidate); err == nil && info.IsDir() {
-			powerPath := filepath.Join(candidate, activePowerLogName)
-			if powerInfo, powerErr := os.Stat(powerPath); powerErr == nil && !powerInfo.IsDir() {
-				return candidate, true
-			}
+		if resolved, ok := resolveHearthstoneLogsCandidate(candidate); ok {
+			return resolved, true
 		}
 	}
 
 	return "", false
+}
+
+func discoverWindowsDriveRoots() []string {
+	roots := make([]string, 0, 4)
+
+	for letter := 'A'; letter <= 'Z'; letter++ {
+		root := fmt.Sprintf("%c:\\", letter)
+		if info, err := os.Stat(root); err == nil && info.IsDir() {
+			roots = append(roots, root)
+		}
+	}
+
+	return roots
+}
+
+func resolveHearthstoneLogsCandidate(candidate string) (string, bool) {
+	info, err := os.Stat(candidate)
+	if err != nil || !info.IsDir() {
+		return "", false
+	}
+
+	powerPath := filepath.Join(candidate, activePowerLogName)
+	if powerInfo, powerErr := os.Stat(powerPath); powerErr == nil && !powerInfo.IsDir() {
+		return candidate, true
+	}
+
+	children, err := os.ReadDir(candidate)
+	if err != nil {
+		return "", false
+	}
+
+	type nestedCandidate struct {
+		path    string
+		modTime int64
+	}
+
+	nested := make([]nestedCandidate, 0, len(children))
+	for _, child := range children {
+		if !child.IsDir() {
+			continue
+		}
+
+		childPath := filepath.Join(candidate, child.Name())
+		powerPath := filepath.Join(childPath, activePowerLogName)
+		powerInfo, err := os.Stat(powerPath)
+		if err != nil || powerInfo.IsDir() {
+			continue
+		}
+
+		nested = append(nested, nestedCandidate{
+			path:    childPath,
+			modTime: powerInfo.ModTime().UnixNano(),
+		})
+	}
+
+	sort.Slice(nested, func(i, j int) bool {
+		if nested[i].modTime == nested[j].modTime {
+			return nested[i].path > nested[j].path
+		}
+		return nested[i].modTime > nested[j].modTime
+	})
+
+	if len(nested) == 0 {
+		return "", false
+	}
+
+	return nested[0].path, true
 }

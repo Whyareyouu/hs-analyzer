@@ -364,6 +364,13 @@ func applyMonitorOverrides(cfg *config.Config, options monitorOptions) error {
 		return fmt.Errorf("get working directory: %w", err)
 	}
 
+	// In live mode we want "no --logs-path" to mean auto-discovery, not the
+	// repository-local default "logs" directory from DefaultConfig.
+	if strings.TrimSpace(options.configPath) == "" && strings.TrimSpace(options.logsPath) == "" {
+		cfg.LogsPath = ""
+		cfg.PowerLogPath = ""
+	}
+
 	if strings.TrimSpace(options.logsPath) != "" {
 		cfg.LogsPath = resolveCLIPath(workingDir, options.logsPath)
 		cfg.PowerLogPath = ""
