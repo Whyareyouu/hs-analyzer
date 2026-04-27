@@ -204,39 +204,44 @@
   - Для каждого этапа определить обязательный набор тестов и зафиксировать, что этап не принимается без их успешного прохождения
   - Результат зафиксирован в `specs/live-log-monitoring-roadmap/phased-plan.md`
 
-- [ ] 13. Спроектировать live card stats projection для клиента
+- [x] 13. Спроектировать live card stats projection для клиента
 
-  - [ ] 13.1 Зафиксировать продуктовый contract live card stats
+  - [x] 13.1 Зафиксировать продуктовый contract live card stats
 
     - Определить, что проекция строится только для активного матча
     - Определить два bucket-а: `self` и `opponent`
     - Определить, что единицей учета является сыгранная карта, агрегированная по `card_id`
     - Зафиксировать минимальный client payload: `name`, `description`, `image`
     - Подготовить acceptance tests на visibility и aggregation semantics
+    - Результат зафиксирован в `specs/live-card-stats-projection/live-card-stats-projection.md`; покрыто тестами `internal/monitor/live_card_stats_test.go`
 
-  - [ ] 13.2 Спроектировать runtime projector
+  - [x] 13.2 Спроектировать runtime projector
 
     - Определить компонент уровня `LiveCardStatsProjector`
     - Зафиксировать его вход: live `CardPlayedEvent`
     - Зафиксировать lifecycle на `GameStart`, `CardPlayedEvent`, `GameEnd`
     - Зафиксировать, что проекция не зависит от full replay materialization и не ждет canonical persistence
     - Подготовить unit tests на обновление счетчиков, reset и finalize behavior
+    - Реализовано в `internal/monitor/live_card_stats.go`; покрыто тестами `internal/monitor/live_card_stats_test.go`
 
-  - [ ] 13.3 Зафиксировать card enrichment и asset policy
+  - [x] 13.3 Зафиксировать card enrichment и asset policy
 
     - Определить lookup имени и текста через `carddb`
     - Зафиксировать reuse текущей text-cleaning policy
     - Определить отдельный `CardAssetResolver` для изображения карты
     - Зафиксировать fallback policy при отсутствии metadata или картинки
     - Подготовить tests на enrichment и fallback behavior
+    - Реализовано в `internal/monitor/live_card_stats.go`, `internal/textutil/card_text.go`, `internal/formatter/text_utils.go`; покрыто тестами `internal/monitor/live_card_stats_test.go`, `internal/formatter/json_formatter_test.go`
 
-  - [ ] 13.4 Определить delivery и recovery semantics
+  - [x] 13.4 Определить delivery и recovery semantics
 
     - Определить lightweight snapshot contract для внешнего клиента
     - Зафиксировать initial delivery surface как атомарно обновляемый JSON snapshot file
     - Описать поведение при mid-match restart: resume либо явный `partial` status
     - Зафиксировать, что silent corruption статистики после рестарта недопустима
     - Подготовить integration/regression tests на snapshot consistency и restart behavior
+    - Реализовано в `internal/monitor/live_card_stats.go`, `cmd/hsanalyzer/monitor.go`, `cmd/hsanalyzer/monitor_state.go`; покрыто тестами `internal/monitor/live_card_stats_test.go`, `cmd/hsanalyzer/monitor_state_test.go`, `cmd/hsanalyzer/root_test.go`
 
   - _Depends on: `cmd/hsanalyzer/monitor.go`, live event stream, carddb enrichment, runtime recovery policy_
   - _Result should be captured in: `specs/live-card-stats-projection/live-card-stats-projection.md`_
+  - Реализовано в `internal/monitor/live_card_stats.go`, `cmd/hsanalyzer/monitor.go`, `cmd/hsanalyzer/monitor_state.go`, `internal/textutil/card_text.go`; покрыто тестами `internal/monitor/live_card_stats_test.go`, `cmd/hsanalyzer/monitor_state_test.go`, `cmd/hsanalyzer/root_test.go`

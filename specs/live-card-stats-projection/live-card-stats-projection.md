@@ -392,3 +392,9 @@ Task `13` считается завершенным, когда:
 5. определена честная recovery semantics
 6. определен обязательный набор unit/integration/regression tests
 7. для каждого пункта спецификации написаны и проходят соответствующие тесты
+
+## 14. Статус реализации
+
+- Статус: выполнено
+- Реализовано в `internal/monitor/live_card_stats.go`, `cmd/hsanalyzer/monitor.go`, `cmd/hsanalyzer/monitor_state.go`, `internal/textutil/card_text.go`
+- Покрыто тестами `internal/monitor/live_card_stats_test.go`, `cmd/hsanalyzer/monitor_state_test.go`, `cmd/hsanalyzer/root_test.go`
