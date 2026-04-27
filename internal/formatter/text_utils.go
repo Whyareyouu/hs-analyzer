@@ -4,17 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"html"
-	"regexp"
 	"strconv"
 	"strings"
+
+	"hsanalyzer/internal/textutil"
 )
 
 var (
-	htmlTagPattern      = regexp.MustCompile(`<[^>]+>`)
-	blankLinePattern    = regexp.MustCompile(`\n{3,}`)
-	spaceBeforeNL       = regexp.MustCompile(`[ \t]+\n`)
-	effectChangePattern = regexp.MustCompile(`^(ATK|HEALTH)_CHANGE:(-?\d+)$`)
+	effectChangePattern = textutil.EffectChangePattern
 )
 
 type effectDetails struct {
@@ -37,32 +34,13 @@ func marshalIndentedJSON(value interface{}) (string, error) {
 }
 
 func cleanCardText(text string) string {
-	text = strings.TrimSpace(text)
-	if text == "" {
-		return ""
-	}
+	return textutil.CleanCardText(text)
+}
 
-	replacer := strings.NewReplacer(
-		"[x]", "",
-		"<br>", "\n",
-		"<br/>", "\n",
-		"<br />", "\n",
-		"\r\n", "\n",
-		"\r", "\n",
-	)
-
-	text = replacer.Replace(text)
-	text = html.UnescapeString(text)
-	text = htmlTagPattern.ReplaceAllString(text, "")
-	text = spaceBeforeNL.ReplaceAllString(text, "\n")
-	text = blankLinePattern.ReplaceAllString(text, "\n\n")
-
-	lines := strings.Split(text, "\n")
-	for i, line := range lines {
-		lines[i] = strings.Join(strings.Fields(line), " ")
-	}
-
-	return strings.TrimSpace(strings.Join(lines, "\n"))
+// CleanCardText normalizes card text for external consumers using the same
+// policy as the existing JSON formatter.
+func CleanCardText(text string) string {
+	return textutil.CleanCardText(text)
 }
 
 func describeEffect(effectName, sourceName, sourceText, language string) effectDetails {

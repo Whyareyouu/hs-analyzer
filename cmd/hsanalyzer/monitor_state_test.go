@@ -3,6 +3,8 @@ package main
 import (
 	"path/filepath"
 	"testing"
+
+	"hsanalyzer/internal/monitor"
 )
 
 func TestMonitorRuntimeStateRoundTrip(t *testing.T) {
@@ -15,6 +17,27 @@ func TestMonitorRuntimeStateRoundTrip(t *testing.T) {
 			"power": {
 				Path:   filepath.Clean("C:\\Logs\\Power.log"),
 				Offset: 128,
+			},
+		},
+		LiveCardStats: &monitor.LiveCardStatsSnapshot{
+			SchemaVersion:     monitor.LiveCardStatsSchemaVersion,
+			ProjectionVersion: 2,
+			RecoveryStatus:    monitor.RecoveryStatusFresh,
+			Match: monitor.LiveCardStatsMatchSnapshot{
+				Key:    "game:test",
+				Status: monitor.LiveCardStatsMatchStatusActive,
+			},
+			Players: monitor.LiveCardStatsPlayersSnapshot{
+				Self: monitor.LiveCardStatsSideSnapshot{
+					TotalPlays:  1,
+					UniqueCards: 1,
+					Cards: []monitor.LiveCardStatsCardEntry{
+						{CardID: "CARD_1", PlayCount: 1, FirstPlaySeq: 1, LastPlaySeq: 1},
+					},
+				},
+				Opponent: monitor.LiveCardStatsSideSnapshot{
+					Cards: make([]monitor.LiveCardStatsCardEntry, 0),
+				},
 			},
 		},
 	}
@@ -37,6 +60,15 @@ func TestMonitorRuntimeStateRoundTrip(t *testing.T) {
 	}
 	if filepath.Clean(checkpoint.Path) != filepath.Clean("C:\\Logs\\Power.log") {
 		t.Fatalf("unexpected checkpoint path: %s", checkpoint.Path)
+	}
+	if got.LiveCardStats == nil {
+		t.Fatalf("expected live card stats snapshot in runtime state")
+	}
+	if got.LiveCardStats.Match.Key != "game:test" {
+		t.Fatalf("unexpected live card stats match key: %q", got.LiveCardStats.Match.Key)
+	}
+	if len(got.LiveCardStats.Players.Self.Cards) != 1 || got.LiveCardStats.Players.Self.Cards[0].CardID != "CARD_1" {
+		t.Fatalf("unexpected live card stats snapshot: %#v", got.LiveCardStats)
 	}
 }
 

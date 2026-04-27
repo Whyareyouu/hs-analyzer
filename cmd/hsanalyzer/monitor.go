@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"hsanalyzer/internal/analyzer"
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/config"
 	"hsanalyzer/internal/game"
 	"hsanalyzer/internal/logreader"
@@ -29,7 +30,9 @@ const (
 type monitorOptions struct {
 	configPath             string
 	logsPath               string
+	cardsDBPath            string
 	stateFile              string
+	liveCardStatsFile      string
 	pollInterval           time.Duration
 	statusInterval         time.Duration
 	persistIncompleteFlush bool
@@ -54,7 +57,9 @@ func newMonitorCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&options.configPath, "config", "", "Path to config file")
 	cmd.Flags().StringVar(&options.logsPath, "logs-path", "", "Path to logs directory or active Power.log file")
+	cmd.Flags().StringVar(&options.cardsDBPath, "cards-db-path", "", "Path to cards database")
 	cmd.Flags().StringVar(&options.stateFile, "state-file", "", "Path to monitor runtime state file for restart recovery")
+	cmd.Flags().StringVar(&options.liveCardStatsFile, "live-card-stats-file", "", "Path to live card stats snapshot file")
 	cmd.Flags().DurationVar(&options.pollInterval, "poll-interval", 250*time.Millisecond, "Live polling interval for growing log files")
 	cmd.Flags().DurationVar(&options.statusInterval, "status-interval", defaultMonitorStatusInterval, "Interval for status output")
 	cmd.Flags().BoolVar(&options.persistIncompleteFlush, "persist-incomplete-flush", false, "Persist incomplete session on shutdown flush")
@@ -92,6 +97,10 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	if err != nil {
 		return err
 	}
+	liveCardStatsPath, err := resolveLiveCardStatsPath(options.liveCardStatsFile)
+	if err != nil {
+		return err
+	}
 
 	baseCtx := parentCtx
 	if options.runFor > 0 {
@@ -111,6 +120,11 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		return fmt.Errorf("register apply handler: %w", err)
 	}
 
+	cardDB := carddb.NewJSONDatabase()
+	if err := cardDB.Load(cfg.CardsDBPath); err != nil {
+		return fmt.Errorf("load cards database: %w", err)
+	}
+
 	builder, err := monitor.NewStateBuilder(pipeline)
 	if err != nil {
 		return fmt.Errorf("create state builder: %w", err)
@@ -128,6 +142,20 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	health := monitor.NewHealthTracker()
 	powerParser := parser.NewPowerParser()
 	loadingParser := parser.NewLoadingScreenParser()
+	liveCardStatsSink, err := monitor.NewAtomicFileLiveCardStatsSink(liveCardStatsPath)
+	if err != nil {
+		return fmt.Errorf("create live card stats sink: %w", err)
+	}
+	projector := monitor.NewLiveCardStatsProjector(monitor.LiveCardStatsProjectorOptions{
+		CardDB:        cardDB,
+		AssetResolver: monitor.NoopCardAssetResolver{},
+		Sink:          liveCardStatsSink,
+	})
+	if runtimeState.LiveCardStats != nil && canRestoreLiveCardStats(runtimeState, powerLogPath, loadingLogPath) {
+		if err := projector.Restore(*runtimeState.LiveCardStats); err != nil {
+			return fmt.Errorf("restore live card stats projector: %w", err)
+		}
+	}
 
 	eventCh := make(chan game.Event, 256)
 	checkpointCh := make(chan monitorReaderUpdate, 64)
@@ -218,6 +246,23 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	for {
 		select {
 		case event := <-eventCh:
+			before := projector.Snapshot()
+			if err := projector.Process(event); err != nil {
+				cancelRun()
+				wg.Wait()
+				return err
+			}
+			if _, ok := event.(*game.CardPlayedEvent); ok {
+				after := projector.Snapshot()
+				if after.ProjectionVersion > before.ProjectionVersion {
+					fmt.Fprintf(
+						cmd.OutOrStdout(),
+						"played cards: self=%s opponent=%s\n",
+						formatLiveCardStatsCardsForTerminal(after.Players.Self.Cards),
+						formatLiveCardStatsCardsForTerminal(after.Players.Opponent.Cards),
+					)
+				}
+			}
 			for _, session := range detector.Process(event) {
 				if err := finalizeLiveSession(runCtx, cmd, postGame, health, session); err != nil {
 					cancelRun()
@@ -269,6 +314,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 				wg.Wait()
 				return err
 			}
+			runtimeState.LiveCardStats = projector.PersistenceSnapshot()
 			if err := saveMonitorRuntimeState(statePath, runtimeState); err != nil {
 				cancelRun()
 				wg.Wait()
@@ -293,6 +339,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 				wg.Wait()
 				return err
 			}
+			runtimeState.LiveCardStats = projector.PersistenceSnapshot()
 			if err := saveMonitorRuntimeState(statePath, runtimeState); err != nil {
 				cancelRun()
 				wg.Wait()
@@ -321,6 +368,9 @@ func applyMonitorOverrides(cfg *config.Config, options monitorOptions) error {
 		cfg.LogsPath = resolveCLIPath(workingDir, options.logsPath)
 		cfg.PowerLogPath = ""
 	}
+	if strings.TrimSpace(options.cardsDBPath) != "" {
+		cfg.CardsDBPath = resolveCLIPath(workingDir, options.cardsDBPath)
+	}
 
 	if err := config.NormalizeLogSource(cfg, config.LogSourceOptions{
 		LogsPathExplicit:   strings.TrimSpace(options.logsPath) != "",
@@ -336,7 +386,10 @@ func validateMonitorConfig(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
 	}
-	return validateDirectory(cfg.LogsPath)
+	if err := validateDirectory(cfg.LogsPath); err != nil {
+		return err
+	}
+	return validateFile(cfg.CardsDBPath)
 }
 
 func resolveLiveLogPaths(cfg *config.Config) (string, string) {
@@ -346,6 +399,62 @@ func resolveLiveLogPaths(cfg *config.Config) (string, string) {
 	}
 	loadingLogPath := filepath.Join(cfg.LogsPath, "LoadingScreen.log")
 	return powerLogPath, loadingLogPath
+}
+
+func resolveLiveCardStatsPath(path string) (string, error) {
+	if strings.TrimSpace(path) != "" {
+		workingDir, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("get working directory: %w", err)
+		}
+		return resolveCLIPath(workingDir, path), nil
+	}
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("get working directory: %w", err)
+	}
+	projectRoot, err := findProjectRoot(workingDir)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(projectRoot, "output", "live_card_stats.json"), nil
+}
+
+func canRestoreLiveCardStats(state monitorRuntimeState, powerLogPath, loadingLogPath string) bool {
+	checks := map[string]string{
+		"power":          powerLogPath,
+		"loading_screen": loadingLogPath,
+	}
+
+	for source, currentPath := range checks {
+		checkpoint, ok := state.Readers[source]
+		if !ok || strings.TrimSpace(checkpoint.Path) == "" {
+			continue
+		}
+		if filepath.Clean(checkpoint.Path) != filepath.Clean(currentPath) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func formatLiveCardStatsCardsForTerminal(cards []monitor.LiveCardStatsCardEntry) string {
+	if len(cards) == 0 {
+		return "[]"
+	}
+
+	items := make([]string, 0, len(cards))
+	for _, current := range cards {
+		name := strings.TrimSpace(current.Card.Name)
+		if name == "" {
+			name = current.CardID
+		}
+		items = append(items, fmt.Sprintf("%s x%d", name, current.PlayCount))
+	}
+
+	return "[" + strings.Join(items, ", ") + "]"
 }
 
 func finalizeLiveSession(

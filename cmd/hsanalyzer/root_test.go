@@ -376,13 +376,16 @@ func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
 
 	var stdout bytes.Buffer
 	stateFile := filepath.Join(t.TempDir(), "monitor-state.json")
+	liveCardStatsFile := filepath.Join(t.TempDir(), "live-card-stats.json")
 	cmd := newRootCmd()
 	cmd.SetOut(&stdout)
 	cmd.SetErr(&stdout)
 	cmd.SetArgs([]string{
 		"monitor",
 		"--logs-path", fixtureLogsDir("standard_game_1"),
+		"--cards-db-path", fixtureCardsPath(),
 		"--state-file", stateFile,
+		"--live-card-stats-file", liveCardStatsFile,
 		"--run-for", "200ms",
 		"--poll-interval", "10ms",
 		"--status-interval", "50ms",
@@ -409,6 +412,9 @@ func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
 	if !strings.Contains(output, "healthy=") {
 		t.Fatalf("unexpected monitor output, missing self-check marker:\n%s", output)
 	}
+	if !strings.Contains(output, "played cards: self=[") || !strings.Contains(output, "opponent=[") {
+		t.Fatalf("unexpected monitor output, missing played cards summary:\n%s", output)
+	}
 	if !strings.Contains(output, "monitoring stopped") {
 		t.Fatalf("unexpected monitor output, missing stop marker:\n%s", output)
 	}
@@ -419,6 +425,17 @@ func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
 	}
 	if !bytes.Contains(stateBytes, []byte(`"readers"`)) {
 		t.Fatalf("unexpected monitor state file:\n%s", string(stateBytes))
+	}
+
+	liveCardStatsBytes, err := os.ReadFile(liveCardStatsFile)
+	if err != nil {
+		t.Fatalf("read live card stats snapshot: %v", err)
+	}
+	if !bytes.Contains(liveCardStatsBytes, []byte(`"schema_version": "live_card_stats/v1"`)) {
+		t.Fatalf("unexpected live card stats snapshot:\n%s", string(liveCardStatsBytes))
+	}
+	if !bytes.Contains(liveCardStatsBytes, []byte(`"self"`)) || !bytes.Contains(liveCardStatsBytes, []byte(`"opponent"`)) {
+		t.Fatalf("live card stats snapshot should contain separate self/opponent arrays:\n%s", string(liveCardStatsBytes))
 	}
 }
 

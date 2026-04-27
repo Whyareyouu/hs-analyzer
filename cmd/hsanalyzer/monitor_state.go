@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"hsanalyzer/internal/monitor"
 )
 
 const monitorStateVersion = 1
@@ -18,9 +20,10 @@ type monitorReaderCheckpoint struct {
 }
 
 type monitorRuntimeState struct {
-	Version   int                                `json:"version"`
-	UpdatedAt string                             `json:"updated_at,omitempty"`
-	Readers   map[string]monitorReaderCheckpoint `json:"readers,omitempty"`
+	Version       int                                `json:"version"`
+	UpdatedAt     string                             `json:"updated_at,omitempty"`
+	Readers       map[string]monitorReaderCheckpoint `json:"readers,omitempty"`
+	LiveCardStats *monitor.LiveCardStatsSnapshot     `json:"live_card_stats,omitempty"`
 }
 
 func defaultMonitorStatePath() (string, error) {
