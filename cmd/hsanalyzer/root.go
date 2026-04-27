@@ -6,12 +6,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const appVersion = "0.0.2"
+
 func newRootCmd() *cobra.Command {
 	options := rootOptions{logLevel: "info"}
 
 	cmd := &cobra.Command{
 		Use:           "hsanalyzer",
 		Short:         "Hearthstone log analyzer",
+		Version:       appVersion,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {

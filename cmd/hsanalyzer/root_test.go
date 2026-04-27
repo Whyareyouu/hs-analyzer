@@ -54,6 +54,25 @@ func TestRootCommandContainsMonitorSubcommand(t *testing.T) {
 	}
 }
 
+func TestRootCommandReportsApplicationVersion(t *testing.T) {
+	t.Parallel()
+
+	var stdout bytes.Buffer
+	cmd := newRootCmd()
+	cmd.SetOut(&stdout)
+	cmd.SetErr(&stdout)
+	cmd.SetArgs([]string{"--version"})
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("execute version: %v", err)
+	}
+
+	output := strings.TrimSpace(stdout.String())
+	if !strings.Contains(output, appVersion) {
+		t.Fatalf("expected version output to contain %q, got %q", appVersion, output)
+	}
+}
+
 func TestAnalyzeCommandPrintsFormattedResultFromFixtureLogs(t *testing.T) {
 	t.Parallel()
 
