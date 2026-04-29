@@ -42,6 +42,47 @@ make install
 make build
 ```
 
+## Быстрый запуск desktop-приложения
+
+Полный локальный стек можно поднять одной командой из корня репозитория:
+
+```powershell
+./scripts/run-app.ps1
+```
+
+```cmd
+run-app.cmd
+```
+
+```cmd
+scripts\run-app.cmd
+```
+
+```bash
+bash ./scripts/run-app.sh
+```
+
+Что делают скрипты:
+
+- при необходимости собирают `hs-analyzer-be`, `hs-analyzer-cli` и Electron client
+- поднимают backend на `127.0.0.1:8080`
+- запускают `hsanalyzer monitor` с live API на `127.0.0.1:8765`
+- открывают `hs-analyzer-client` в foreground и завершают фоновые процессы после закрытия окна
+
+Полезные варианты запуска:
+
+```powershell
+./scripts/run-app.ps1 -LogsPath logs
+./scripts/run-app.ps1 -RebuildGo -RebuildClient
+```
+
+```bash
+bash ./scripts/run-app.sh --logs-path logs
+bash ./scripts/run-app.sh --rebuild-go --rebuild-client
+```
+
+По умолчанию `monitor` использует auto-discovery логов Hearthstone. Для локального прогона на репозиторных логах можно явно передать `logs`.
+
 ## Команды CLI
 
 Общая справка:

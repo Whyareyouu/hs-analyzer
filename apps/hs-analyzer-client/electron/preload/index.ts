@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { createNativeBridge } from "./bridge";
+import { createNativeBridge } from "./bridge.js";
 
 const bridge = createNativeBridge({
   invoke: (channel: string, payload?: unknown) => ipcRenderer.invoke(channel, payload),

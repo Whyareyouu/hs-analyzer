@@ -31,6 +31,7 @@ go.work
 # OS
 .DS_Store
 Thumbs.db
+.tmp/
 
 # Frontend / Electron
 apps/hs-analyzer-client/dist/
