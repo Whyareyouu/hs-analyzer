@@ -72,6 +72,33 @@ func TestLiveEventSideCorrectorKeepsSidesWhenSelectedDeckCardsAreMappedAsPlayer(
 	}
 }
 
+func TestLiveEventSideCorrectorDoesNotLearnSideFromDrawnDeckCards(t *testing.T) {
+	t.Parallel()
+
+	corrector := newLiveEventSideCorrector()
+	corrector.Correct(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("MY_DECK_CARD", 1, types.PlayerTypePlayer),
+	}, "My Deck", "deck-1", "code"))
+
+	drawnCard := card.New("MY_DECK_CARD", 10, types.PlayerTypeOpponent)
+	correctedDraw, ok := corrector.Correct(game.NewCardDrawnEvent(types.PlayerTypeOpponent, drawnCard)).(*game.CardDrawnEvent)
+	if !ok {
+		t.Fatalf("unexpected corrected draw event type: %T", correctedDraw)
+	}
+	if correctedDraw.Player != types.PlayerTypeOpponent {
+		t.Fatalf("draw events must not establish side inversion, got %s", correctedDraw.Player)
+	}
+
+	opponentPlay := game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("OPP_CARD", 11, types.PlayerTypeOpponent), 0)
+	correctedOpponentPlay, ok := corrector.Correct(opponentPlay).(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected corrected opponent event type: %T", correctedOpponentPlay)
+	}
+	if correctedOpponentPlay.Player != types.PlayerTypeOpponent {
+		t.Fatalf("expected opponent side to remain opponent after a drawn deck card, got %s", correctedOpponentPlay.Player)
+	}
+}
+
 func TestLiveEventSideCorrectorUsesRealDeckLogToFixPowerLogSideInversion(t *testing.T) {
 	t.Parallel()
 

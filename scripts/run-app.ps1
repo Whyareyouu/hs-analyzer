@@ -35,25 +35,62 @@ function Resolve-RepoPath([string]$PathValue) {
 }
 
 function Resolve-AutoLogsPath() {
+    $candidateRoots = @()
     $localAppData = [Environment]::GetEnvironmentVariable("LOCALAPPDATA")
-    if ([string]::IsNullOrWhiteSpace($localAppData)) {
+    if (-not [string]::IsNullOrWhiteSpace($localAppData)) {
+        $candidateRoots += (Join-Path $localAppData "Blizzard\Hearthstone\Logs")
+    }
+
+    $userProfile = [Environment]::GetEnvironmentVariable("USERPROFILE")
+    if (-not [string]::IsNullOrWhiteSpace($userProfile)) {
+        $candidateRoots += (Join-Path $userProfile "AppData\Local\Blizzard\Hearthstone\Logs")
+    }
+
+    Get-PSDrive -PSProvider FileSystem -ErrorAction SilentlyContinue | ForEach-Object {
+        $root = $_.Root
+        if ([string]::IsNullOrWhiteSpace($root)) {
+            return
+        }
+        $candidateRoots += (Join-Path $root "Hearthstone\Logs")
+        $candidateRoots += (Join-Path $root "Games\Hearthstone\Logs")
+        $candidateRoots += (Join-Path $root "Blizzard\Hearthstone\Logs")
+    }
+
+    $seen = @{}
+    foreach ($candidateRoot in $candidateRoots) {
+        if ([string]::IsNullOrWhiteSpace($candidateRoot)) {
+            continue
+        }
+
+        $candidateRoot = [System.IO.Path]::GetFullPath($candidateRoot)
+        if ($seen.ContainsKey($candidateRoot)) {
+            continue
+        }
+        $seen[$candidateRoot] = $true
+
+        $resolved = Resolve-LogsCandidate $candidateRoot
+        if (-not [string]::IsNullOrWhiteSpace($resolved)) {
+            return $resolved
+        }
+    }
+
+    return ""
+}
+
+function Resolve-LogsCandidate([string]$LogsRoot) {
+    if ([string]::IsNullOrWhiteSpace($LogsRoot) -or -not (Test-Path -LiteralPath $LogsRoot -PathType Container)) {
         return ""
     }
 
-    $logsRoot = Join-Path $localAppData "Blizzard\Hearthstone\Logs"
-    if (-not (Test-Path -LiteralPath $logsRoot -PathType Container)) {
-        return ""
-    }
-
-    $directPowerLog = Join-Path $logsRoot "Power.log"
+    $directPowerLog = Join-Path $LogsRoot "Power.log"
     if (Test-Path -LiteralPath $directPowerLog -PathType Leaf) {
-        return $logsRoot
+        return $LogsRoot
     }
 
     $nestedCandidates = @(
-        Get-ChildItem -LiteralPath $logsRoot -Directory -ErrorAction SilentlyContinue |
+        Get-ChildItem -LiteralPath $LogsRoot -Directory -ErrorAction SilentlyContinue |
             Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "Power.log") -PathType Leaf } |
-            Sort-Object -Property LastWriteTimeUtc -Descending
+            Sort-Object -Property @{ Expression = { (Get-Item -LiteralPath (Join-Path $_.FullName "Power.log")).LastWriteTimeUtc } }, FullName -Descending
     )
     if ($nestedCandidates.Count -gt 0) {
         return $nestedCandidates[0].FullName
@@ -75,6 +112,13 @@ function Resolve-DeckCatalogLogsPath([string]$LogsPathValue) {
         return $item.FullName
     }
     return $item.DirectoryName
+}
+
+function Format-DatabaseUrlForDisplay([string]$Value) {
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return "(not set)"
+    }
+    return ($Value -replace '(postgres(?:ql)?://[^:/@]+):([^@]+)@', '$1:xxxxx@')
 }
 
 function Assert-Command([string]$Name) {
@@ -327,6 +371,9 @@ try {
         Write-Host "Local services are ready:"
         Write-Host ("  backend: {0}" -f $backendUrl)
         Write-Host ("  live api: http://{0}" -f $LiveApiAddr)
+        Write-Host ("  hearthstone logs: {0}" -f $(if ($logsFullPath) { $logsFullPath } else { "(auto-discovery failed)" }))
+        Write-Host ("  deck catalog: {0}" -f $(if ($backendLogsPath) { $backendLogsPath } else { "(disabled)" }))
+        Write-Host ("  database: {0}" -f (Format-DatabaseUrlForDisplay $DatabaseUrl))
         Write-Host ("  logs: {0}" -f $runDir)
         Write-Host ""
 

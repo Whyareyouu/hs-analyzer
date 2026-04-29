@@ -30,7 +30,6 @@ func (c *liveEventSideCorrector) Correct(event game.Event) game.Event {
 		c.trackPlayerDeck(current)
 		return current
 	case *game.CardDrawnEvent:
-		c.learnLocalSideFromKnownDeckCard(current.Player, current.Card)
 		current.Player = c.correctPlayer(current.Player)
 		c.correctCardOwner(current.Card)
 		return current

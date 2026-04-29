@@ -88,13 +88,59 @@ resolve_repo_path() {
 }
 
 resolve_auto_logs_path() {
+  local candidates=()
   local local_app_data="${LOCALAPPDATA:-}"
-  if [[ -z "$local_app_data" ]]; then
-    printf '%s\n' ""
-    return
+  if [[ -n "$local_app_data" ]]; then
+    candidates+=("$local_app_data/Blizzard/Hearthstone/Logs")
   fi
 
-  local logs_root="$local_app_data/Blizzard/Hearthstone/Logs"
+  local user_profile="${USERPROFILE:-}"
+  if [[ -n "$user_profile" ]]; then
+    candidates+=("$user_profile/AppData/Local/Blizzard/Hearthstone/Logs")
+  fi
+
+  local root=""
+  for root in /mnt/[A-Za-z] /[A-Za-z]; do
+    [[ -d "$root" ]] || continue
+    candidates+=(
+      "$root/Hearthstone/Logs"
+      "$root/Games/Hearthstone/Logs"
+      "$root/Blizzard/Hearthstone/Logs"
+    )
+  done
+
+  if command -v powershell.exe >/dev/null 2>&1; then
+    while IFS= read -r root; do
+      [[ -z "$root" ]] && continue
+      candidates+=(
+        "$root/Hearthstone/Logs"
+        "$root/Games/Hearthstone/Logs"
+        "$root/Blizzard/Hearthstone/Logs"
+      )
+    done < <(powershell.exe -NoProfile -Command "Get-PSDrive -PSProvider FileSystem | ForEach-Object { \$_.Root }" 2>/dev/null | tr -d '\r')
+  fi
+
+  local candidate=""
+  local seen="|"
+  for candidate in "${candidates[@]}"; do
+    [[ -z "$candidate" ]] && continue
+    if [[ "$seen" == *"|$candidate|"* ]]; then
+      continue
+    fi
+    seen="$seen$candidate|"
+    local resolved
+    resolved="$(resolve_logs_candidate "$candidate")"
+    if [[ -n "$resolved" ]]; then
+      printf '%s\n' "$resolved"
+      return
+    fi
+  done
+
+  printf '%s\n' ""
+}
+
+resolve_logs_candidate() {
+  local logs_root="$1"
   if [[ ! -d "$logs_root" ]]; then
     printf '%s\n' ""
     return
@@ -143,6 +189,15 @@ assert_command() {
     echo "Required command '$name' was not found in PATH." >&2
     exit 1
   fi
+}
+
+format_database_url_for_display() {
+  local value="$1"
+  if [[ -z "$value" ]]; then
+    printf '%s\n' "(not set)"
+    return
+  fi
+  printf '%s\n' "$value" | sed -E 's#(postgres(ql)?://[^:/@]+):([^@]+)@#\1:xxxxx@#'
 }
 
 cleanup() {
@@ -266,6 +321,9 @@ echo
 echo "Local services are ready:"
 echo "  backend: http://$backend_addr"
 echo "  live api: http://$live_api_addr"
+echo "  hearthstone logs: ${logs_full:-"(auto-discovery failed)"}"
+echo "  deck catalog: ${backend_logs_path:-"(disabled)"}"
+echo "  database: $(format_database_url_for_display "$database_url")"
 echo "  logs: $run_dir"
 echo
 
