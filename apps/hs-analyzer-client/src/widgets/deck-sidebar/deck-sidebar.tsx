@@ -23,6 +23,11 @@ export function DeckSidebar({
         <Pill>{decks.length}</Pill>
       </div>
       <div className="flex flex-col gap-3">
+        {decks.length === 0 ? (
+          <div className="rounded-lg border border-app-border/50 bg-app-panel/40 px-4 py-4 text-sm text-app-muted">
+            Не удалось найти колоды в локальном Decks.log.
+          </div>
+        ) : null}
         {decks.map((deck) => {
           const selected = deck.deckId === selectedDeckId;
           return (

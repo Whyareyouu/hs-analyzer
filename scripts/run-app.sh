@@ -81,6 +81,56 @@ resolve_repo_path() {
   printf '%s\n' "$repo_root/$value"
 }
 
+resolve_auto_logs_path() {
+  local local_app_data="${LOCALAPPDATA:-}"
+  if [[ -z "$local_app_data" ]]; then
+    printf '%s\n' ""
+    return
+  fi
+
+  local logs_root="$local_app_data/Blizzard/Hearthstone/Logs"
+  if [[ ! -d "$logs_root" ]]; then
+    printf '%s\n' ""
+    return
+  fi
+
+  if [[ -f "$logs_root/Power.log" ]]; then
+    printf '%s\n' "$logs_root"
+    return
+  fi
+
+  local latest_dir=""
+  local latest_mtime=0
+  local candidate=""
+  while IFS= read -r candidate; do
+    [[ -z "$candidate" ]] && continue
+    if [[ ! -f "$candidate/Power.log" ]]; then
+      continue
+    fi
+    local mtime
+    mtime=$(stat -c %Y "$candidate" 2>/dev/null || stat -f %m "$candidate" 2>/dev/null || printf '0')
+    if (( mtime >= latest_mtime )); then
+      latest_mtime=$mtime
+      latest_dir="$candidate"
+    fi
+  done < <(find "$logs_root" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+
+  printf '%s\n' "$latest_dir"
+}
+
+resolve_deck_catalog_logs_path() {
+  local value="$1"
+  if [[ -z "$value" ]]; then
+    printf '%s\n' ""
+    return
+  fi
+  if [[ -d "$value" ]]; then
+    printf '%s\n' "$value"
+    return
+  fi
+  dirname "$value"
+}
+
 assert_command() {
   local name="$1"
   if ! command -v "$name" >/dev/null 2>&1; then
@@ -125,6 +175,9 @@ if [[ ! -f "$cards_db_full" ]]; then
 fi
 
 logs_full="$(resolve_repo_path "$logs_path")"
+if [[ -z "$logs_full" ]]; then
+  logs_full="$(resolve_auto_logs_path)"
+fi
 if [[ -n "$logs_full" && ! -e "$logs_full" ]]; then
   echo "Logs path was not found: $logs_full" >&2
   exit 1
@@ -161,7 +214,15 @@ if [[ $rebuild_client -eq 1 || ! -f "$dist_entry" || ! -f "$electron_entry" ]]; 
 fi
 
 echo "Starting backend..."
-(cd "$repo_root" && "$backend_binary" >"$run_dir/backend.stdout.log" 2>"$run_dir/backend.stderr.log") &
+backend_logs_path="$(resolve_deck_catalog_logs_path "$logs_full")"
+(
+  cd "$repo_root"
+  if [[ -n "$backend_logs_path" ]]; then
+    export HS_ANALYZER_LOGS_PATH="$backend_logs_path"
+    export HS_ANALYZER_CARDS_DB_PATH="$cards_db_full"
+  fi
+  "$backend_binary" >"$run_dir/backend.stdout.log" 2>"$run_dir/backend.stderr.log"
+) &
 backend_pid=$!
 sleep 2
 if ! kill -0 "$backend_pid" 2>/dev/null; then

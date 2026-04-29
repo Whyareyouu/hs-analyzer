@@ -32,6 +32,8 @@ func NewServer(store MatchStore, dashboardStores ...DashboardStore) *Server {
 	server := &Server{store: store}
 	if len(dashboardStores) > 0 {
 		server.dashboardStore = dashboardStores[0]
+	} else if store != nil {
+		server.dashboardStore = NewMatchDashboardStore(store)
 	}
 	return server
 }

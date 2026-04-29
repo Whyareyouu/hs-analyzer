@@ -33,11 +33,13 @@ export class OverlayWindowController {
   constructor(
     private readonly overlayWindow: ManagedWindow,
     private readonly locator: GameWindowLocator,
+    private readonly previewBoundsProvider?: () => OverlayBounds,
   ) {}
 
   async syncBounds(): Promise<OverlayDiagnostics> {
     const gameState = await this.locator.locate();
     const supported = gameState.detected && gameState.supportedMode !== "unsupported" && gameState.bounds !== null;
+    const previewBounds = !supported && gameState.detected ? this.previewBoundsProvider?.() ?? null : null;
 
     this.diagnostics = {
       attached: supported,
@@ -45,11 +47,18 @@ export class OverlayWindowController {
       gameDetected: gameState.detected,
       reason: gameState.reason,
       hearthstoneMode: gameState.supportedMode,
-      bounds: gameState.bounds,
+      bounds: supported ? gameState.bounds : previewBounds,
     };
 
     if (supported && gameState.bounds) {
       this.overlayWindow.setBounds(gameState.bounds);
+      this.overlayWindow.showInactive();
+      this.applyMode();
+      return this.diagnostics;
+    }
+
+    if (previewBounds) {
+      this.overlayWindow.setBounds(previewBounds);
       this.overlayWindow.showInactive();
       this.applyMode();
       return this.diagnostics;

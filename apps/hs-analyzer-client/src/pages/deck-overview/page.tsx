@@ -12,7 +12,11 @@ export function DeckOverviewPage() {
       <DeckSidebar decks={decks} selectedDeckId={selectedDeckId} onSelect={selectDeck} />
       <div className="space-y-[var(--dashboard-panel-gap)]">
         {status === "error" ? <div className="rounded-xl border border-app-danger/50 bg-app-danger/10 p-4 text-sm text-app-danger">Не удалось загрузить dashboard: {errorMessage}</div> : null}
-        {bundle ? (
+        {status === "ready" && decks.length === 0 ? (
+          <div className="rounded-xl border border-app-border/70 bg-app-panel/50 p-6 text-sm text-app-muted">
+            Не удалось построить список колод. Проверь, что локальный Decks.log доступен и что launcher стартовал monitor вместе с backend.
+          </div>
+        ) : bundle ? (
           <>
             <DeckSummary overview={bundle.overview} stale={stale || bundle.stale} />
             <MatchupBreakdown matchups={bundle.matchups} />

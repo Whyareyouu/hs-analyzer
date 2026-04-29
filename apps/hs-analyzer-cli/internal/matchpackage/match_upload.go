@@ -2,9 +2,12 @@ package matchpackage
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
+	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/game"
 	"hsanalyzer/internal/monitor"
 	"hsanalyzer/internal/types"
@@ -48,6 +51,9 @@ func BuildMatchUploadPayload(match monitor.PersistedMatch, clientVersion string)
 	}
 	if payload.MatchID == "" {
 		payload.MatchID = payload.Hash()
+	}
+	if summary, ok := buildDashboardSummary(match); ok {
+		_ = payload.SetDashboardSummary(summary)
 	}
 
 	return payload
@@ -118,4 +124,143 @@ func matchUploadCompletionReason(reason monitor.CompletionReason) string {
 
 func eventTypeString(eventType types.EventType) string {
 	return eventType.String()
+}
+
+func buildDashboardSummary(match monitor.PersistedMatch) (matchupload.DashboardSummary, bool) {
+	deckEvent := findPlayerDeckListEvent(match.Events)
+	if deckEvent == nil {
+		return matchupload.DashboardSummary{}, false
+	}
+
+	summary := matchupload.DashboardSummary{
+		DeckID:      strings.TrimSpace(deckEvent.DeckID),
+		DeckName:    resolveDeckName(match, deckEvent),
+		PlayerClass: deriveDeckClass(deckEvent.Cards),
+		Result:      resolveDashboardResult(match),
+		DeckCards:   buildDashboardDeckCards(deckEvent.Cards),
+	}
+	if summary.DeckID == "" {
+		summary.DeckID = summary.DeckName
+	}
+	if summary.PlayerClass == "" {
+		summary.PlayerClass = string(carddb.CardClassUnknown)
+	}
+	return summary, true
+}
+
+func findPlayerDeckListEvent(events []game.Event) *game.DeckListEvent {
+	for _, current := range events {
+		deckEvent, ok := current.(*game.DeckListEvent)
+		if !ok || deckEvent == nil || deckEvent.Player != types.PlayerTypePlayer {
+			continue
+		}
+		return deckEvent
+	}
+	return nil
+}
+
+func resolveDeckName(match monitor.PersistedMatch, deckEvent *game.DeckListEvent) string {
+	if deckEvent != nil && strings.TrimSpace(deckEvent.Name) != "" {
+		return strings.TrimSpace(deckEvent.Name)
+	}
+	if match.State != nil && match.State.Player != nil && strings.TrimSpace(match.State.Player.Name) != "" {
+		return strings.TrimSpace(match.State.Player.Name)
+	}
+	if deckEvent != nil && strings.TrimSpace(deckEvent.DeckID) != "" {
+		return strings.TrimSpace(deckEvent.DeckID)
+	}
+	return "Unknown Deck"
+}
+
+func resolveDashboardResult(match monitor.PersistedMatch) string {
+	if match.State == nil || match.State.Winner == nil {
+		return matchupload.DashboardResultUnknown
+	}
+	switch *match.State.Winner {
+	case types.PlayerTypePlayer:
+		return matchupload.DashboardResultWin
+	case types.PlayerTypeOpponent:
+		return matchupload.DashboardResultLoss
+	default:
+		return matchupload.DashboardResultUnknown
+	}
+}
+
+func deriveDeckClass(cards []*card.Card) string {
+	for _, current := range cards {
+		info := cardInfo(current)
+		if info == nil {
+			continue
+		}
+		if info.Class != "" && info.Class != carddb.CardClassNeutral {
+			return string(info.Class)
+		}
+	}
+	return ""
+}
+
+func buildDashboardDeckCards(cards []*card.Card) []matchupload.DashboardDeckCard {
+	type aggregate struct {
+		card matchupload.DashboardDeckCard
+	}
+
+	grouped := make(map[string]*aggregate)
+	order := make([]string, 0, len(cards))
+	for _, current := range cards {
+		if current == nil {
+			continue
+		}
+		cardID := strings.TrimSpace(current.ID)
+		if cardID == "" {
+			continue
+		}
+		entry, ok := grouped[cardID]
+		if !ok {
+			entry = &aggregate{card: newDashboardDeckCard(current)}
+			grouped[cardID] = entry
+			order = append(order, cardID)
+		}
+		entry.card.Copies++
+	}
+
+	result := make([]matchupload.DashboardDeckCard, 0, len(order))
+	for _, cardID := range order {
+		result = append(result, grouped[cardID].card)
+	}
+	return result
+}
+
+func newDashboardDeckCard(current *card.Card) matchupload.DashboardDeckCard {
+	result := matchupload.DashboardDeckCard{
+		CardID: strings.TrimSpace(current.ID),
+	}
+	if info := cardInfo(current); info != nil {
+		result.Name = strings.TrimSpace(info.Name)
+		result.ManaCost = info.Cost
+		result.Rarity = string(info.Rarity)
+		result.IsLegendary = info.Rarity == carddb.RarityLegendary
+		if result.CardID != "" {
+			result.Image = fmt.Sprintf("https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/%s.png", result.CardID)
+		}
+	} else {
+		result.ManaCost = current.Cost
+	}
+	if result.Name == "" {
+		result.Name = result.CardID
+	}
+	return result
+}
+
+func cardInfo(current *card.Card) *carddb.CardInfo {
+	if current == nil || current.Info == nil {
+		return nil
+	}
+	switch info := current.Info.(type) {
+	case *carddb.CardInfo:
+		return info
+	case carddb.CardInfo:
+		return &info
+	default:
+		return nil
+	}
 }

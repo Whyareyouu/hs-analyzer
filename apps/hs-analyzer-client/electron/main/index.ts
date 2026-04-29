@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import { execFile } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -46,16 +46,21 @@ public static class HsAnalyzerUser32 {
   public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
 }
 "@
-$process = Get-Process Hearthstone -ErrorAction SilentlyContinue |
-  Where-Object { $_.MainWindowHandle -ne 0 -and -not [string]::IsNullOrWhiteSpace($_.MainWindowTitle) } |
+$allProcesses = @(Get-Process Hearthstone -ErrorAction SilentlyContinue)
+if ($allProcesses.Count -eq 0) {
+  [Console]::Out.Write('{"detected":false,"reason":"Hearthstone process not found","bounds":null}')
+  exit 0
+}
+$process = $allProcesses |
+  Where-Object { $_.MainWindowHandle -ne 0 } |
   Select-Object -First 1
 if (-not $process) {
-  [Console]::Out.Write('{"detected":false,"reason":"Hearthstone window not found","bounds":null}')
+  [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but it does not expose an attachable desktop window","bounds":null}')
   exit 0
 }
 $rect = New-Object HsAnalyzerUser32+RECT
 if (-not [HsAnalyzerUser32]::GetWindowRect([IntPtr]$process.MainWindowHandle, [ref]$rect)) {
-  [Console]::Out.Write('{"detected":false,"reason":"Unable to read Hearthstone window bounds","bounds":null}')
+  [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but its window bounds are unavailable","bounds":null}')
   exit 0
 }
 $payload = [ordered]@{
@@ -74,6 +79,9 @@ $payload | ConvertTo-Json -Compress
       const { stdout } = await execFileAsync("powershell.exe", ["-NoProfile", "-Command", script], { windowsHide: true });
       const parsed = JSON.parse(stdout.trim()) as PowerShellWindowResult;
       if (!parsed.detected || !parsed.bounds || parsed.bounds.width <= 0 || parsed.bounds.height <= 0) {
+        if (parsed.detected) {
+          return detectedButUnsupportedWindowState(parsed.reason || "Hearthstone window is unavailable");
+        }
         return unsupportedWindowState(parsed.reason || "Hearthstone window is unavailable");
       }
       return {
@@ -101,7 +109,7 @@ const bridgeConfig: NativeBridgeConfig = {
 async function createWindows() {
   mainWindow = new BrowserWindow(createMainWindowConfig(preloadPath));
   overlayWindow = new BrowserWindow(createOverlayWindowConfig(preloadPath));
-  overlayController = new OverlayWindowController(overlayWindow, new WindowsHearthstoneLocator());
+  overlayController = new OverlayWindowController(overlayWindow, new WindowsHearthstoneLocator(), buildPreviewBounds);
 
   const rendererEntry = path.join(projectRoot, "dist", "index.html");
   await mainWindow.loadFile(rendererEntry, { hash: "/" });
@@ -160,8 +168,17 @@ function classifyWindowMode(bounds: OverlayBounds) {
 }
 
 function unsupportedWindowState(reason: string) {
+	return {
+		detected: false,
+    supportedMode: "unsupported" as const,
+    bounds: null,
+    reason,
+	};
+}
+
+function detectedButUnsupportedWindowState(reason: string) {
   return {
-    detected: false,
+    detected: true,
     supportedMode: "unsupported" as const,
     bounds: null,
     reason,
@@ -173,6 +190,16 @@ function formatError(error: unknown) {
     return error.message;
   }
   return String(error);
+}
+
+function buildPreviewBounds(): OverlayBounds {
+  const { bounds } = screen.getPrimaryDisplay();
+  return {
+    x: bounds.x,
+    y: bounds.y,
+    width: bounds.width,
+    height: bounds.height,
+  };
 }
 
 app.whenReady().then(createWindows);

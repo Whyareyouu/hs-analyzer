@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bufio"
 	"context"
 	"encoding/base64"
 	"encoding/binary"
@@ -16,7 +17,9 @@ import (
 
 // DeckParser извлекает выбранную колоду из Decks.log и связывает карты с игроком.
 type DeckParser struct {
-	cardDB carddb.CardDatabase
+	cardDB            carddb.CardDatabase
+	incrementalBuffer []string
+	incrementalSeen   map[string]deckLogEntry
 }
 
 func NewDeckParser(cardDB carddb.CardDatabase) *DeckParser {
@@ -73,6 +76,130 @@ func (p *DeckParser) Parse(ctx context.Context, reader io.Reader) ([]game.Event,
 	}, nil
 }
 
+type DeckCatalogEntry struct {
+	Name     string
+	DeckID   string
+	Code     string
+	Cards    []*card.Card
+	Selected bool
+}
+
+// ParseCatalog extracts all known player decks from Decks.log while preserving
+// stable order from the log.
+func (p *DeckParser) ParseCatalog(ctx context.Context, reader io.Reader) ([]DeckCatalogEntry, string, error) {
+	if reader == nil {
+		return nil, "", fmt.Errorf("%s: reader is nil", p.Name())
+	}
+	if p.cardDB == nil {
+		return nil, "", fmt.Errorf("%s: card database is nil", p.Name())
+	}
+
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, "", fmt.Errorf("%s: read deck log: %w", p.Name(), err)
+	}
+
+	select {
+	case <-ctx.Done():
+		return nil, "", ctx.Err()
+	default:
+	}
+
+	entries, selectedDeckID, err := parseDeckCatalog(string(data))
+	if err != nil {
+		return nil, "", fmt.Errorf("%s: %w", p.Name(), err)
+	}
+
+	result := make([]DeckCatalogEntry, 0, len(entries))
+	for _, entry := range entries {
+		cards, err := p.decodeDeckCards(entry.Code)
+		if err != nil {
+			return nil, "", fmt.Errorf("%s: decode deck %s: %w", p.Name(), entry.DeckID, err)
+		}
+		result = append(result, DeckCatalogEntry{
+			Name:     entry.Name,
+			DeckID:   entry.DeckID,
+			Code:     entry.Code,
+			Cards:    cards,
+			Selected: entry.DeckID == selectedDeckID,
+		})
+	}
+
+	return result, selectedDeckID, nil
+}
+
+// ParseLine parses one appended Decks.log line incrementally. It emits a
+// DeckListEvent when a "Finding Game With Deck" block is completed.
+func (p *DeckParser) ParseLine(line string) ([]game.Event, error) {
+	if p == nil {
+		return nil, fmt.Errorf("deck parser is nil")
+	}
+	if p.cardDB == nil {
+		return nil, fmt.Errorf("%s: card database is nil", p.Name())
+	}
+
+	p.ensureIncrementalState()
+	trimmed := strings.TrimSpace(line)
+
+	if isDeckTriggerLine(trimmed) {
+		events, err := p.flushIncrementalBlock()
+		if err != nil {
+			return nil, err
+		}
+		p.incrementalBuffer = []string{trimmed}
+		return events, nil
+	}
+
+	if len(p.incrementalBuffer) == 0 {
+		return nil, nil
+	}
+
+	p.incrementalBuffer = append(p.incrementalBuffer, trimmed)
+	if trimmed == "" || isDeckCodeLine(trimmed) {
+		return p.flushIncrementalBlock()
+	}
+
+	return nil, nil
+}
+
+func (p *DeckParser) ParseStream(ctx context.Context, reader io.Reader) ([]game.Event, error) {
+	if reader == nil {
+		return nil, fmt.Errorf("%s: reader is nil", p.Name())
+	}
+	if p.cardDB == nil {
+		return nil, fmt.Errorf("%s: card database is nil", p.Name())
+	}
+
+	p.resetIncrementalState()
+	scanner := bufio.NewScanner(reader)
+	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+
+	events := make([]game.Event, 0)
+	for scanner.Scan() {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
+		parsedEvents, err := p.ParseLine(scanner.Text())
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", p.Name(), err)
+		}
+		events = append(events, parsedEvents...)
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("%s: read deck log: %w", p.Name(), err)
+	}
+
+	parsedEvents, err := p.flushIncrementalBlock()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", p.Name(), err)
+	}
+	events = append(events, parsedEvents...)
+	return events, nil
+}
+
 type deckLogEntry struct {
 	Name   string
 	DeckID string
@@ -80,8 +207,22 @@ type deckLogEntry struct {
 }
 
 func parseDeckLogEntries(raw string) (map[string]deckLogEntry, string, error) {
+	catalog, selectedDeckID, err := parseDeckCatalog(raw)
+	if err != nil {
+		return nil, "", err
+	}
+
+	entries := make(map[string]deckLogEntry, len(catalog))
+	for _, entry := range catalog {
+		entries[entry.DeckID] = entry
+	}
+	return entries, selectedDeckID, nil
+}
+
+func parseDeckCatalog(raw string) ([]deckLogEntry, string, error) {
 	lines := strings.Split(strings.ReplaceAll(raw, "\r\n", "\n"), "\n")
 	entries := make(map[string]deckLogEntry)
+	order := make([]string, 0)
 	selectedDeckID := ""
 
 	for i := 0; i < len(lines); i++ {
@@ -95,6 +236,9 @@ func parseDeckLogEntries(raw string) (map[string]deckLogEntry, string, error) {
 				return nil, "", err
 			}
 			if entry.DeckID != "" {
+				if _, exists := entries[entry.DeckID]; !exists {
+					order = append(order, entry.DeckID)
+				}
 				entries[entry.DeckID] = entry
 			}
 			if strings.Contains(line, "Finding Game With Deck:") {
@@ -104,7 +248,11 @@ func parseDeckLogEntries(raw string) (map[string]deckLogEntry, string, error) {
 		}
 	}
 
-	return entries, selectedDeckID, nil
+	result := make([]deckLogEntry, 0, len(order))
+	for _, deckID := range order {
+		result = append(result, entries[deckID])
+	}
+	return result, selectedDeckID, nil
 }
 
 func parseDeckBlock(lines []string, start int) (deckLogEntry, int, error) {
@@ -153,6 +301,54 @@ func isDeckCodeLine(line string) bool {
 	return strings.HasPrefix(code, "AAE") && strings.Contains(code, "=")
 }
 
+func isDeckTriggerLine(line string) bool {
+	line = strings.TrimSpace(line)
+	return strings.Contains(line, "Deck Contents Received:") ||
+		strings.Contains(line, "Finding Game With Deck:") ||
+		strings.Contains(line, "Finished Editing Deck:")
+}
+
+func (p *DeckParser) ensureIncrementalState() {
+	if p.incrementalSeen == nil {
+		p.incrementalSeen = make(map[string]deckLogEntry)
+	}
+}
+
+func (p *DeckParser) resetIncrementalState() {
+	p.incrementalBuffer = nil
+	p.incrementalSeen = make(map[string]deckLogEntry)
+}
+
+func (p *DeckParser) flushIncrementalBlock() ([]game.Event, error) {
+	if len(p.incrementalBuffer) == 0 {
+		return nil, nil
+	}
+
+	lines := append([]string(nil), p.incrementalBuffer...)
+	p.incrementalBuffer = nil
+	trigger := strings.TrimSpace(lines[0])
+	entry, _, err := parseDeckBlock(lines, 1)
+	if err != nil {
+		return nil, err
+	}
+	if entry.DeckID == "" {
+		return nil, nil
+	}
+	p.incrementalSeen[entry.DeckID] = entry
+
+	if !strings.Contains(trigger, "Finding Game With Deck:") {
+		return nil, nil
+	}
+
+	cards, err := p.decodeDeckCards(entry.Code)
+	if err != nil {
+		return nil, fmt.Errorf("decode selected deck %s: %w", entry.DeckID, err)
+	}
+	return []game.Event{
+		game.NewDeckListEvent(types.PlayerTypePlayer, cards, entry.Name, entry.DeckID, entry.Code),
+	}, nil
+}
+
 func (p *DeckParser) decodeDeckCards(deckCode string) ([]*card.Card, error) {
 	dbfIDs, err := decodeDeckstring(deckCode)
 	if err != nil {
@@ -166,8 +362,9 @@ func (p *DeckParser) decodeDeckCards(deckCode string) ([]*card.Card, error) {
 			return nil, fmt.Errorf("card with dbf id %d not found", dbfID)
 		}
 
-		c := card.New(info.ID, 0, types.PlayerTypePlayer)
+		c := card.New(info.ID, info.Cost, types.PlayerTypePlayer)
 		c.Zone = card.ZoneDeck
+		c.Info = info
 		cards = append(cards, c)
 	}
 

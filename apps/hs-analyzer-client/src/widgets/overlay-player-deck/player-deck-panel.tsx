@@ -15,6 +15,7 @@ export function PlayerDeckPanel({
     <Panel className="w-[var(--overlay-panel-width)] p-3">
       <div className="mb-3 text-xs uppercase tracking-[0.2em] text-app-muted">Моя колода</div>
       <div className="space-y-2">
+        {cards.length === 0 ? <div className="text-xs text-app-muted">Ждём выбранную колоду из Decks.log.</div> : null}
         {cards.map((card) => (
           <button
             key={card.cardId}

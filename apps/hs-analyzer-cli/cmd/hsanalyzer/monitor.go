@@ -98,7 +98,15 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	}
 
 	powerLogPath, loadingLogPath := resolveLiveLogPaths(cfg)
-	fmt.Fprintf(cmd.OutOrStdout(), "monitoring started: power=%s loading=%s\n", powerLogPath, loadingLogPath)
+	deckLogPath := resolveDeckLogPath(cfg)
+	deckLogAvailable := liveOptionalLogExists(deckLogPath)
+	fmt.Fprintf(
+		cmd.OutOrStdout(),
+		"monitoring started: power=%s loading=%s deck=%s\n",
+		powerLogPath,
+		loadingLogPath,
+		formatOptionalLiveLogPath(deckLogPath, deckLogAvailable),
+	)
 
 	statePath := strings.TrimSpace(options.stateFile)
 	if statePath == "" {
@@ -164,6 +172,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	health := monitor.NewHealthTracker()
 	powerParser := parser.NewPowerParser()
 	loadingParser := parser.NewLoadingScreenParser()
+	deckParser := parser.NewDeckParser(cardDB)
 	liveCardStatsSink, err := monitor.NewAtomicFileLiveCardStatsSink(liveCardStatsPath)
 	if err != nil {
 		return fmt.Errorf("create live card stats sink: %w", err)
@@ -173,7 +182,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		AssetResolver: monitor.NoopCardAssetResolver{},
 		Sink:          liveCardStatsSink,
 	})
-	if runtimeState.LiveCardStats != nil && canRestoreLiveCardStats(runtimeState, powerLogPath, loadingLogPath) {
+	if runtimeState.LiveCardStats != nil && canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(deckLogAvailable, deckLogPath)) {
 		if err := projector.Restore(*runtimeState.LiveCardStats); err != nil {
 			return fmt.Errorf("restore live card stats projector: %w", err)
 		}
@@ -195,7 +204,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		AssetResolver: overlayCardAssetResolver{},
 		Sink:          overlaySink,
 	})
-	if runtimeState.Overlay != nil && canRestoreLiveCardStats(runtimeState, powerLogPath, loadingLogPath) {
+	if runtimeState.Overlay != nil && canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(deckLogAvailable, deckLogPath)) {
 		if err := overlayProjector.Restore(*runtimeState.Overlay); err != nil {
 			return fmt.Errorf("restore overlay projector: %w", err)
 		}
@@ -302,6 +311,9 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 
 	startLiveReader(powerLogPath, "power", powerParser.ParseLine, resolveReaderStartOffset(runtimeState, "power", powerLogPath))
 	startLiveReader(loadingLogPath, "loading_screen", loadingParser.ParseLine, resolveReaderStartOffset(runtimeState, "loading_screen", loadingLogPath))
+	if deckLogAvailable {
+		startLiveReader(deckLogPath, "deck", deckParser.ParseLine, resolveReaderStartOffset(runtimeState, "deck", deckLogPath))
+	}
 
 	statusInterval := options.statusInterval
 	if statusInterval <= 0 {
@@ -487,6 +499,13 @@ func resolveLiveLogPaths(cfg *config.Config) (string, string) {
 	return powerLogPath, loadingLogPath
 }
 
+func resolveDeckLogPath(cfg *config.Config) string {
+	if cfg == nil {
+		return ""
+	}
+	return filepath.Join(cfg.LogsPath, "Decks.log")
+}
+
 func resolveLiveCardStatsPath(path string) (string, error) {
 	if strings.TrimSpace(path) != "" {
 		workingDir, err := os.Getwd()
@@ -527,13 +546,17 @@ func resolveOverlaySnapshotPath(path string) (string, error) {
 	return filepath.Join(projectRoot, "output", "overlay_snapshot.json"), nil
 }
 
-func canRestoreLiveCardStats(state monitorRuntimeState, powerLogPath, loadingLogPath string) bool {
+func canRestoreRuntimeSnapshots(state monitorRuntimeState, powerLogPath, loadingLogPath, deckLogPath string) bool {
 	checks := map[string]string{
 		"power":          powerLogPath,
 		"loading_screen": loadingLogPath,
+		"deck":           deckLogPath,
 	}
 
 	for source, currentPath := range checks {
+		if strings.TrimSpace(currentPath) == "" {
+			continue
+		}
 		checkpoint, ok := state.Readers[source]
 		if !ok || strings.TrimSpace(checkpoint.Path) == "" {
 			continue
@@ -544,6 +567,29 @@ func canRestoreLiveCardStats(state monitorRuntimeState, powerLogPath, loadingLog
 	}
 
 	return true
+}
+
+func optionalRestorePath(enabled bool, path string) string {
+	if !enabled {
+		return ""
+	}
+	return path
+}
+
+func liveOptionalLogExists(path string) bool {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return false
+	}
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
+}
+
+func formatOptionalLiveLogPath(path string, enabled bool) string {
+	if enabled {
+		return path
+	}
+	return path + " (optional, not found)"
 }
 
 func formatLiveCardStatsCardsForTerminal(cards []monitor.LiveCardStatsCardEntry) string {

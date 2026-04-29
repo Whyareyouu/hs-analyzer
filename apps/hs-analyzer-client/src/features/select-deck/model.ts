@@ -24,7 +24,11 @@ export function useDeckSelection() {
         setStale(nextStale);
         if (items[0]) {
           setSelectedDeckId(items[0].deckId);
+          return;
         }
+        setSelectedDeckId("");
+        setBundle(null);
+        setStatus("ready");
       })
       .catch((error: Error) => {
         if (cancelled) {
@@ -41,6 +45,7 @@ export function useDeckSelection() {
 
   useEffect(() => {
     if (!selectedDeckId) {
+      setBundle(null);
       return;
     }
     let cancelled = false;

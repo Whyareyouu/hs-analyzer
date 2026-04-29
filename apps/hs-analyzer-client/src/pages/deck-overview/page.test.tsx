@@ -90,4 +90,20 @@ describe("DeckOverviewPage", () => {
     expect(screen.getAllByText("Spell Demon Hunter")).toHaveLength(2);
     expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
   });
+
+  it("renders empty-state instead of demo decks", async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => [],
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(
+      <AppProviders>
+        <DeckOverviewPage />
+      </AppProviders>,
+    );
+
+    await waitFor(() => expect(screen.getByText(/Не удалось построить список колод/i)).toBeInTheDocument());
+  });
 });

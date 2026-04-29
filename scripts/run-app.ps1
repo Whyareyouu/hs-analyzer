@@ -33,6 +33,49 @@ function Resolve-RepoPath([string]$PathValue) {
     return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $PathValue))
 }
 
+function Resolve-AutoLogsPath() {
+    $localAppData = [Environment]::GetEnvironmentVariable("LOCALAPPDATA")
+    if ([string]::IsNullOrWhiteSpace($localAppData)) {
+        return ""
+    }
+
+    $logsRoot = Join-Path $localAppData "Blizzard\Hearthstone\Logs"
+    if (-not (Test-Path -LiteralPath $logsRoot -PathType Container)) {
+        return ""
+    }
+
+    $directPowerLog = Join-Path $logsRoot "Power.log"
+    if (Test-Path -LiteralPath $directPowerLog -PathType Leaf) {
+        return $logsRoot
+    }
+
+    $nestedCandidates = @(
+        Get-ChildItem -LiteralPath $logsRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "Power.log") -PathType Leaf } |
+            Sort-Object -Property LastWriteTimeUtc -Descending
+    )
+    if ($nestedCandidates.Count -gt 0) {
+        return $nestedCandidates[0].FullName
+    }
+
+    return ""
+}
+
+function Resolve-DeckCatalogLogsPath([string]$LogsPathValue) {
+    if ([string]::IsNullOrWhiteSpace($LogsPathValue)) {
+        return ""
+    }
+
+    $item = Get-Item -LiteralPath $LogsPathValue -ErrorAction SilentlyContinue
+    if ($null -eq $item) {
+        return ""
+    }
+    if ($item.PSIsContainer) {
+        return $item.FullName
+    }
+    return $item.DirectoryName
+}
+
 function Assert-Command([string]$Name) {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
         throw "Required command '$Name' was not found in PATH."
@@ -131,7 +174,8 @@ function Start-BackgroundProcess(
     [string]$Name,
     [string]$FilePath,
     [string[]]$Arguments,
-    [string]$WorkingDirectory
+    [string]$WorkingDirectory,
+    [hashtable]$Environment = @{}
 ) {
     $stdoutPath = Join-Path $runDir "$Name.stdout.log"
     $stderrPath = Join-Path $runDir "$Name.stderr.log"
@@ -149,7 +193,20 @@ function Start-BackgroundProcess(
     if ($safeArguments.Count -gt 0) {
         $startProcessParams.ArgumentList = $safeArguments
     }
-    $process = Start-Process @startProcessParams
+    $previousEnvironment = @{}
+    foreach ($entry in $Environment.GetEnumerator()) {
+        $previousEnvironment[$entry.Key] = [Environment]::GetEnvironmentVariable($entry.Key)
+        [Environment]::SetEnvironmentVariable($entry.Key, [string]$entry.Value)
+    }
+
+    try {
+        $process = Start-Process @startProcessParams
+    }
+    finally {
+        foreach ($entry in $Environment.GetEnumerator()) {
+            [Environment]::SetEnvironmentVariable($entry.Key, $previousEnvironment[$entry.Key])
+        }
+    }
 
     Start-Sleep -Seconds 2
     if ($process.HasExited) {
@@ -177,6 +234,9 @@ if (-not (Test-Path -LiteralPath $cardsDbFullPath -PathType Leaf)) {
 }
 
 $logsFullPath = Resolve-RepoPath $LogsPath
+if (-not $logsFullPath) {
+    $logsFullPath = Resolve-AutoLogsPath
+}
 if ($logsFullPath -and -not (Test-Path -LiteralPath $logsFullPath)) {
     throw "Logs path was not found: $logsFullPath"
 }
@@ -234,7 +294,14 @@ try {
 
     $processes = @()
     try {
-        $processes += Start-BackgroundProcess "backend" $backendBinary @() $repoRoot
+        $backendEnvironment = @{}
+        $backendLogsPath = Resolve-DeckCatalogLogsPath $logsFullPath
+        if ($backendLogsPath) {
+            $backendEnvironment["HS_ANALYZER_LOGS_PATH"] = $backendLogsPath
+            $backendEnvironment["HS_ANALYZER_CARDS_DB_PATH"] = $cardsDbFullPath
+        }
+
+        $processes += Start-BackgroundProcess "backend" $backendBinary @() $repoRoot $backendEnvironment
 
         $monitorArgs = @(
             "monitor",

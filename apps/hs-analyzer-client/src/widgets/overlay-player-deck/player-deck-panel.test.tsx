@@ -26,4 +26,9 @@ describe("PlayerDeckPanel", () => {
     expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
     expect(container.firstChild).toMatchSnapshot();
   });
+
+  it("shows explicit waiting state when deck cards are not available yet", () => {
+    render(<PlayerDeckPanel inspectMode={false} onInspect={vi.fn()} cards={[]} />);
+    expect(screen.getByText(/Ждём выбранную колоду/i)).toBeInTheDocument();
+  });
 });

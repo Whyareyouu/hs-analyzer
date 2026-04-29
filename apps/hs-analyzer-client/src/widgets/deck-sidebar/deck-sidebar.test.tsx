@@ -38,4 +38,9 @@ describe("DeckSidebar", () => {
     await userEvent.click(screen.getByRole("button", { name: /Rainbow DK/i }));
     expect(onSelect).toHaveBeenCalledWith("deck-2");
   });
+
+  it("renders empty-state copy when decks are unavailable", () => {
+    render(<DeckSidebar selectedDeckId="" onSelect={() => undefined} decks={[]} />);
+    expect(screen.getByText(/Не удалось найти колоды/i)).toBeInTheDocument();
+  });
 });

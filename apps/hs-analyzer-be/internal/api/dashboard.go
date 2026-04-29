@@ -1,11 +1,10 @@
 package api
 
 import (
-	"fmt"
-	"slices"
+	"sort"
 	"strings"
 
-	"hsanalyzer/internal/carddb"
+	"hsanalyzer/pkg/contracts/matchupload"
 )
 
 type DeckListItem struct {
@@ -57,203 +56,338 @@ type DashboardStore interface {
 	GetDeckMatchups(deckID string) ([]MatchupEntry, bool)
 }
 
-type MemoryDashboardStore struct {
-	decks     []DeckListItem
-	overviews map[string]DeckOverview
-	cards     map[string][]DeckCard
-	matchups  map[string][]MatchupEntry
+type MatchDashboardStore struct {
+	store         MatchStore
+	catalogSource DashboardDeckCatalogSource
 }
 
-func NewMemoryDashboardStore() *MemoryDashboardStore {
-	deckID := "deck-spell-dh"
-	decks := []DeckListItem{
-		{
-			DeckID:       deckID,
-			Name:         "Spell Demon Hunter",
-			Class:        string(carddb.CardClassDemonHunter),
-			Wins:         18,
-			Losses:       12,
-			Winrate:      0.60,
-			LastPlayedAt: "2026-04-27T16:30:00Z",
-			Icon:         "DH",
-		},
-		{
-			DeckID:       "deck-rainbow-dk",
-			Name:         "Rainbow Death Knight",
-			Class:        string(carddb.CardClassDeathKnight),
-			Wins:         11,
-			Losses:       9,
-			Winrate:      0.55,
-			LastPlayedAt: "2026-04-25T19:12:00Z",
-			Icon:         "DK",
-		},
+func NewMatchDashboardStore(store MatchStore, catalogSources ...DashboardDeckCatalogSource) *MatchDashboardStore {
+	dashboardStore := &MatchDashboardStore{store: store}
+	if len(catalogSources) > 0 {
+		dashboardStore.catalogSource = catalogSources[0]
 	}
-
-	store := &MemoryDashboardStore{
-		decks:     decks,
-		overviews: make(map[string]DeckOverview, len(decks)),
-		cards:     make(map[string][]DeckCard, len(decks)),
-		matchups:  make(map[string][]MatchupEntry, len(decks)),
-	}
-
-	store.overviews[deckID] = DeckOverview{
-		DeckID:       deckID,
-		Name:         "Spell Demon Hunter",
-		Class:        string(carddb.CardClassDemonHunter),
-		Wins:         18,
-		Losses:       12,
-		TotalMatches: 30,
-		Winrate:      0.60,
-		BestMatchups: []MatchupEntry{
-			{OpponentClass: string(carddb.CardClassWarrior), Wins: 6, Losses: 2, Matches: 8, Winrate: 0.75},
-			{OpponentClass: string(carddb.CardClassDruid), Wins: 5, Losses: 2, Matches: 7, Winrate: 0.71},
-			{OpponentClass: string(carddb.CardClassHunter), Wins: 4, Losses: 2, Matches: 6, Winrate: 0.67},
-		},
-		WorstMatchups: []MatchupEntry{
-			{OpponentClass: string(carddb.CardClassMage), Wins: 1, Losses: 4, Matches: 5, Winrate: 0.20},
-			{OpponentClass: string(carddb.CardClassPriest), Wins: 2, Losses: 4, Matches: 6, Winrate: 0.33},
-			{OpponentClass: string(carddb.CardClassShaman), Wins: 0, Losses: 2, Matches: 2, Winrate: 0},
-		},
-	}
-	store.cards[deckID] = []DeckCard{
-		newDeckCard("CARD_001", "Taste of Chaos", 1, 2, carddb.RarityCommon, false),
-		newDeckCard("CARD_002", "Parched Desperado", 2, 2, carddb.RarityRare, false),
-		newDeckCard("CARD_003", "Illidari Studies", 1, 2, carddb.RarityCommon, false),
-		newDeckCard("CARD_004", "Argus, the Emerald Star", 5, 1, carddb.RarityLegendary, true),
-	}
-	store.matchups[deckID] = append([]MatchupEntry(nil), store.overviews[deckID].BestMatchups...)
-	store.matchups[deckID] = append(store.matchups[deckID], store.overviews[deckID].WorstMatchups...)
-
-	secondaryID := "deck-rainbow-dk"
-	store.overviews[secondaryID] = DeckOverview{
-		DeckID:       secondaryID,
-		Name:         "Rainbow Death Knight",
-		Class:        string(carddb.CardClassDeathKnight),
-		Wins:         11,
-		Losses:       9,
-		TotalMatches: 20,
-		Winrate:      0.55,
-		BestMatchups: []MatchupEntry{
-			{OpponentClass: string(carddb.CardClassPaladin), Wins: 4, Losses: 1, Matches: 5, Winrate: 0.80},
-			{OpponentClass: string(carddb.CardClassRogue), Wins: 3, Losses: 1, Matches: 4, Winrate: 0.75},
-		},
-		WorstMatchups: []MatchupEntry{
-			{OpponentClass: string(carddb.CardClassDruid), Wins: 1, Losses: 3, Matches: 4, Winrate: 0.25},
-		},
-	}
-	store.cards[secondaryID] = []DeckCard{
-		newDeckCard("CARD_101", "Skeletal Sidekick", 1, 2, carddb.RarityCommon, false),
-		newDeckCard("CARD_102", "Rainbow Seamstress", 3, 2, carddb.RarityEpic, false),
-		newDeckCard("CARD_103", "The Primus", 8, 1, carddb.RarityLegendary, true),
-	}
-	store.matchups[secondaryID] = append([]MatchupEntry(nil), store.overviews[secondaryID].BestMatchups...)
-	store.matchups[secondaryID] = append(store.matchups[secondaryID], store.overviews[secondaryID].WorstMatchups...)
-
-	return store
+	return dashboardStore
 }
 
-func (s *MemoryDashboardStore) ListDecks() []DeckListItem {
-	if s == nil {
-		return nil
+type dashboardDeckAggregate struct {
+	listItem   DeckListItem
+	overview   DeckOverview
+	cards      []DeckCard
+	matchups   map[string]*MatchupEntry
+	lastPlayed string
+}
+
+type dashboardSnapshot struct {
+	decks map[string]*dashboardDeckAggregate
+}
+
+func (s *MatchDashboardStore) ListDecks() []DeckListItem {
+	snapshot := s.buildSnapshot()
+	result := make([]DeckListItem, 0, len(snapshot.decks))
+	for _, current := range snapshot.decks {
+		result = append(result, current.listItem)
 	}
-	result := append([]DeckListItem(nil), s.decks...)
-	slices.SortFunc(result, func(left, right DeckListItem) int {
+	sort.Slice(result, func(i, j int) bool {
 		switch {
-		case left.LastPlayedAt > right.LastPlayedAt:
-			return -1
-		case left.LastPlayedAt < right.LastPlayedAt:
-			return 1
-		case left.Name < right.Name:
-			return -1
-		case left.Name > right.Name:
-			return 1
+		case result[i].LastPlayedAt > result[j].LastPlayedAt:
+			return true
+		case result[i].LastPlayedAt < result[j].LastPlayedAt:
+			return false
 		default:
-			return 0
+			return result[i].Name < result[j].Name
 		}
 	})
 	return result
 }
 
-func (s *MemoryDashboardStore) GetDeckOverview(deckID string) (DeckOverview, bool) {
-	if s == nil {
-		return DeckOverview{}, false
-	}
-	overview, ok := s.overviews[strings.TrimSpace(deckID)]
+func (s *MatchDashboardStore) GetDeckOverview(deckID string) (DeckOverview, bool) {
+	current, ok := s.buildSnapshot().decks[strings.TrimSpace(deckID)]
 	if !ok {
 		return DeckOverview{}, false
 	}
-	overview.BestMatchups = append([]MatchupEntry(nil), overview.BestMatchups...)
-	overview.WorstMatchups = append([]MatchupEntry(nil), overview.WorstMatchups...)
+	overview := current.overview
+	best, worst := buildMatchupSlices(current.matchups)
+	overview.BestMatchups = best
+	overview.WorstMatchups = worst
 	return overview, true
 }
 
-func (s *MemoryDashboardStore) GetDeckCards(deckID string) ([]DeckCard, bool) {
-	if s == nil {
-		return nil, false
-	}
-	cards, ok := s.cards[strings.TrimSpace(deckID)]
+func (s *MatchDashboardStore) GetDeckCards(deckID string) ([]DeckCard, bool) {
+	current, ok := s.buildSnapshot().decks[strings.TrimSpace(deckID)]
 	if !ok {
 		return nil, false
 	}
-	result := append([]DeckCard(nil), cards...)
-	slices.SortFunc(result, func(left, right DeckCard) int {
+	result := append([]DeckCard(nil), current.cards...)
+	sort.Slice(result, func(i, j int) bool {
 		switch {
-		case left.ManaCost < right.ManaCost:
-			return -1
-		case left.ManaCost > right.ManaCost:
-			return 1
-		case left.Name < right.Name:
-			return -1
-		case left.Name > right.Name:
-			return 1
+		case result[i].ManaCost < result[j].ManaCost:
+			return true
+		case result[i].ManaCost > result[j].ManaCost:
+			return false
 		default:
-			return 0
+			return result[i].Name < result[j].Name
 		}
 	})
 	return result, true
 }
 
-func (s *MemoryDashboardStore) GetDeckMatchups(deckID string) ([]MatchupEntry, bool) {
-	if s == nil {
-		return nil, false
-	}
-	matchups, ok := s.matchups[strings.TrimSpace(deckID)]
+func (s *MatchDashboardStore) GetDeckMatchups(deckID string) ([]MatchupEntry, bool) {
+	current, ok := s.buildSnapshot().decks[strings.TrimSpace(deckID)]
 	if !ok {
 		return nil, false
 	}
-	result := append([]MatchupEntry(nil), matchups...)
-	slices.SortFunc(result, func(left, right MatchupEntry) int {
-		switch {
-		case left.Winrate > right.Winrate:
-			return -1
-		case left.Winrate < right.Winrate:
-			return 1
-		case matchupLabel(left) < matchupLabel(right):
-			return -1
-		case matchupLabel(left) > matchupLabel(right):
-			return 1
-		default:
-			return 0
-		}
-	})
+	result, _ := buildMatchupSlices(current.matchups)
 	return result, true
 }
 
-func newDeckCard(cardID, name string, manaCost, copies int, rarity carddb.Rarity, legendary bool) DeckCard {
-	return DeckCard{
-		CardID:      cardID,
-		Name:        name,
-		ManaCost:    manaCost,
-		Copies:      copies,
-		Rarity:      string(rarity),
-		IsLegendary: legendary,
-		Image:       fmt.Sprintf("https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/%s.png", cardID),
+func (s *MatchDashboardStore) buildSnapshot() dashboardSnapshot {
+	snapshot := dashboardSnapshot{decks: map[string]*dashboardDeckAggregate{}}
+	if s == nil {
+		return snapshot
+	}
+
+	if s.catalogSource != nil {
+		if catalogDecks, err := s.catalogSource.LoadDeckCatalog(); err == nil {
+			for _, catalogDeck := range catalogDecks {
+				deckID := strings.TrimSpace(catalogDeck.DeckID)
+				if deckID == "" {
+					continue
+				}
+				snapshot.decks[deckID] = &dashboardDeckAggregate{
+					listItem: DeckListItem{
+						DeckID: deckID,
+						Name:   strings.TrimSpace(catalogDeck.Name),
+						Class:  fallbackDeckClass(catalogDeck.Class),
+						Icon:   strings.TrimSpace(catalogDeck.Icon),
+					},
+					overview: DeckOverview{
+						DeckID: deckID,
+						Name:   strings.TrimSpace(catalogDeck.Name),
+						Class:  fallbackDeckClass(catalogDeck.Class),
+					},
+					cards:    append([]DeckCard(nil), catalogDeck.Cards...),
+					matchups: make(map[string]*MatchupEntry),
+				}
+			}
+		}
+	}
+
+	if s.store != nil {
+		for _, stored := range s.store.ListMatches() {
+			summary, ok, err := stored.Payload.GetDashboardSummary()
+			if err != nil || !ok {
+				continue
+			}
+
+			deckID := dashboardDeckKey(summary)
+			if deckID == "" {
+				continue
+			}
+
+			current, exists := snapshot.decks[deckID]
+			if !exists {
+				current = &dashboardDeckAggregate{
+					listItem: DeckListItem{
+						DeckID: deckID,
+						Name:   fallbackDeckName(summary, deckID),
+						Class:  fallbackDeckClass(summary.PlayerClass),
+						Icon:   deckIcon(summary.PlayerClass),
+					},
+					overview: DeckOverview{
+						DeckID: deckID,
+						Name:   fallbackDeckName(summary, deckID),
+						Class:  fallbackDeckClass(summary.PlayerClass),
+					},
+					matchups: make(map[string]*MatchupEntry),
+				}
+				snapshot.decks[deckID] = current
+			}
+
+			playedAt := payloadPlayedAt(stored.Payload)
+			if playedAt >= current.lastPlayed {
+				current.lastPlayed = playedAt
+				current.listItem.LastPlayedAt = playedAt
+				if cards := convertDashboardCards(summary.DeckCards); len(cards) > 0 {
+					current.cards = cards
+				}
+				if strings.TrimSpace(summary.DeckName) != "" {
+					current.listItem.Name = strings.TrimSpace(summary.DeckName)
+					current.overview.Name = strings.TrimSpace(summary.DeckName)
+				}
+				if strings.TrimSpace(summary.PlayerClass) != "" {
+					className := strings.TrimSpace(summary.PlayerClass)
+					current.listItem.Class = className
+					current.listItem.Icon = deckIcon(className)
+					current.overview.Class = className
+				}
+			}
+
+			current.overview.TotalMatches++
+			switch strings.TrimSpace(summary.Result) {
+			case matchupload.DashboardResultWin:
+				current.listItem.Wins++
+				current.overview.Wins++
+			case matchupload.DashboardResultLoss:
+				current.listItem.Losses++
+				current.overview.Losses++
+			}
+
+			if opponentClass := strings.TrimSpace(summary.OpponentClass); opponentClass != "" {
+				entry, ok := current.matchups[opponentClass]
+				if !ok {
+					entry = &MatchupEntry{OpponentClass: opponentClass}
+					current.matchups[opponentClass] = entry
+				}
+				entry.Matches++
+				switch strings.TrimSpace(summary.Result) {
+				case matchupload.DashboardResultWin:
+					entry.Wins++
+				case matchupload.DashboardResultLoss:
+					entry.Losses++
+				}
+				entry.Winrate = ratio(entry.Wins, entry.Matches)
+			}
+		}
+	}
+
+	for _, current := range snapshot.decks {
+		if strings.TrimSpace(current.listItem.Name) == "" {
+			current.listItem.Name = current.listItem.DeckID
+		}
+		if strings.TrimSpace(current.listItem.Class) == "" {
+			current.listItem.Class = "UNKNOWN"
+		}
+		if strings.TrimSpace(current.listItem.Icon) == "" {
+			current.listItem.Icon = deckIcon(current.listItem.Class)
+		}
+		if strings.TrimSpace(current.overview.Name) == "" {
+			current.overview.Name = current.listItem.Name
+		}
+		if strings.TrimSpace(current.overview.Class) == "" {
+			current.overview.Class = current.listItem.Class
+		}
+		current.listItem.Winrate = ratio(current.listItem.Wins, current.overview.TotalMatches)
+		current.overview.Winrate = ratio(current.overview.Wins, current.overview.TotalMatches)
+	}
+
+	return snapshot
+}
+
+func buildMatchupSlices(matchups map[string]*MatchupEntry) ([]MatchupEntry, []MatchupEntry) {
+	if len(matchups) == 0 {
+		return []MatchupEntry{}, []MatchupEntry{}
+	}
+
+	items := make([]MatchupEntry, 0, len(matchups))
+	for _, current := range matchups {
+		items = append(items, *current)
+	}
+	sort.Slice(items, func(i, j int) bool {
+		switch {
+		case items[i].Winrate > items[j].Winrate:
+			return true
+		case items[i].Winrate < items[j].Winrate:
+			return false
+		default:
+			return items[i].OpponentClass < items[j].OpponentClass
+		}
+	})
+
+	best := append([]MatchupEntry(nil), items...)
+	worst := append([]MatchupEntry(nil), items...)
+	sort.Slice(worst, func(i, j int) bool {
+		switch {
+		case worst[i].Winrate < worst[j].Winrate:
+			return true
+		case worst[i].Winrate > worst[j].Winrate:
+			return false
+		default:
+			return worst[i].OpponentClass < worst[j].OpponentClass
+		}
+	})
+
+	return best, worst
+}
+
+func payloadPlayedAt(payload matchupload.Payload) string {
+	if strings.TrimSpace(payload.EndedAt) != "" {
+		return strings.TrimSpace(payload.EndedAt)
+	}
+	return strings.TrimSpace(payload.StartedAt)
+}
+
+func convertDashboardCards(cards []matchupload.DashboardDeckCard) []DeckCard {
+	result := make([]DeckCard, 0, len(cards))
+	for _, current := range cards {
+		result = append(result, DeckCard{
+			CardID:      strings.TrimSpace(current.CardID),
+			Name:        strings.TrimSpace(current.Name),
+			ManaCost:    current.ManaCost,
+			Copies:      current.Copies,
+			Rarity:      strings.TrimSpace(current.Rarity),
+			IsLegendary: current.IsLegendary,
+			Image:       strings.TrimSpace(current.Image),
+		})
+	}
+	return result
+}
+
+func dashboardDeckKey(summary matchupload.DashboardSummary) string {
+	if strings.TrimSpace(summary.DeckID) != "" {
+		return strings.TrimSpace(summary.DeckID)
+	}
+	return strings.TrimSpace(summary.DeckName)
+}
+
+func fallbackDeckName(summary matchupload.DashboardSummary, deckID string) string {
+	if strings.TrimSpace(summary.DeckName) != "" {
+		return strings.TrimSpace(summary.DeckName)
+	}
+	if strings.TrimSpace(deckID) != "" {
+		return strings.TrimSpace(deckID)
+	}
+	return "Unknown Deck"
+}
+
+func fallbackDeckClass(value string) string {
+	if strings.TrimSpace(value) == "" {
+		return "UNKNOWN"
+	}
+	return strings.TrimSpace(value)
+}
+
+func deckIcon(className string) string {
+	switch strings.TrimSpace(className) {
+	case "DEMONHUNTER":
+		return "DH"
+	case "DEATHKNIGHT":
+		return "DK"
+	case "PALADIN":
+		return "PA"
+	case "PRIEST":
+		return "PR"
+	case "WARLOCK":
+		return "WL"
+	case "WARRIOR":
+		return "WR"
+	case "HUNTER":
+		return "HU"
+	case "MAGE":
+		return "MA"
+	case "ROGUE":
+		return "RO"
+	case "SHAMAN":
+		return "SH"
+	case "DRUID":
+		return "DR"
+	default:
+		return "HS"
 	}
 }
 
-func matchupLabel(entry MatchupEntry) string {
-	if strings.TrimSpace(entry.OpponentArchetype) != "" {
-		return entry.OpponentArchetype
+func ratio(numerator, denominator int) float64 {
+	if denominator <= 0 {
+		return 0
 	}
-	return entry.OpponentClass
+	return float64(numerator) / float64(denominator)
 }

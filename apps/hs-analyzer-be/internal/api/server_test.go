@@ -92,7 +92,9 @@ func TestPostMatchesReturnsStableErrorShape(t *testing.T) {
 func TestDeckDashboardEndpointsReturnTypedPayloads(t *testing.T) {
 	t.Parallel()
 
-	server := NewServer(NewMemoryStore(), NewMemoryDashboardStore()).Routes()
+	store := NewMemoryStore()
+	server := NewServer(store).Routes()
+	_ = postPayload(t, server, backendDashboardPayload(), "match-1")
 
 	for _, path := range []string{
 		"/api/v1/decks",
@@ -115,7 +117,7 @@ func TestDeckDashboardEndpointsReturnTypedPayloads(t *testing.T) {
 func TestDeckDashboardReturnsNotFoundForUnknownDeck(t *testing.T) {
 	t.Parallel()
 
-	server := NewServer(NewMemoryStore(), NewMemoryDashboardStore()).Routes()
+	server := NewServer(NewMemoryStore()).Routes()
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/decks/unknown/overview", nil)
 	resp := httptest.NewRecorder()
 	server.ServeHTTP(resp, req)
@@ -150,4 +152,20 @@ func backendPayload() matchupload.Payload {
 			{Index: 0, Type: "game_start"},
 		},
 	}
+}
+
+func backendDashboardPayload() matchupload.Payload {
+	payload := backendPayload()
+	payload.MatchID = "game:1"
+	payload.EndedAt = "2026-04-29T10:15:03.000000000Z"
+	_ = payload.SetDashboardSummary(matchupload.DashboardSummary{
+		DeckID:      "deck-spell-dh",
+		DeckName:    "Spell Demon Hunter",
+		PlayerClass: "DEMONHUNTER",
+		Result:      matchupload.DashboardResultWin,
+		DeckCards: []matchupload.DashboardDeckCard{
+			{CardID: "CARD_1", Name: "Taste of Chaos", ManaCost: 1, Copies: 2, Rarity: "COMMON"},
+		},
+	})
+	return payload
 }
