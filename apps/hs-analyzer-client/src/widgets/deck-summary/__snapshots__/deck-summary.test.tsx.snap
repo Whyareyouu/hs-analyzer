@@ -1,0 +1,179 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DeckSummary > renders three-panel summary row with hero winrate ring 1`] = `
+<div
+  class="space-y-6"
+>
+  <div
+    class="rounded-xl border border-app-border/70 bg-[linear-gradient(180deg,rgba(21,31,54,0.94),rgba(12,18,31,0.92))] p-5 shadow-panel backdrop-blur-md flex items-center gap-5"
+  >
+    <div
+      class="grid h-20 w-20 place-items-center rounded-2xl bg-app-accent/15 text-3xl font-bold text-app-accent"
+    >
+      DE
+    </div>
+    <div>
+      <div
+        class="text-xs uppercase tracking-[0.2em] text-app-muted"
+      >
+        Selected Deck
+      </div>
+      <div
+        class="text-3xl font-bold text-app-text"
+      >
+        Spell DH
+      </div>
+      <div
+        class="mt-2 flex items-center gap-3 text-sm text-app-muted"
+      >
+        <span>
+          18-12
+        </span>
+        <span>
+          60%
+        </span>
+      </div>
+    </div>
+  </div>
+  <div
+    class="grid gap-[var(--dashboard-panel-gap)] xl:grid-cols-3"
+  >
+    <div
+      class="rounded-xl border border-app-border/70 bg-[linear-gradient(180deg,rgba(21,31,54,0.94),rgba(12,18,31,0.92))] p-5 shadow-panel backdrop-blur-md min-h-[var(--dashboard-summary-card-min-height)]"
+    >
+      <div
+        class="mb-4 text-sm font-semibold text-app-muted"
+      >
+        Общая статистика
+      </div>
+      <div
+        class="flex flex-col items-center gap-4 xl:flex-row xl:items-center xl:justify-between"
+      >
+        <div
+          class="flex flex-col items-center gap-3"
+        >
+          <div
+            class="grid place-items-center rounded-full border border-app-border/80 bg-app-panel p-3 shadow-glow"
+            style="width: var(--dashboard-winrate-ring-size); height: var(--dashboard-winrate-ring-size); background-image: conic-gradient(hsl(var(--color-accent-primary)) 216deg, rgba(255,255,255,0.07) 216deg 360deg);"
+          >
+            <div
+              class="grid h-[70%] w-[70%] place-items-center rounded-full bg-[#091120] text-center"
+            >
+              <div>
+                <div
+                  class="text-4xl font-bold text-app-text"
+                >
+                  60%
+                </div>
+                <div
+                  class="text-xs uppercase tracking-[0.2em] text-app-muted"
+                >
+                  Winrate
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="space-y-3"
+        >
+          <div
+            class="text-sm text-app-muted"
+          >
+            Победы
+          </div>
+          <div
+            class="text-3xl font-bold text-app-success"
+          >
+            18
+          </div>
+          <div
+            class="text-sm text-app-muted"
+          >
+            Поражения
+          </div>
+          <div
+            class="text-2xl font-semibold text-app-danger"
+          >
+            12
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-xl border border-app-border/70 bg-[linear-gradient(180deg,rgba(21,31,54,0.94),rgba(12,18,31,0.92))] p-5 shadow-panel backdrop-blur-md min-h-[var(--dashboard-summary-card-min-height)]"
+    >
+      <div
+        class="mb-4 text-sm font-semibold text-app-muted"
+      >
+        Матчи
+      </div>
+      <div
+        class="space-y-5"
+      >
+        <div>
+          <div
+            class="text-xs uppercase tracking-[0.16em] text-app-muted"
+          >
+            Всего матчей
+          </div>
+          <div
+            class="mt-2 text-5xl font-bold text-app-text"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="grid gap-3 rounded-lg border border-app-border/50 bg-app-panelStrong/60 p-4"
+        >
+          <div
+            class="text-sm text-app-muted"
+          >
+            Класс
+          </div>
+          <div
+            class="text-xl font-semibold text-app-text"
+          >
+            DEMONHUNTER
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-xl border border-app-border/70 bg-[linear-gradient(180deg,rgba(21,31,54,0.94),rgba(12,18,31,0.92))] p-5 shadow-panel backdrop-blur-md min-h-[var(--dashboard-summary-card-min-height)]"
+    >
+      <div
+        class="mb-4 text-sm font-semibold text-app-muted"
+      >
+        Лучшие матчапы
+      </div>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="flex items-center justify-between rounded-lg border border-app-border/50 bg-app-panelStrong/60 px-4 py-3"
+        >
+          <div>
+            <div
+              class="text-sm font-medium text-app-text"
+            >
+              Против WARRIOR
+            </div>
+            <div
+              class="text-xs text-app-muted"
+            >
+              8
+               матчей
+            </div>
+          </div>
+          <div
+            class="text-lg font-semibold text-app-success"
+          >
+            75%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

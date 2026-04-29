@@ -9,7 +9,8 @@ import (
 
 func main() {
 	store := api.NewMemoryStore()
-	server := api.NewServer(store)
+	dashboardStore := api.NewMemoryDashboardStore()
+	server := api.NewServer(store, dashboardStore)
 
 	log.Println("hs-analyzer-be listening on 127.0.0.1:8080")
 	if err := http.ListenAndServe("127.0.0.1:8080", server.Routes()); err != nil {

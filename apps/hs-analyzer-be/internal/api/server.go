@@ -24,16 +24,23 @@ type MatchStore interface {
 }
 
 type Server struct {
-	store MatchStore
+	store          MatchStore
+	dashboardStore DashboardStore
 }
 
-func NewServer(store MatchStore) *Server {
-	return &Server{store: store}
+func NewServer(store MatchStore, dashboardStores ...DashboardStore) *Server {
+	server := &Server{store: store}
+	if len(dashboardStores) > 0 {
+		server.dashboardStore = dashboardStores[0]
+	}
+	return server
 }
 
 func (s *Server) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/matches", s.handleMatches)
+	mux.HandleFunc("/api/v1/decks", s.handleDecks)
+	mux.HandleFunc("/api/v1/decks/", s.handleDeckDetails)
 	return mux
 }
 
@@ -100,6 +107,65 @@ func (s *Server) listMatches(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, s.store.ListMatches())
+}
+
+func (s *Server) handleDecks(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeError(w, http.StatusMethodNotAllowed, matchupload.ErrorValidationFailed, "method is not allowed")
+		return
+	}
+	if s == nil || s.dashboardStore == nil {
+		writeError(w, http.StatusServiceUnavailable, matchupload.ErrorInternal, "dashboard store is not configured")
+		return
+	}
+	writeJSON(w, http.StatusOK, s.dashboardStore.ListDecks())
+}
+
+func (s *Server) handleDeckDetails(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeError(w, http.StatusMethodNotAllowed, matchupload.ErrorValidationFailed, "method is not allowed")
+		return
+	}
+	if s == nil || s.dashboardStore == nil {
+		writeError(w, http.StatusServiceUnavailable, matchupload.ErrorInternal, "dashboard store is not configured")
+		return
+	}
+
+	path := strings.TrimPrefix(strings.TrimSpace(r.URL.Path), "/api/v1/decks/")
+	path = strings.Trim(path, "/")
+	parts := strings.Split(path, "/")
+	if len(parts) != 2 {
+		writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck endpoint not found")
+		return
+	}
+
+	deckID := strings.TrimSpace(parts[0])
+	resource := strings.TrimSpace(parts[1])
+	switch resource {
+	case "overview":
+		overview, ok := s.dashboardStore.GetDeckOverview(deckID)
+		if !ok {
+			writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck overview not found")
+			return
+		}
+		writeJSON(w, http.StatusOK, overview)
+	case "cards":
+		cards, ok := s.dashboardStore.GetDeckCards(deckID)
+		if !ok {
+			writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck cards not found")
+			return
+		}
+		writeJSON(w, http.StatusOK, cards)
+	case "matchups":
+		matchups, ok := s.dashboardStore.GetDeckMatchups(deckID)
+		if !ok {
+			writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck matchups not found")
+			return
+		}
+		writeJSON(w, http.StatusOK, matchups)
+	default:
+		writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck endpoint not found")
+	}
 }
 
 func writeJSON(w http.ResponseWriter, statusCode int, payload interface{}) {

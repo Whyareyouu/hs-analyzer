@@ -16,6 +16,7 @@ coverage.html
 
 # Dependency directories
 vendor/
+node_modules/
 
 # Go workspace file
 go.work
@@ -30,6 +31,12 @@ go.work
 # OS
 .DS_Store
 Thumbs.db
+
+# Frontend / Electron
+apps/hs-analyzer-client/dist/
+apps/hs-analyzer-client/dist-electron/
+apps/hs-analyzer-client/.vite/
+apps/hs-analyzer-client/coverage/
 
 # Config files (keep examples)
 config.yaml

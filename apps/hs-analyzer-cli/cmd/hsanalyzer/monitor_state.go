@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"hsanalyzer/internal/monitor"
+	"hsanalyzer/pkg/contracts/overlay"
 )
 
 const monitorStateVersion = 1
@@ -24,6 +25,7 @@ type monitorRuntimeState struct {
 	UpdatedAt     string                             `json:"updated_at,omitempty"`
 	Readers       map[string]monitorReaderCheckpoint `json:"readers,omitempty"`
 	LiveCardStats *monitor.LiveCardStatsSnapshot     `json:"live_card_stats,omitempty"`
+	Overlay       *overlay.Snapshot                  `json:"overlay,omitempty"`
 }
 
 func defaultMonitorStatePath() (string, error) {

@@ -1,0 +1,21 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-family-base);
+    color: hsl(var(--color-text-primary));
+    background:
+      radial-gradient(circle at top, rgba(59, 130, 246, 0.16), transparent 32%),
+      linear-gradient(160deg, #060b15 0%, #091120 48%, #030610 100%);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}

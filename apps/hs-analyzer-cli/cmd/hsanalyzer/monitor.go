@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -12,6 +14,7 @@ import (
 	"time"
 
 	"hsanalyzer/apps/hs-analyzer-cli/internal/delivery"
+	"hsanalyzer/apps/hs-analyzer-cli/internal/liveapi"
 	"hsanalyzer/apps/hs-analyzer-cli/internal/matchpackage"
 	"hsanalyzer/internal/analyzer"
 	"hsanalyzer/internal/carddb"
@@ -20,6 +23,7 @@ import (
 	"hsanalyzer/internal/logreader"
 	"hsanalyzer/internal/monitor"
 	"hsanalyzer/internal/parser"
+	"hsanalyzer/pkg/contracts/overlay"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -27,6 +31,7 @@ import (
 
 const (
 	defaultMonitorStatusInterval = 5 * time.Second
+	defaultLiveAPIAddr           = "127.0.0.1:8765"
 )
 
 type monitorOptions struct {
@@ -35,6 +40,8 @@ type monitorOptions struct {
 	cardsDBPath            string
 	stateFile              string
 	liveCardStatsFile      string
+	overlaySnapshotFile    string
+	liveAPIAddr            string
 	matchUploadURL         string
 	matchSpoolDir          string
 	pollInterval           time.Duration
@@ -64,6 +71,8 @@ func newMonitorCmd() *cobra.Command {
 	cmd.Flags().StringVar(&options.cardsDBPath, "cards-db-path", "", "Path to cards database")
 	cmd.Flags().StringVar(&options.stateFile, "state-file", "", "Path to monitor runtime state file for restart recovery")
 	cmd.Flags().StringVar(&options.liveCardStatsFile, "live-card-stats-file", "", "Path to live card stats snapshot file")
+	cmd.Flags().StringVar(&options.overlaySnapshotFile, "overlay-snapshot-file", "", "Path to overlay snapshot file")
+	cmd.Flags().StringVar(&options.liveAPIAddr, "live-api-addr", defaultLiveAPIAddr, "Address for local live overlay API server")
 	cmd.Flags().StringVar(&options.matchUploadURL, "match-upload-url", "", "Backend URL for POST /api/v1/matches")
 	cmd.Flags().StringVar(&options.matchSpoolDir, "match-spool-dir", "", "Directory for durable pending match uploads")
 	cmd.Flags().DurationVar(&options.pollInterval, "poll-interval", 250*time.Millisecond, "Live polling interval for growing log files")
@@ -104,6 +113,10 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		return err
 	}
 	liveCardStatsPath, err := resolveLiveCardStatsPath(options.liveCardStatsFile)
+	if err != nil {
+		return err
+	}
+	overlaySnapshotPath, err := resolveOverlaySnapshotPath(options.overlaySnapshotFile)
 	if err != nil {
 		return err
 	}
@@ -166,10 +179,55 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		}
 	}
 
+	overlayFileSink, err := monitor.NewAtomicFileOverlaySnapshotSink(overlaySnapshotPath)
+	if err != nil {
+		return fmt.Errorf("create overlay snapshot sink: %w", err)
+	}
+	liveServer := liveapi.NewServer(overlay.NewSnapshot())
+	overlaySink := multiOverlaySnapshotSink{
+		sinks: []monitor.OverlaySnapshotSink{
+			overlayFileSink,
+			liveServer,
+		},
+	}
+	overlayProjector := monitor.NewOverlaySnapshotProjector(monitor.OverlaySnapshotProjectorOptions{
+		CardDB:        cardDB,
+		AssetResolver: overlayCardAssetResolver{},
+		Sink:          overlaySink,
+	})
+	if runtimeState.Overlay != nil && canRestoreLiveCardStats(runtimeState, powerLogPath, loadingLogPath) {
+		if err := overlayProjector.Restore(*runtimeState.Overlay); err != nil {
+			return fmt.Errorf("restore overlay projector: %w", err)
+		}
+	}
+
 	eventCh := make(chan game.Event, 256)
 	checkpointCh := make(chan monitorReaderUpdate, 64)
 	errCh := make(chan error, 2)
 	var wg sync.WaitGroup
+
+	liveListener, err := net.Listen("tcp", strings.TrimSpace(options.liveAPIAddr))
+	if err != nil {
+		return fmt.Errorf("listen local live api %q: %w", options.liveAPIAddr, err)
+	}
+	defer func() {
+		_ = liveListener.Close()
+	}()
+	liveHTTPServer := &http.Server{Handler: liveServer.Routes()}
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		_ = liveHTTPServer.Shutdown(shutdownCtx)
+	}()
+	go func() {
+		if err := liveHTTPServer.Serve(liveListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			select {
+			case errCh <- fmt.Errorf("live api server: %w", err):
+			case <-runCtx.Done():
+			}
+		}
+	}()
+	fmt.Fprintf(cmd.OutOrStdout(), "live api started: http://%s\n", liveListener.Addr().String())
 
 	startLiveReader := func(path string, source string, parseLine func(string) ([]game.Event, error), startOffset int64) {
 		wg.Add(1)
@@ -261,6 +319,11 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 				wg.Wait()
 				return err
 			}
+			if err := overlayProjector.Process(event); err != nil {
+				cancelRun()
+				wg.Wait()
+				return err
+			}
 			if _, ok := event.(*game.CardPlayedEvent); ok {
 				after := projector.Snapshot()
 				if after.ProjectionVersion > before.ProjectionVersion {
@@ -318,12 +381,18 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 				zap.Bool("healthy", selfCheck.Healthy),
 				zap.Strings("issues", selfCheck.Issues),
 			)
+			if err := overlayProjector.SetHealth(buildOverlayHealth(snapshot)); err != nil {
+				cancelRun()
+				wg.Wait()
+				return err
+			}
 			if err := retryPending(runCtx, cmd, postGame, health); err != nil {
 				cancelRun()
 				wg.Wait()
 				return err
 			}
 			runtimeState.LiveCardStats = projector.PersistenceSnapshot()
+			runtimeState.Overlay = overlayProjector.PersistenceSnapshot()
 			if err := saveMonitorRuntimeState(statePath, runtimeState); err != nil {
 				cancelRun()
 				wg.Wait()
@@ -349,6 +418,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 				return err
 			}
 			runtimeState.LiveCardStats = projector.PersistenceSnapshot()
+			runtimeState.Overlay = overlayProjector.PersistenceSnapshot()
 			if err := saveMonitorRuntimeState(statePath, runtimeState); err != nil {
 				cancelRun()
 				wg.Wait()
@@ -437,6 +507,26 @@ func resolveLiveCardStatsPath(path string) (string, error) {
 	return filepath.Join(projectRoot, "output", "live_card_stats.json"), nil
 }
 
+func resolveOverlaySnapshotPath(path string) (string, error) {
+	if strings.TrimSpace(path) != "" {
+		workingDir, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("get working directory: %w", err)
+		}
+		return resolveCLIPath(workingDir, path), nil
+	}
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("get working directory: %w", err)
+	}
+	projectRoot, err := findProjectRoot(workingDir)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(projectRoot, "output", "overlay_snapshot.json"), nil
+}
+
 func canRestoreLiveCardStats(state monitorRuntimeState, powerLogPath, loadingLogPath string) bool {
 	checks := map[string]string{
 		"power":          powerLogPath,
@@ -471,6 +561,43 @@ func formatLiveCardStatsCardsForTerminal(cards []monitor.LiveCardStatsCardEntry)
 	}
 
 	return "[" + strings.Join(items, ", ") + "]"
+}
+
+func buildOverlayHealth(snapshot monitor.LiveHealthSnapshot) overlay.Health {
+	health := overlay.Health{
+		Monitor:   overlay.HealthStateHealthy,
+		Transport: overlay.HealthStateHealthy,
+	}
+	if snapshot.Watcher != monitor.WatcherHealthHealthy || snapshot.Storage != monitor.StorageHealthHealthy {
+		health.Monitor = overlay.HealthStateDegraded
+	}
+	return health
+}
+
+type overlayCardAssetResolver struct{}
+
+func (overlayCardAssetResolver) ResolveCardImage(cardID string, _ int) string {
+	cardID = strings.TrimSpace(cardID)
+	if cardID == "" {
+		return ""
+	}
+	return fmt.Sprintf("https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/%s.png", cardID)
+}
+
+type multiOverlaySnapshotSink struct {
+	sinks []monitor.OverlaySnapshotSink
+}
+
+func (s multiOverlaySnapshotSink) Publish(snapshot overlay.Snapshot) error {
+	for _, sink := range s.sinks {
+		if sink == nil {
+			continue
+		}
+		if err := sink.Publish(snapshot); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func finalizeLiveSession(

@@ -89,6 +89,41 @@ func TestPostMatchesReturnsStableErrorShape(t *testing.T) {
 	}
 }
 
+func TestDeckDashboardEndpointsReturnTypedPayloads(t *testing.T) {
+	t.Parallel()
+
+	server := NewServer(NewMemoryStore(), NewMemoryDashboardStore()).Routes()
+
+	for _, path := range []string{
+		"/api/v1/decks",
+		"/api/v1/decks/deck-spell-dh/overview",
+		"/api/v1/decks/deck-spell-dh/cards",
+		"/api/v1/decks/deck-spell-dh/matchups",
+	} {
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		resp := httptest.NewRecorder()
+		server.ServeHTTP(resp, req)
+		if resp.Code != http.StatusOK {
+			t.Fatalf("unexpected status for %s: %d body=%s", path, resp.Code, resp.Body.String())
+		}
+		if !json.Valid(resp.Body.Bytes()) {
+			t.Fatalf("invalid json for %s: %s", path, resp.Body.String())
+		}
+	}
+}
+
+func TestDeckDashboardReturnsNotFoundForUnknownDeck(t *testing.T) {
+	t.Parallel()
+
+	server := NewServer(NewMemoryStore(), NewMemoryDashboardStore()).Routes()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/decks/unknown/overview", nil)
+	resp := httptest.NewRecorder()
+	server.ServeHTTP(resp, req)
+	if resp.Code != http.StatusNotFound {
+		t.Fatalf("unexpected status: %d body=%s", resp.Code, resp.Body.String())
+	}
+}
+
 func postPayload(t *testing.T, handler http.Handler, payload matchupload.Payload, idempotencyKey string) *httptest.ResponseRecorder {
 	t.Helper()
 	body, err := json.Marshal(payload)
