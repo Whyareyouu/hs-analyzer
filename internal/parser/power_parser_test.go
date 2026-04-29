@@ -489,3 +489,70 @@ func TestPowerParserParseLineSupportsIncrementalStream(t *testing.T) {
 		t.Fatalf("unexpected played card: %#v", cardPlayed.Card)
 	}
 }
+
+func TestPowerParserMapsLocalPlayerNumberFromDebugGameHeader(t *testing.T) {
+	t.Parallel()
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(strings.Join([]string{
+		"D 00:00:00.0000000 GameState.DebugPrintGame() - PlayerID=2, PlayerName=UNKNOWN HUMAN PLAYER",
+		"D 00:00:00.0000000 GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Моя карта id=10 zone=HAND zonePos=1 cardId=MY_CARD player=2] EffectCardId=List EffectIndex=0 Target=0 SubOption=-1",
+		"D 00:00:00.0000000 PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Моя карта id=10 zone=PLAY zonePos=0 cardId=MY_CARD player=2] EffectCardId=List EffectIndex=0 Target=0 SubOption=-1",
+		"D 00:00:00.0000000 GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Карта оппонента id=11 zone=HAND zonePos=1 cardId=OPP_CARD player=1] EffectCardId=List EffectIndex=0 Target=0 SubOption=-1",
+		"D 00:00:00.0000000 PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Карта оппонента id=11 zone=PLAY zonePos=0 cardId=OPP_CARD player=1] EffectCardId=List EffectIndex=0 Target=0 SubOption=-1",
+	}, "\n")))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+	if len(events) != 2 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	first, ok := events[0].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected first event type: %T", events[0])
+	}
+	if first.Player != types.PlayerTypePlayer {
+		t.Fatalf("expected first card to be ours, got %s", first.Player)
+	}
+
+	second, ok := events[1].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected second event type: %T", events[1])
+	}
+	if second.Player != types.PlayerTypeOpponent {
+		t.Fatalf("expected second card to be opponent, got %s", second.Player)
+	}
+}
+
+func TestPowerParserKeepsLocalPlayerNumberAcrossPlayingReset(t *testing.T) {
+	t.Parallel()
+
+	parser := NewPowerParser()
+	lines := []string{
+		"D 00:00:00.0000000 GameState.DebugPrintGame() - PlayerID=2, PlayerName=UNKNOWN HUMAN PLAYER",
+		"D 00:00:00.0000000 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=PLAYSTATE value=PLAYING",
+		"D 00:00:01.0000000 GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=15 zone=HAND zonePos=2 cardId=TEST_SELF player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1",
+		"D 00:00:01.0000000 GameState.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Test Self id=15 zone=PLAY zonePos=0 cardId=TEST_SELF player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1",
+	}
+
+	var events []game.Event
+	for _, line := range lines {
+		parsedEvents, err := parser.ParseLine(line)
+		if err != nil {
+			t.Fatalf("parse line: %v", err)
+		}
+		events = append(events, parsedEvents...)
+	}
+
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+	playEvent, ok := events[0].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
+	}
+	if playEvent.Player != types.PlayerTypePlayer {
+		t.Fatalf("expected local player after PLAYING reset, got %s", playEvent.Player)
+	}
+}

@@ -13,8 +13,8 @@ exports[`PlayerDeckPanel > renders overlay rows with tokenized layout and zero-c
     class="space-y-2"
   >
     <button
-      class="grid w-[var(--overlay-card-row-width)] grid-cols-[36px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border border-app-border/60 text-left shadow-panel opacity-45 grayscale"
-      style="min-height: var(--overlay-card-row-height); background-image: linear-gradient(90deg, rgba(12, 18, 31, 0.95), rgba(18, 28, 49, 0.7)); background-size: cover; background-position: center;"
+      class="grid w-[var(--overlay-card-row-width)] grid-cols-[36px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border border-app-border/60 text-left shadow-panel grayscale"
+      style="min-height: var(--overlay-card-row-height); background-image: linear-gradient(90deg, rgba(8, 8, 10, 0.96), rgba(30, 32, 36, 0.92)); background-size: cover; background-position: center; opacity: 0.78;"
       type="button"
     >
       <span
@@ -28,9 +28,11 @@ exports[`PlayerDeckPanel > renders overlay rows with tokenized layout and zero-c
         Taste of Chaos
       </span>
       <span
-        class="grid h-full place-items-center bg-black/30 text-xs font-semibold text-app-text"
+        class="grid h-full place-items-center bg-black/30 text-[10px] font-semibold text-app-text"
       >
         0
+        /
+        2
       </span>
     </button>
   </div>

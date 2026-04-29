@@ -80,6 +80,23 @@ func TestOverlaySnapshotIgnoresGeneratedCardsForRemainingDeck(t *testing.T) {
 	}
 }
 
+func TestOverlaySnapshotBackfillsRemainingDeckWhenSelfPlayArrivesWithoutDrawEvent(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{})
+	mustOverlayProject(t, projector, game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("DECK_1", 1, types.PlayerTypePlayer),
+		card.New("DECK_1", 2, types.PlayerTypePlayer),
+	}, "Deck", "deck-1", ""))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("DECK_1", 3, types.PlayerTypePlayer), 0))
+
+	snapshot := projector.Snapshot()
+	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 {
+		t.Fatalf("unexpected deck counters after self play fallback: %#v", snapshot.PlayerDeckRemaining[0])
+	}
+}
+
 func TestOverlaySnapshotAggregatesOpponentRepeatsAndResetsOnNewMatch(t *testing.T) {
 	t.Parallel()
 

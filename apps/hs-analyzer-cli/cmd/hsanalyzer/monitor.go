@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -172,6 +174,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	health := monitor.NewHealthTracker()
 	powerParser := parser.NewPowerParser()
 	loadingParser := parser.NewLoadingScreenParser()
+	zoneParser := parser.NewZoneParser()
 	deckParser := parser.NewDeckParser(cardDB)
 	liveCardStatsSink, err := monitor.NewAtomicFileLiveCardStatsSink(liveCardStatsPath)
 	if err != nil {
@@ -182,7 +185,10 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		AssetResolver: monitor.NoopCardAssetResolver{},
 		Sink:          liveCardStatsSink,
 	})
-	if runtimeState.LiveCardStats != nil && canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(deckLogAvailable, deckLogPath)) {
+	canRestoreLiveCardStats := runtimeState.LiveCardStats != nil &&
+		runtimeState.LiveCardStats.Match.Status != monitor.LiveCardStatsMatchStatusFinalized &&
+		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, powerLogPath, optionalRestorePath(deckLogAvailable, deckLogPath))
+	if canRestoreLiveCardStats {
 		if err := projector.Restore(*runtimeState.LiveCardStats); err != nil {
 			return fmt.Errorf("restore live card stats projector: %w", err)
 		}
@@ -204,11 +210,17 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		AssetResolver: overlayCardAssetResolver{},
 		Sink:          overlaySink,
 	})
-	if runtimeState.Overlay != nil && canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(deckLogAvailable, deckLogPath)) {
+	canRestoreOverlay := runtimeState.Overlay != nil &&
+		runtimeState.Overlay.Match.Status != overlay.MatchStatusFinalized &&
+		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, powerLogPath, optionalRestorePath(deckLogAvailable, deckLogPath))
+	if canRestoreOverlay {
 		if err := overlayProjector.Restore(*runtimeState.Overlay); err != nil {
 			return fmt.Errorf("restore overlay projector: %w", err)
 		}
 	}
+
+	projectorRestored := canRestoreLiveCardStats
+	overlayRestored := canRestoreOverlay
 
 	eventCh := make(chan game.Event, 256)
 	checkpointCh := make(chan monitorReaderUpdate, 64)
@@ -237,6 +249,62 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		}
 	}()
 	fmt.Fprintf(cmd.OutOrStdout(), "live api started: http://%s\n", liveListener.Addr().String())
+
+	powerStartOffset, err := resolveLiveReaderStartOffset(runtimeState, "power", powerLogPath)
+	if err != nil {
+		return err
+	}
+	if err := primeIncrementalParserState(powerLogPath, powerStartOffset, powerParser.ParseLine); err != nil {
+		return fmt.Errorf("prime power parser state: %w", err)
+	}
+	loadingStartOffset, err := resolveLiveReaderStartOffset(runtimeState, "loading_screen", loadingLogPath)
+	if err != nil {
+		return err
+	}
+	if err := primeIncrementalParserState(loadingLogPath, loadingStartOffset, loadingParser.ParseLine); err != nil {
+		return fmt.Errorf("prime loading parser state: %w", err)
+	}
+	powerZoneStartOffset, err := resolveLiveReaderStartOffset(runtimeState, "power_zone", powerLogPath)
+	if err != nil {
+		return err
+	}
+	if err := primeIncrementalParserState(powerLogPath, powerZoneStartOffset, zoneParser.ParseLine); err != nil {
+		return fmt.Errorf("prime power zone parser state: %w", err)
+	}
+	deckStartOffset := int64(0)
+	if deckLogAvailable {
+		deckStartOffset, err = resolveLiveReaderStartOffset(runtimeState, "deck", deckLogPath)
+		if err != nil {
+			return err
+		}
+		if err := primeIncrementalParserState(deckLogPath, deckStartOffset, deckParser.ParseLine); err != nil {
+			return fmt.Errorf("prime deck parser state: %w", err)
+		}
+		if !hasMatchingReaderCheckpoint(runtimeState, "deck", deckLogPath) {
+			if err := bootstrapCurrentDeckSelection(runCtx, deckLogPath, deckParser, projector, overlayProjector); err != nil {
+				return err
+			}
+		}
+	}
+	if !projectorRestored {
+		if err := projector.Restore(projector.Snapshot()); err != nil {
+			return fmt.Errorf("publish initial live card stats snapshot: %w", err)
+		}
+	}
+	if !overlayRestored {
+		if err := overlayProjector.Restore(overlayProjector.Snapshot()); err != nil {
+			return fmt.Errorf("publish initial overlay snapshot: %w", err)
+		}
+	}
+	if runtimeState.Readers == nil {
+		runtimeState.Readers = make(map[string]monitorReaderCheckpoint)
+	}
+	recordInitialReaderCheckpoint(runtimeState.Readers, "power", powerLogPath, powerStartOffset)
+	recordInitialReaderCheckpoint(runtimeState.Readers, "loading_screen", loadingLogPath, loadingStartOffset)
+	recordInitialReaderCheckpoint(runtimeState.Readers, "power_zone", powerLogPath, powerZoneStartOffset)
+	if deckLogAvailable {
+		recordInitialReaderCheckpoint(runtimeState.Readers, "deck", deckLogPath, deckStartOffset)
+	}
 
 	startLiveReader := func(path string, source string, parseLine func(string) ([]game.Event, error), startOffset int64) {
 		wg.Add(1)
@@ -309,10 +377,11 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		}()
 	}
 
-	startLiveReader(powerLogPath, "power", powerParser.ParseLine, resolveReaderStartOffset(runtimeState, "power", powerLogPath))
-	startLiveReader(loadingLogPath, "loading_screen", loadingParser.ParseLine, resolveReaderStartOffset(runtimeState, "loading_screen", loadingLogPath))
+	startLiveReader(powerLogPath, "power", powerParser.ParseLine, powerStartOffset)
+	startLiveReader(loadingLogPath, "loading_screen", loadingParser.ParseLine, loadingStartOffset)
+	startLiveReader(powerLogPath, "power_zone", zoneParser.ParseLine, powerZoneStartOffset)
 	if deckLogAvailable {
-		startLiveReader(deckLogPath, "deck", deckParser.ParseLine, resolveReaderStartOffset(runtimeState, "deck", deckLogPath))
+		startLiveReader(deckLogPath, "deck", deckParser.ParseLine, deckStartOffset)
 	}
 
 	statusInterval := options.statusInterval
@@ -445,6 +514,110 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	}
 }
 
+func primeIncrementalParserState(path string, endOffset int64, parseLine func(string) ([]game.Event, error)) error {
+	if strings.TrimSpace(path) == "" || endOffset <= 0 || parseLine == nil {
+		return nil
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("open log file: %w", err)
+	}
+	defer func() {
+		_ = file.Close()
+	}()
+
+	scanner := bufio.NewScanner(io.LimitReader(file, endOffset))
+	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+	for scanner.Scan() {
+		if _, err := parseLine(scanner.Text()); err != nil {
+			return err
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("scan parser history: %w", err)
+	}
+	return nil
+}
+
+func bootstrapCurrentDeckSelection(
+	ctx context.Context,
+	deckLogPath string,
+	deckParser *parser.DeckParser,
+	projector *monitor.LiveCardStatsProjector,
+	overlayProjector *monitor.OverlaySnapshotProjector,
+) error {
+	if strings.TrimSpace(deckLogPath) == "" || deckParser == nil {
+		return nil
+	}
+
+	file, err := os.Open(deckLogPath)
+	if err != nil {
+		return fmt.Errorf("open deck log for bootstrap: %w", err)
+	}
+	defer func() {
+		_ = file.Close()
+	}()
+
+	events, err := deckParser.Parse(ctx, file)
+	if err != nil {
+		return fmt.Errorf("bootstrap selected deck from deck log: %w", err)
+	}
+	for _, event := range events {
+		if event == nil {
+			continue
+		}
+		if err := projector.Process(event); err != nil {
+			return fmt.Errorf("bootstrap selected deck for live card stats: %w", err)
+		}
+		if err := overlayProjector.Process(event); err != nil {
+			return fmt.Errorf("bootstrap selected deck for overlay: %w", err)
+		}
+	}
+	return nil
+}
+
+func resolveLiveReaderStartOffset(state monitorRuntimeState, source, path string) (int64, error) {
+	offset := resolveReaderStartOffset(state, source, path)
+	if offset > 0 || hasMatchingReaderCheckpoint(state, source, path) {
+		return offset, nil
+	}
+	if strings.TrimSpace(path) == "" {
+		return 0, nil
+	}
+
+	info, err := os.Stat(path)
+	if err != nil {
+		return 0, fmt.Errorf("stat live log path %s: %w", path, err)
+	}
+	if info.IsDir() {
+		return 0, fmt.Errorf("live log path is a directory: %s", path)
+	}
+	return info.Size(), nil
+}
+
+func hasMatchingReaderCheckpoint(state monitorRuntimeState, source, path string) bool {
+	checkpoint, ok := state.Readers[source]
+	if !ok {
+		return false
+	}
+	if strings.TrimSpace(checkpoint.Path) == "" || strings.TrimSpace(path) == "" {
+		return false
+	}
+	return filepath.Clean(checkpoint.Path) == filepath.Clean(path)
+}
+
+func recordInitialReaderCheckpoint(readers map[string]monitorReaderCheckpoint, source, path string, offset int64) {
+	if readers == nil || strings.TrimSpace(source) == "" || strings.TrimSpace(path) == "" {
+		return
+	}
+	readers[source] = monitorReaderCheckpoint{
+		Path:      path,
+		Offset:    offset,
+		UpdatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+	}
+}
+
 func applyMonitorOverrides(cfg *config.Config, options monitorOptions) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
@@ -546,11 +719,24 @@ func resolveOverlaySnapshotPath(path string) (string, error) {
 	return filepath.Join(projectRoot, "output", "overlay_snapshot.json"), nil
 }
 
-func canRestoreRuntimeSnapshots(state monitorRuntimeState, powerLogPath, loadingLogPath, deckLogPath string) bool {
+func canRestoreRuntimeSnapshots(state monitorRuntimeState, paths ...string) bool {
 	checks := map[string]string{
-		"power":          powerLogPath,
-		"loading_screen": loadingLogPath,
-		"deck":           deckLogPath,
+		"power":          "",
+		"loading_screen": "",
+		"power_zone":     "",
+		"deck":           "",
+	}
+	if len(paths) > 0 {
+		checks["power"] = paths[0]
+	}
+	if len(paths) > 1 {
+		checks["loading_screen"] = paths[1]
+	}
+	if len(paths) > 2 {
+		checks["power_zone"] = paths[2]
+	}
+	if len(paths) > 3 {
+		checks["deck"] = paths[3]
 	}
 
 	for source, currentPath := range checks {

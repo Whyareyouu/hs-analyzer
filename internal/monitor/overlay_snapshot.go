@@ -45,6 +45,7 @@ type OverlaySnapshotProjector struct {
 	templateDeckID string
 	templateName   string
 	activeDeck     map[string]*overlay.PlayerDeckCard
+	selfPlayed     map[string]int
 	opponentCards  map[string]*overlay.OpponentPlayedCard
 }
 
@@ -128,6 +129,7 @@ func NewOverlaySnapshotProjector(options OverlaySnapshotProjectorOptions) *Overl
 		snapshot:      snapshot,
 		templateDeck:  make([]overlay.PlayerDeckCard, 0),
 		activeDeck:    make(map[string]*overlay.PlayerDeckCard),
+		selfPlayed:    make(map[string]int),
 		opponentCards: make(map[string]*overlay.OpponentPlayedCard),
 	}
 }
@@ -167,9 +169,14 @@ func (p *OverlaySnapshotProjector) Restore(snapshot overlay.Snapshot) error {
 	p.templateDeckID = snapshot.Match.DeckID
 	p.templateName = snapshot.Match.DeckName
 	p.activeDeck = make(map[string]*overlay.PlayerDeckCard, len(snapshot.PlayerDeckRemaining))
+	p.selfPlayed = make(map[string]int, len(snapshot.PlayerDeckRemaining))
 	for _, current := range snapshot.PlayerDeckRemaining {
 		card := current
 		p.activeDeck[current.CardID] = &card
+		outOfDeckCopies := current.InitialCopies - current.RemainingCopies
+		if outOfDeckCopies > 0 {
+			p.selfPlayed[current.CardID] = minInt(outOfDeckCopies, current.DrawnCopies)
+		}
 	}
 	p.opponentCards = make(map[string]*overlay.OpponentPlayedCard, len(snapshot.OpponentPlayedCards))
 	for _, current := range snapshot.OpponentPlayedCards {
@@ -295,7 +302,7 @@ func (p *OverlaySnapshotProjector) processCardDrawn(event *game.CardDrawnEvent) 
 }
 
 func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent) error {
-	if event == nil || event.Player != types.PlayerTypeOpponent || event.Card == nil {
+	if event == nil || event.Card == nil {
 		return nil
 	}
 	if p.snapshot.Match.Status != overlay.MatchStatusActive {
@@ -304,6 +311,25 @@ func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent
 
 	cardID := strings.TrimSpace(event.Card.ID)
 	if cardID == "" {
+		return nil
+	}
+
+	if event.Player == types.PlayerTypePlayer {
+		current, ok := p.activeDeck[cardID]
+		if !ok || current == nil {
+			return nil
+		}
+
+		playedCopies := p.selfPlayed[cardID]
+		if playedCopies >= current.DrawnCopies && current.RemainingCopies > 0 {
+			current.RemainingCopies--
+			current.DrawnCopies++
+			p.rebuildPlayerDeckSnapshot()
+		}
+		p.selfPlayed[cardID] = playedCopies + 1
+		return p.publish()
+	}
+	if event.Player != types.PlayerTypeOpponent {
 		return nil
 	}
 
@@ -412,6 +438,7 @@ func (p *OverlaySnapshotProjector) resolveCardInfo(current *card.Card) *carddb.C
 
 func (p *OverlaySnapshotProjector) resetActiveDeckFromTemplate() {
 	p.activeDeck = make(map[string]*overlay.PlayerDeckCard, len(p.templateDeck))
+	p.selfPlayed = make(map[string]int, len(p.templateDeck))
 	for _, current := range p.templateDeck {
 		card := current
 		card.RemainingCopies = card.InitialCopies
@@ -507,4 +534,11 @@ func sortPlayerDeckCards(cards []overlay.PlayerDeckCard) {
 
 func clonePlayerDeckCards(cards []overlay.PlayerDeckCard) []overlay.PlayerDeckCard {
 	return append([]overlay.PlayerDeckCard(nil), cards...)
+}
+
+func minInt(left, right int) int {
+	if left < right {
+		return left
+	}
+	return right
 }

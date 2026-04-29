@@ -33,8 +33,10 @@ class WindowsHearthstoneLocator implements GameWindowLocator {
 $ErrorActionPreference = 'Stop'
 Add-Type -TypeDefinition @"
 using System;
+using System.Text;
 using System.Runtime.InteropServices;
 public static class HsAnalyzerUser32 {
+  public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
   [StructLayout(LayoutKind.Sequential)]
   public struct RECT {
     public int Left;
@@ -43,35 +45,134 @@ public static class HsAnalyzerUser32 {
     public int Bottom;
   }
   [DllImport("user32.dll")]
+  public static extern bool EnumWindows(EnumWindowsProc callback, IntPtr lParam);
+  [DllImport("user32.dll")]
+  public static extern bool IsWindowVisible(IntPtr hWnd);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+  public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+  public static extern int GetWindowTextLength(IntPtr hWnd);
+  [DllImport("user32.dll")]
+  public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int processId);
+  [DllImport("user32.dll")]
   public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
 }
 "@
-$allProcesses = @(Get-Process Hearthstone -ErrorAction SilentlyContinue)
+$allProcesses = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like 'Hearthstone*' })
 if ($allProcesses.Count -eq 0) {
+  $windowCandidates = New-Object System.Collections.Generic.List[object]
+  $enumWithoutProcess = [HsAnalyzerUser32+EnumWindowsProc]{
+    param([IntPtr]$hWnd, [IntPtr]$lParam)
+    if (-not [HsAnalyzerUser32]::IsWindowVisible($hWnd)) {
+      return $true
+    }
+    $length = [HsAnalyzerUser32]::GetWindowTextLength($hWnd)
+    if ($length -le 0) {
+      return $true
+    }
+    $builder = New-Object System.Text.StringBuilder ($length + 1)
+    [void][HsAnalyzerUser32]::GetWindowText($hWnd, $builder, $builder.Capacity)
+    $title = $builder.ToString().Trim()
+    if ($title -notlike '*Hearthstone*') {
+      return $true
+    }
+    $rect = New-Object HsAnalyzerUser32+RECT
+    if (-not [HsAnalyzerUser32]::GetWindowRect($hWnd, [ref]$rect)) {
+      return $true
+    }
+    $width = [Math]::Max(0, $rect.Right - $rect.Left)
+    $height = [Math]::Max(0, $rect.Bottom - $rect.Top)
+    if ($width -lt 200 -or $height -lt 200) {
+      return $true
+    }
+    $windowCandidates.Add([pscustomobject]@{
+      title = $title
+      process_name = ''
+      x = $rect.Left
+      y = $rect.Top
+      width = $width
+      height = $height
+      area = $width * $height
+    }) | Out-Null
+    return $true
+  }
+  [void][HsAnalyzerUser32]::EnumWindows($enumWithoutProcess, [IntPtr]::Zero)
+  if ($windowCandidates.Count -eq 0) {
   [Console]::Out.Write('{"detected":false,"reason":"Hearthstone process not found","bounds":null}')
   exit 0
 }
-$process = $allProcesses |
-  Where-Object { $_.MainWindowHandle -ne 0 } |
-  Select-Object -First 1
-if (-not $process) {
-  [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but it does not expose an attachable desktop window","bounds":null}')
+  $window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+  $payload = [ordered]@{
+    detected = $true
+    title = $window.title
+    reason = "Hearthstone window detected by title match"
+    bounds = @{
+      x = $window.x
+      y = $window.y
+      width = $window.width
+      height = $window.height
+    }
+  }
+  $payload | ConvertTo-Json -Compress
   exit 0
 }
-$rect = New-Object HsAnalyzerUser32+RECT
-if (-not [HsAnalyzerUser32]::GetWindowRect([IntPtr]$process.MainWindowHandle, [ref]$rect)) {
-  [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but its window bounds are unavailable","bounds":null}')
-  exit 0
+$processById = @{}
+foreach ($process in $allProcesses) {
+  $processById[[int]$process.Id] = $process
 }
-$payload = [ordered]@{
-  detected = $true
-  title = $process.MainWindowTitle
-  reason = "Hearthstone window detected"
-  bounds = @{
+$windowCandidates = New-Object System.Collections.Generic.List[object]
+$enumWindows = [HsAnalyzerUser32+EnumWindowsProc]{
+  param([IntPtr]$hWnd, [IntPtr]$lParam)
+  if (-not [HsAnalyzerUser32]::IsWindowVisible($hWnd)) {
+    return $true
+  }
+  $pid = 0
+  [void][HsAnalyzerUser32]::GetWindowThreadProcessId($hWnd, [ref]$pid)
+  $belongsToProcess = $processById.ContainsKey([int]$pid)
+  $length = [HsAnalyzerUser32]::GetWindowTextLength($hWnd)
+  $builder = New-Object System.Text.StringBuilder ($length + 1)
+  [void][HsAnalyzerUser32]::GetWindowText($hWnd, $builder, $builder.Capacity)
+  $title = $builder.ToString().Trim()
+  $matchesTitle = $title -like '*Hearthstone*'
+  if (-not $belongsToProcess -and -not $matchesTitle) {
+    return $true
+  }
+  $rect = New-Object HsAnalyzerUser32+RECT
+  if (-not [HsAnalyzerUser32]::GetWindowRect($hWnd, [ref]$rect)) {
+    return $true
+  }
+  $width = [Math]::Max(0, $rect.Right - $rect.Left)
+  $height = [Math]::Max(0, $rect.Bottom - $rect.Top)
+  if ($width -lt 200 -or $height -lt 200) {
+    return $true
+  }
+  $processName = if ($belongsToProcess) { $processById[[int]$pid].ProcessName } else { '' }
+  $windowCandidates.Add([pscustomobject]@{
+    title = $title
+    process_name = $processName
     x = $rect.Left
     y = $rect.Top
-    width = [Math]::Max(0, $rect.Right - $rect.Left)
-    height = [Math]::Max(0, $rect.Bottom - $rect.Top)
+    width = $width
+    height = $height
+    area = $width * $height
+  }) | Out-Null
+  return $true
+}
+[void][HsAnalyzerUser32]::EnumWindows($enumWindows, [IntPtr]::Zero)
+if ($windowCandidates.Count -eq 0) {
+  [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but no visible top-level window was detected","bounds":null}')
+  exit 0
+}
+$window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+$payload = [ordered]@{
+  detected = $true
+  title = $window.title
+  reason = "Hearthstone window detected"
+  bounds = @{
+    x = $window.x
+    y = $window.y
+    width = $window.width
+    height = $window.height
   }
 }
 $payload | ConvertTo-Json -Compress
@@ -109,6 +210,7 @@ const bridgeConfig: NativeBridgeConfig = {
 async function createWindows() {
   mainWindow = new BrowserWindow(createMainWindowConfig(preloadPath));
   overlayWindow = new BrowserWindow(createOverlayWindowConfig(preloadPath));
+  configureOverlayWindow(overlayWindow);
   overlayController = new OverlayWindowController(overlayWindow, new WindowsHearthstoneLocator(), buildPreviewBounds);
 
   const rendererEntry = path.join(projectRoot, "dist", "index.html");
@@ -200,6 +302,13 @@ function buildPreviewBounds(): OverlayBounds {
     width: bounds.width,
     height: bounds.height,
   };
+}
+
+function configureOverlayWindow(window: BrowserWindow) {
+  window.setAlwaysOnTop(true, "screen-saver", 1);
+  window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  window.setSkipTaskbar(true);
+  window.moveTop();
 }
 
 app.whenReady().then(createWindows);

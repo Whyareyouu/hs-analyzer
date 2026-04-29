@@ -3,8 +3,10 @@ package parser
 import (
 	"bufio"
 	"context"
+	"crypto/sha1"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"strings"
@@ -224,28 +226,38 @@ func parseDeckCatalog(raw string) ([]deckLogEntry, string, error) {
 	entries := make(map[string]deckLogEntry)
 	order := make([]string, 0)
 	selectedDeckID := ""
+	currentTrigger := ""
 
 	for i := 0; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
-		switch {
-		case strings.Contains(line, "Deck Contents Received:"),
-			strings.Contains(line, "Finding Game With Deck:"),
-			strings.Contains(line, "Finished Editing Deck:"):
-			entry, consumed, err := parseDeckBlock(lines, i+1)
-			if err != nil {
-				return nil, "", err
-			}
-			if entry.DeckID != "" {
-				if _, exists := entries[entry.DeckID]; !exists {
-					order = append(order, entry.DeckID)
-				}
-				entries[entry.DeckID] = entry
-			}
-			if strings.Contains(line, "Finding Game With Deck:") {
-				selectedDeckID = entry.DeckID
-			}
-			i = consumed
+		line := deckLogPayload(lines[i])
+		if isDeckTriggerLine(line) {
+			currentTrigger = line
+			continue
 		}
+
+		if _, ok := parseDeckNameLine(line, currentTrigger != ""); !ok {
+			continue
+		}
+
+		entry, consumed, err := parseDeckBlock(lines, i)
+		if err != nil {
+			return nil, "", err
+		}
+		if entry.DeckID != "" {
+			if _, exists := entries[entry.DeckID]; !exists {
+				order = append(order, entry.DeckID)
+			}
+			entries[entry.DeckID] = entry
+		}
+		if strings.Contains(currentTrigger, "Finding Game With Deck:") {
+			selectedDeckID = entry.DeckID
+			currentTrigger = ""
+		}
+		i = consumed
+	}
+
+	if selectedDeckID == "" && len(order) > 0 {
+		selectedDeckID = order[len(order)-1]
 	}
 
 	result := make([]deckLogEntry, 0, len(order))
@@ -259,19 +271,26 @@ func parseDeckBlock(lines []string, start int) (deckLogEntry, int, error) {
 	entry := deckLogEntry{}
 	i := start
 	for ; i < len(lines); i++ {
-		line := strings.TrimSpace(lines[i])
+		line := deckLogPayload(lines[i])
 		if line == "" {
 			break
 		}
-		if strings.Contains(line, "Deck Contents Received:") ||
-			strings.Contains(line, "Finding Game With Deck:") ||
-			strings.Contains(line, "Finished Editing Deck:") {
+		if isDeckTriggerLine(line) {
 			i--
 			break
 		}
-		if entry.Name == "" && strings.Contains(line, "### ") {
-			entry.Name = strings.TrimSpace(strings.SplitN(line, "### ", 2)[1])
-			continue
+		if entry.Name != "" {
+			if _, ok := parseDeckNameLine(line, true); ok && entry.Code == "" {
+				i--
+				break
+			}
+		}
+		if entry.Name == "" {
+			name, ok := parseDeckNameLine(line, true)
+			if ok {
+				entry.Name = name
+				continue
+			}
 		}
 		if entry.DeckID == "" && strings.Contains(line, "# Deck ID: ") {
 			entry.DeckID = strings.TrimSpace(strings.SplitN(line, "# Deck ID: ", 2)[1])
@@ -280,15 +299,82 @@ func parseDeckBlock(lines []string, start int) (deckLogEntry, int, error) {
 		if entry.Code == "" && isDeckCodeLine(line) {
 			fields := strings.Fields(line)
 			entry.Code = fields[len(fields)-1]
+			if entry.DeckID == "" {
+				entry.DeckID = deckIDFromCode(entry.Code)
+			}
 			break
 		}
 	}
 
+	if entry.Name == "" && entry.DeckID != "" {
+		entry.Name = entry.DeckID
+	}
 	if entry.DeckID == "" || entry.Code == "" {
 		return deckLogEntry{}, i, fmt.Errorf("incomplete deck block: %#v", entry)
 	}
 
 	return entry, i, nil
+}
+
+func parseDeckNameLine(line string, allowPlain bool) (string, bool) {
+	line = strings.TrimSpace(line)
+	if line == "" || isDeckTriggerLine(line) || strings.Contains(line, "# Deck ID: ") || isDeckCodeLine(line) {
+		return "", false
+	}
+	if strings.Contains(line, "### ") {
+		return strings.TrimSpace(strings.SplitN(line, "### ", 2)[1]), true
+	}
+	if strings.HasPrefix(line, `"`) && strings.Count(line, `"`) >= 2 {
+		rest := strings.TrimPrefix(line, `"`)
+		name, _, _ := strings.Cut(rest, `"`)
+		name = strings.TrimSpace(name)
+		return name, name != ""
+	}
+	if firstQuote := strings.Index(line, `"`); firstQuote >= 0 {
+		rest := line[firstQuote+1:]
+		name, _, found := strings.Cut(rest, `"`)
+		name = strings.TrimSpace(name)
+		return name, found && name != ""
+	}
+	if allowPlain && !strings.HasPrefix(line, "#") {
+		return strings.TrimSpace(line), true
+	}
+	return "", false
+}
+
+func deckLogPayload(line string) string {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return ""
+	}
+	switch {
+	case strings.Contains(line, "### "):
+		return strings.TrimSpace(line[strings.Index(line, "### "):])
+	case strings.Contains(line, "# Deck ID: "):
+		return strings.TrimSpace(line[strings.Index(line, "# Deck ID: "):])
+	case isDeckCodeLine(line):
+		fields := strings.Fields(line)
+		return fields[len(fields)-1]
+	case strings.Contains(line, "Deck Contents Received:"),
+		strings.Contains(line, "Finding Game With Deck:"),
+		strings.Contains(line, "Finished Editing Deck:"):
+		return line
+	}
+
+	fields := strings.Fields(line)
+	if len(fields) >= 3 && len(fields[0]) == 1 && strings.Contains(fields[1], ":") {
+		return strings.Join(fields[2:], " ")
+	}
+	return line
+}
+
+func deckIDFromCode(code string) string {
+	code = strings.TrimSpace(code)
+	if code == "" {
+		return ""
+	}
+	sum := sha1.Sum([]byte(code))
+	return "deck-" + hex.EncodeToString(sum[:8])
 }
 
 func isDeckCodeLine(line string) bool {

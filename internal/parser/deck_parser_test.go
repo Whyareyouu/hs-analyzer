@@ -92,6 +92,9 @@ func TestDeckParserParseCatalogFromRealLogs(t *testing.T) {
 	if len(catalog) == 0 {
 		t.Fatalf("expected at least one deck in catalog")
 	}
+	if len(catalog) < 7 {
+		t.Fatalf("expected all known decks from Decks.log, got %d", len(catalog))
+	}
 	if selectedDeckID != "2732587110" {
 		t.Fatalf("unexpected selected deck id: %s", selectedDeckID)
 	}
@@ -110,6 +113,75 @@ func TestDeckParserParseCatalogFromRealLogs(t *testing.T) {
 	}
 	if selectedCount != 1 {
 		t.Fatalf("expected exactly one selected deck, got %d", selectedCount)
+	}
+}
+
+func TestDeckParserParseCatalogFromNameAndCodePairs(t *testing.T) {
+	t.Parallel()
+
+	const deckCode = "AAECAZ6rBAaEnQe3rQePsQfQvwfOyQeb1AcM4+YGqvwGq/wG94MH6IcH0pcH0LIH7LIHhL0HtcAHr8EHoMUHAAA="
+	input := strings.Join([]string{
+		`I 00:00:00.0000000 "Название колоды"`,
+		"I 00:00:00.0000000 " + deckCode,
+	}, "\n")
+
+	db := carddb.NewJSONDatabase()
+	if err := db.Load(filepath.Join("..", "..", "data", "cards.json")); err != nil {
+		t.Fatalf("load cards db: %v", err)
+	}
+
+	parser := NewDeckParser(db)
+	catalog, selectedDeckID, err := parser.ParseCatalog(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse simple deck catalog: %v", err)
+	}
+	if len(catalog) != 1 {
+		t.Fatalf("unexpected catalog size: %d", len(catalog))
+	}
+	if catalog[0].Name != "Название колоды" {
+		t.Fatalf("unexpected deck name: %s", catalog[0].Name)
+	}
+	if catalog[0].DeckID != deckIDFromCode(deckCode) {
+		t.Fatalf("unexpected generated deck id: %s", catalog[0].DeckID)
+	}
+	if selectedDeckID != catalog[0].DeckID {
+		t.Fatalf("expected latest simple deck to be selected, got %s", selectedDeckID)
+	}
+	if len(catalog[0].Cards) != 30 {
+		t.Fatalf("unexpected deck size: %d", len(catalog[0].Cards))
+	}
+}
+
+func TestDeckParserParseCatalogSkipsDeckstringMetadata(t *testing.T) {
+	t.Parallel()
+
+	const deckCode = "AAECAZ6rBAaEnQe3rQePsQfQvwfOyQeb1AcM4+YGqvwGq/wG94MH6IcH0pcH0LIH7LIHhL0HtcAHr8EHoMUHAAA="
+	input := strings.Join([]string{
+		`I 00:00:00.0000000 ### Метовая колода`,
+		`I 00:00:00.0000000 # Class: Paladin`,
+		`I 00:00:00.0000000 # Format: Standard`,
+		`I 00:00:00.0000000 # Deck ID: 42`,
+		"I 00:00:00.0000000 " + deckCode,
+	}, "\n")
+
+	db := carddb.NewJSONDatabase()
+	if err := db.Load(filepath.Join("..", "..", "data", "cards.json")); err != nil {
+		t.Fatalf("load cards db: %v", err)
+	}
+
+	parser := NewDeckParser(db)
+	catalog, selectedDeckID, err := parser.ParseCatalog(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse metadata deck catalog: %v", err)
+	}
+	if len(catalog) != 1 {
+		t.Fatalf("unexpected catalog size: %d", len(catalog))
+	}
+	if catalog[0].Name != "Метовая колода" {
+		t.Fatalf("unexpected deck name: %s", catalog[0].Name)
+	}
+	if catalog[0].DeckID != "42" || selectedDeckID != "42" {
+		t.Fatalf("unexpected deck ids: deck=%s selected=%s", catalog[0].DeckID, selectedDeckID)
 	}
 }
 

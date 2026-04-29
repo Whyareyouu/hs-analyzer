@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"hsanalyzer/pkg/contracts/matchupload"
@@ -141,7 +142,12 @@ func (s *Server) handleDeckDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	deckID := strings.TrimSpace(parts[0])
+	deckID, err := url.PathUnescape(strings.TrimSpace(parts[0]))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, matchupload.ErrorValidationFailed, "invalid deck id")
+		return
+	}
+	deckID = strings.TrimSpace(deckID)
 	resource := strings.TrimSpace(parts[1])
 	switch resource {
 	case "overview":

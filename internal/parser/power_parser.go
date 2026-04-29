@@ -20,6 +20,7 @@ type PowerParser struct {
 	currentTurnPlayer types.PlayerType
 	hasActiveTurn     bool
 	gameEnded         bool
+	localPlayerNumber int
 	pendingPlays      map[int]pendingPlay
 	emittedPlays      map[int]struct{}
 	damageTotals      map[int]int
@@ -92,6 +93,7 @@ func (p *PowerParser) Parse(ctx context.Context, reader io.Reader) ([]game.Event
 // across appended lines from a growing file.
 func (p *PowerParser) ParseLine(line string) ([]game.Event, error) {
 	p.ensureState()
+	p.detectLocalPlayerNumber(line)
 
 	if !p.isRelevantLine(line) {
 		return nil, nil
@@ -145,6 +147,7 @@ func (p *PowerParser) reset() {
 	p.currentTurnPlayer = types.PlayerTypeUnknown
 	p.hasActiveTurn = false
 	p.gameEnded = false
+	p.localPlayerNumber = 1
 	p.pendingPlays = make(map[int]pendingPlay)
 	p.emittedPlays = make(map[int]struct{})
 	p.damageTotals = make(map[int]int)
@@ -172,7 +175,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 			return nil, fmt.Errorf("invalid turn value %q", value)
 		}
 
-		playerType := identifyTurnPlayer(entity)
+		playerType := p.identifyTurnPlayer(entity)
 		if playerType == types.PlayerTypeUnknown {
 			return nil, nil
 		}
@@ -193,7 +196,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 
 		return events, nil
 	case "DAMAGE":
-		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		logged, ok, err := p.parseLoggedEntityFromRawEntity(entity)
 		if err != nil || !ok {
 			return nil, err
 		}
@@ -217,7 +220,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 			return nil, nil
 		}
 
-		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		logged, ok, err := p.parseLoggedEntityFromRawEntity(entity)
 		if err != nil || !ok {
 			return nil, err
 		}
@@ -226,7 +229,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 			game.NewDetailedDeathEvent(logged.entityID, logged.cardID, logged.name),
 		}, nil
 	case "ATK", "HEALTH":
-		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		logged, ok, err := p.parseLoggedEntityFromRawEntity(entity)
 		if err != nil || !ok {
 			return nil, err
 		}
@@ -245,7 +248,7 @@ func (p *PowerParser) parseTagChange(entity, tag, value string) ([]game.Event, e
 			game.NewDetailedEffectTriggeredEvent(logged.entityID, logged.cardID, logged.name, fmt.Sprintf("%s_CHANGE:%d", tag, statValue)),
 		}, nil
 	case "COST":
-		logged, ok, err := parseLoggedEntityFromRawEntity(entity)
+		logged, ok, err := p.parseLoggedEntityFromRawEntity(entity)
 		if err != nil || !ok {
 			return nil, err
 		}
@@ -270,14 +273,18 @@ func (p *PowerParser) parsePlayStateChange(entity, value string) []game.Event {
 
 	switch stateValue {
 	case "PLAYING":
+		localPlayerNumber := p.localPlayerNumber
 		p.reset()
+		if localPlayerNumber > 0 {
+			p.localPlayerNumber = localPlayerNumber
+		}
 		return nil
 	case "WON", "LOST", "CONCEDED", "TIED":
 		if p.gameEnded {
 			return nil
 		}
 
-		winner, ok := resolveGameEndWinner(entity, stateValue)
+		winner, ok := p.resolveGameEndWinner(entity, stateValue)
 		if !ok {
 			return nil
 		}
@@ -289,16 +296,19 @@ func (p *PowerParser) parsePlayStateChange(entity, value string) []game.Event {
 	}
 }
 
-func identifyTurnPlayer(entity string) types.PlayerType {
+func (p *PowerParser) identifyTurnPlayer(entity string) types.PlayerType {
 	trimmed := strings.TrimSpace(entity)
 
 	switch trimmed {
-	case "UNKNOWN HUMAN PLAYER", "1":
+	case "UNKNOWN HUMAN PLAYER":
 		return types.PlayerTypePlayer
-	case "2", "GameEntity":
+	case "GameEntity":
 		return types.PlayerTypeUnknown
 	}
 
+	if number, err := strconv.Atoi(trimmed); err == nil {
+		return p.mapPlayerNumber(number)
+	}
 	if strings.Contains(trimmed, "#") {
 		return types.PlayerTypeOpponent
 	}
@@ -306,8 +316,8 @@ func identifyTurnPlayer(entity string) types.PlayerType {
 	return types.PlayerTypeUnknown
 }
 
-func resolveGameEndWinner(entity, stateValue string) (types.PlayerType, bool) {
-	player := identifyTurnPlayer(entity)
+func (p *PowerParser) resolveGameEndWinner(entity, stateValue string) (types.PlayerType, bool) {
+	player := p.identifyTurnPlayer(entity)
 
 	switch stateValue {
 	case "WON":
@@ -349,7 +359,7 @@ func (p *PowerParser) parseEntityChoicesHeader(line string) ([]game.Event, error
 		return nil, nil
 	}
 
-	player := identifyTurnPlayer(matches[2])
+	player := p.identifyTurnPlayer(matches[2])
 	if player == types.PlayerTypeUnknown {
 		return nil, nil
 	}
@@ -368,7 +378,7 @@ func (p *PowerParser) parseChoiceOption(line string) ([]game.Event, error) {
 		return nil, nil
 	}
 
-	entity, ok, err := buildLoggedEntity(matches)
+	entity, ok, err := p.buildLoggedEntity(matches)
 	if err != nil || !ok {
 		return nil, err
 	}
@@ -422,7 +432,7 @@ func (p *PowerParser) parseChosenEntity(line string) ([]game.Event, error) {
 		return nil, nil
 	}
 
-	chosen, ok, err := buildLoggedEntity(matches)
+	chosen, ok, err := p.buildLoggedEntity(matches)
 	if err != nil || !ok {
 		return nil, err
 	}
@@ -439,7 +449,7 @@ func (p *PowerParser) parseChosenEntity(line string) ([]game.Event, error) {
 }
 
 func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, error) {
-	entity, ok, err := parseLoggedEntity(line)
+	entity, ok, err := p.parseLoggedEntity(line)
 	if err != nil || !ok {
 		return nil, err
 	}
@@ -450,7 +460,7 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 			return nil, nil
 		}
 
-		target, ok, err := parseLoggedTarget(line)
+		target, ok, err := p.parseLoggedTarget(line)
 		if err != nil || !ok {
 			return nil, err
 		}
@@ -528,34 +538,34 @@ type loggedEntity struct {
 	player   types.PlayerType
 }
 
-func parseLoggedEntity(line string) (loggedEntity, bool, error) {
+func (p *PowerParser) parseLoggedEntity(line string) (loggedEntity, bool, error) {
 	matches := hslog.PowerEntityPattern.FindStringSubmatch(line)
 	if matches == nil {
 		return loggedEntity{}, false, nil
 	}
 
-	return buildLoggedEntity(matches)
+	return p.buildLoggedEntity(matches)
 }
 
-func parseLoggedEntityFromRawEntity(raw string) (loggedEntity, bool, error) {
+func (p *PowerParser) parseLoggedEntityFromRawEntity(raw string) (loggedEntity, bool, error) {
 	matches := hslog.PowerEntityPattern.FindStringSubmatch("Entity=" + raw)
 	if matches == nil {
 		return loggedEntity{}, false, nil
 	}
 
-	return buildLoggedEntity(matches)
+	return p.buildLoggedEntity(matches)
 }
 
-func parseLoggedTarget(line string) (loggedEntity, bool, error) {
+func (p *PowerParser) parseLoggedTarget(line string) (loggedEntity, bool, error) {
 	matches := hslog.PowerTargetPattern.FindStringSubmatch(line)
 	if matches == nil {
 		return loggedEntity{}, false, nil
 	}
 
-	return buildLoggedEntity(matches)
+	return p.buildLoggedEntity(matches)
 }
 
-func buildLoggedEntity(matches []string) (loggedEntity, bool, error) {
+func (p *PowerParser) buildLoggedEntity(matches []string) (loggedEntity, bool, error) {
 	entityID, err := strconv.Atoi(matches[2])
 	if err != nil {
 		return loggedEntity{}, false, fmt.Errorf("invalid entity id %q", matches[2])
@@ -575,17 +585,47 @@ func buildLoggedEntity(matches []string) (loggedEntity, bool, error) {
 		zone:     card.ZoneType(matches[3]),
 		zonePos:  zonePos,
 		cardID:   matches[5],
-		player:   mapPlayerNumber(playerNumber),
+		player:   p.mapPlayerNumber(playerNumber),
 	}, true, nil
 }
 
-func mapPlayerNumber(playerNumber int) types.PlayerType {
-	switch playerNumber {
-	case 1:
+func (p *PowerParser) mapPlayerNumber(playerNumber int) types.PlayerType {
+	if playerNumber <= 0 {
+		return types.PlayerTypeUnknown
+	}
+	localPlayerNumber := p.localPlayerNumber
+	if localPlayerNumber <= 0 {
+		localPlayerNumber = 1
+	}
+
+	switch {
+	case playerNumber == localPlayerNumber:
 		return types.PlayerTypePlayer
-	case 2:
+	case playerNumber == 1 || playerNumber == 2:
 		return types.PlayerTypeOpponent
 	default:
 		return types.PlayerTypeUnknown
 	}
+}
+
+func (p *PowerParser) detectLocalPlayerNumber(line string) {
+	if p == nil {
+		return
+	}
+	const marker = "PlayerName=UNKNOWN HUMAN PLAYER"
+	if !strings.Contains(line, marker) {
+		return
+	}
+
+	prefix := line[:strings.Index(line, marker)]
+	lastEquals := strings.LastIndex(prefix, "=")
+	if lastEquals < 0 {
+		return
+	}
+	rawValue := strings.Trim(strings.TrimSpace(prefix[lastEquals+1:]), ",")
+	playerNumber, err := strconv.Atoi(rawValue)
+	if err != nil || playerNumber <= 0 {
+		return
+	}
+	p.localPlayerNumber = playerNumber
 }

@@ -413,9 +413,6 @@ func TestMonitorCommandRunsWithFixtureLogsAndStopsGracefully(t *testing.T) {
 	if !strings.Contains(output, "healthy=") {
 		t.Fatalf("unexpected monitor output, missing self-check marker:\n%s", output)
 	}
-	if !strings.Contains(output, "played cards: self=[") || !strings.Contains(output, "opponent=[") {
-		t.Fatalf("unexpected monitor output, missing played cards summary:\n%s", output)
-	}
 	if !strings.Contains(output, "monitoring stopped") {
 		t.Fatalf("unexpected monitor output, missing stop marker:\n%s", output)
 	}

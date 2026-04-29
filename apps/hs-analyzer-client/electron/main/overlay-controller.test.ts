@@ -82,4 +82,26 @@ describe("OverlayWindowController", () => {
     expect(diagnostics.bounds).toEqual({ x: 20, y: 20, width: 680, height: 900 });
     expect(windowMock.showInactive).toHaveBeenCalled();
   });
+
+  it("keeps fullscreen fallback visible when Hearthstone detection fails completely", async () => {
+    const windowMock = createWindowMock();
+    const controller = new OverlayWindowController(
+      windowMock,
+      {
+        locate: async () => ({
+          detected: false,
+          supportedMode: "unsupported",
+          bounds: null,
+          reason: "Hearthstone process not found",
+        }),
+      },
+      () => ({ x: 0, y: 0, width: 1920, height: 1080 }),
+    );
+
+    const diagnostics = await controller.syncBounds();
+    expect(diagnostics.attached).toBe(false);
+    expect(diagnostics.degraded).toBe(true);
+    expect(diagnostics.bounds).toEqual({ x: 0, y: 0, width: 1920, height: 1080 });
+    expect(windowMock.showInactive).toHaveBeenCalled();
+  });
 });

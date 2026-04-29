@@ -11,10 +11,11 @@ export class DashboardClient {
   }
 
   async loadDeckBundle(deckId: string): Promise<DashboardBundle> {
+    const encodedDeckId = encodeURIComponent(deckId);
     const [overview, cards, matchups] = await Promise.all([
-      this.fetchCached<DeckOverview>(`/api/v1/decks/${deckId}/overview`, parseDeckOverview),
-      this.fetchCached<DeckCard[]>(`/api/v1/decks/${deckId}/cards`, parseDeckCards),
-      this.fetchCached<MatchupEntry[]>(`/api/v1/decks/${deckId}/matchups`, parseMatchups),
+      this.fetchCached<DeckOverview>(`/api/v1/decks/${encodedDeckId}/overview`, parseDeckOverview),
+      this.fetchCached<DeckCard[]>(`/api/v1/decks/${encodedDeckId}/cards`, parseDeckCards),
+      this.fetchCached<MatchupEntry[]>(`/api/v1/decks/${encodedDeckId}/matchups`, parseMatchups),
     ]);
 
     return {

@@ -39,7 +39,7 @@ export class OverlayWindowController {
   async syncBounds(): Promise<OverlayDiagnostics> {
     const gameState = await this.locator.locate();
     const supported = gameState.detected && gameState.supportedMode !== "unsupported" && gameState.bounds !== null;
-    const previewBounds = !supported && gameState.detected ? this.previewBoundsProvider?.() ?? null : null;
+    const previewBounds = !supported ? this.previewBoundsProvider?.() ?? null : null;
 
     this.diagnostics = {
       attached: supported,

@@ -97,8 +97,8 @@ func NewSnapshot() Snapshot {
 
 func (s Snapshot) Clone() Snapshot {
 	cloned := s
-	cloned.PlayerDeckRemaining = append([]PlayerDeckCard(nil), s.PlayerDeckRemaining...)
-	cloned.OpponentPlayedCards = append([]OpponentPlayedCard(nil), s.OpponentPlayedCards...)
+	cloned.PlayerDeckRemaining = append(make([]PlayerDeckCard, 0, len(s.PlayerDeckRemaining)), s.PlayerDeckRemaining...)
+	cloned.OpponentPlayedCards = append(make([]OpponentPlayedCard, 0, len(s.OpponentPlayedCards)), s.OpponentPlayedCards...)
 	return cloned
 }
 

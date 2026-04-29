@@ -24,6 +24,7 @@ describe("PlayerDeckPanel", () => {
     );
 
     expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
+    expect(screen.getByText("0/2")).toBeInTheDocument();
     expect(container.firstChild).toMatchSnapshot();
   });
 
