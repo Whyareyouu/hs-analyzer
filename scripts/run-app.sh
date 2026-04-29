@@ -200,6 +200,56 @@ format_database_url_for_display() {
   printf '%s\n' "$value" | sed -E 's#(postgres(ql)?://[^:/@]+):([^@]+)@#\1:xxxxx@#'
 }
 
+test_database_tcp_endpoint() {
+  local value="$1"
+  [[ -n "$value" ]] || return 0
+
+  local stripped="${value#*://}"
+  stripped="${stripped%%/*}"
+  stripped="${stripped##*@}"
+  local host="${stripped%%:*}"
+  local port="${stripped##*:}"
+  if [[ "$port" == "$host" ]]; then
+    port="5432"
+  fi
+  [[ -n "$host" ]] || return 0
+
+  if command -v nc >/dev/null 2>&1; then
+    if ! nc -z "$host" "$port" >/dev/null 2>&1; then
+      echo "PostgreSQL is not reachable at $host:$port. Start PostgreSQL or update HS_ANALYZER_DATABASE_URL in .env." >&2
+      exit 1
+    fi
+  fi
+}
+
+load_dotenv() {
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+
+  local line name value
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [[ -z "$line" || "${line:0:1}" == "#" ]] && continue
+    [[ "$line" == *"="* ]] || continue
+
+    name="${line%%=*}"
+    value="${line#*=}"
+    name="${name#"${name%%[![:space:]]*}"}"
+    name="${name%"${name##*[![:space:]]}"}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    [[ -z "$name" ]] && continue
+
+    if [[ "${value:0:1}" == "\"" && "${value: -1}" == "\"" ]] || [[ "${value:0:1}" == "'" && "${value: -1}" == "'" ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+    if [[ -z "${!name:-}" ]]; then
+      export "$name=$value"
+    fi
+  done < "$file"
+}
+
 cleanup() {
   local code=$?
   if [[ -n "${client_pid:-}" ]] && kill -0 "$client_pid" 2>/dev/null; then
@@ -224,9 +274,16 @@ if [[ ! -d "$client_dir" ]]; then
   exit 1
 fi
 
+load_dotenv "$repo_root/.env"
 if [[ -z "$database_url" ]]; then
-  database_url="postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
+  database_url="${HS_ANALYZER_DATABASE_URL:-}"
 fi
+
+if [[ -z "$database_url" ]]; then
+  echo "Database URL is not configured. Set HS_ANALYZER_DATABASE_URL in .env or pass --database-url." >&2
+  exit 1
+fi
+test_database_tcp_endpoint "$database_url"
 
 if [[ ! -d "$client_dir/node_modules" ]]; then
   echo "Client dependencies are missing. Run 'npm install' in $client_dir first." >&2

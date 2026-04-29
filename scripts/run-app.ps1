@@ -121,6 +121,72 @@ function Format-DatabaseUrlForDisplay([string]$Value) {
     return ($Value -replace '(postgres(?:ql)?://[^:/@]+):([^@]+)@', '$1:xxxxx@')
 }
 
+function Test-DatabaseTcpEndpoint([string]$DatabaseUrlValue) {
+    if ([string]::IsNullOrWhiteSpace($DatabaseUrlValue)) {
+        return
+    }
+
+    try {
+        $uri = [System.Uri]$DatabaseUrlValue
+    }
+    catch {
+        throw "Database URL is invalid: $DatabaseUrlValue"
+    }
+
+    $hostName = $uri.Host
+    $port = $uri.Port
+    if ([string]::IsNullOrWhiteSpace($hostName)) {
+        return
+    }
+    if ($port -le 0) {
+        $port = 5432
+    }
+
+    $client = [System.Net.Sockets.TcpClient]::new()
+    try {
+        $connectTask = $client.ConnectAsync($hostName, $port)
+        if (-not $connectTask.Wait(1500) -or -not $client.Connected) {
+            throw "PostgreSQL is not reachable at ${hostName}:${port}. Start PostgreSQL or update HS_ANALYZER_DATABASE_URL in .env."
+        }
+    }
+    catch {
+        throw "PostgreSQL is not reachable at ${hostName}:${port}. Start PostgreSQL or update HS_ANALYZER_DATABASE_URL in .env. Details: $($_.Exception.Message)"
+    }
+    finally {
+        $client.Dispose()
+    }
+}
+
+function Import-DotEnv([string]$PathValue) {
+    if ([string]::IsNullOrWhiteSpace($PathValue) -or -not (Test-Path -LiteralPath $PathValue -PathType Leaf)) {
+        return
+    }
+
+    Get-Content -LiteralPath $PathValue | ForEach-Object {
+        $line = $_.Trim()
+        if ([string]::IsNullOrWhiteSpace($line) -or $line.StartsWith("#")) {
+            return
+        }
+
+        $separator = $line.IndexOf("=")
+        if ($separator -le 0) {
+            return
+        }
+
+        $name = $line.Substring(0, $separator).Trim()
+        $value = $line.Substring($separator + 1).Trim()
+        if ([string]::IsNullOrWhiteSpace($name)) {
+            return
+        }
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+            [Environment]::SetEnvironmentVariable($name, $value)
+        }
+    }
+}
+
 function Assert-Command([string]$Name) {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
         throw "Required command '$Name' was not found in PATH."
@@ -129,15 +195,15 @@ function Assert-Command([string]$Name) {
 
 function Resolve-CommandPath([string]$PrimaryName, [string]$WindowsFallbackName = "", [switch]$PreferWindowsFallback) {
     $candidates = @()
-    $isWindows = $env:OS -eq "Windows_NT"
+    $runningOnWindows = $env:OS -eq "Windows_NT"
 
-    if ($isWindows -and $PreferWindowsFallback -and -not [string]::IsNullOrWhiteSpace($WindowsFallbackName)) {
+    if ($runningOnWindows -and $PreferWindowsFallback -and -not [string]::IsNullOrWhiteSpace($WindowsFallbackName)) {
         $candidates += $WindowsFallbackName
     }
     if (-not [string]::IsNullOrWhiteSpace($PrimaryName)) {
         $candidates += $PrimaryName
     }
-    if ($isWindows -and -not $PreferWindowsFallback -and -not [string]::IsNullOrWhiteSpace($WindowsFallbackName)) {
+    if ($runningOnWindows -and -not $PreferWindowsFallback -and -not [string]::IsNullOrWhiteSpace($WindowsFallbackName)) {
         $candidates += $WindowsFallbackName
     }
 
@@ -269,9 +335,16 @@ if (-not (Test-Path -LiteralPath $clientDir)) {
     throw "Electron client directory was not found: $clientDir"
 }
 
+Import-DotEnv (Join-Path $repoRoot ".env")
+
 if ([string]::IsNullOrWhiteSpace($DatabaseUrl)) {
-    $DatabaseUrl = "postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
+    $DatabaseUrl = $env:HS_ANALYZER_DATABASE_URL
 }
+
+if ([string]::IsNullOrWhiteSpace($DatabaseUrl)) {
+    throw "Database URL is not configured. Set HS_ANALYZER_DATABASE_URL in .env or pass -DatabaseUrl."
+}
+Test-DatabaseTcpEndpoint $DatabaseUrl
 
 if (-not (Test-Path -LiteralPath (Join-Path $clientDir "node_modules"))) {
     throw "Client dependencies are missing. Run 'npm install' in $clientDir first."

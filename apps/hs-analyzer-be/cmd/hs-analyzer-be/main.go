@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"database/sql"
 	"log"
@@ -20,13 +21,14 @@ import (
 )
 
 const (
-	envLogsPath        = "HS_ANALYZER_LOGS_PATH"
-	envCardsDBPath     = "HS_ANALYZER_CARDS_DB_PATH"
-	envDatabaseURL     = "HS_ANALYZER_DATABASE_URL"
-	defaultDatabaseURL = "postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
+	envLogsPath    = "HS_ANALYZER_LOGS_PATH"
+	envCardsDBPath = "HS_ANALYZER_CARDS_DB_PATH"
+	envDatabaseURL = "HS_ANALYZER_DATABASE_URL"
 )
 
 func main() {
+	loadDotEnv(".env")
+
 	store, closeStore := openMatchStore()
 	defer closeStore()
 	dashboardStore := api.NewMatchDashboardStore(store)
@@ -56,9 +58,9 @@ func main() {
 func openMatchStore() (api.MatchStore, func()) {
 	databaseURL := strings.TrimSpace(os.Getenv(envDatabaseURL))
 	if databaseURL == "" {
-		databaseURL = defaultDatabaseURL
-		log.Printf("%s is not set; using default local postgres %s", envDatabaseURL, redactDatabaseURL(databaseURL))
+		log.Fatalf("%s is not set; configure it in .env or environment", envDatabaseURL)
 	}
+	log.Printf("using postgres %s", redactDatabaseURL(databaseURL))
 
 	db, err := openPostgres(databaseURL)
 	if err != nil {
@@ -69,6 +71,50 @@ func openMatchStore() (api.MatchStore, func()) {
 		if err == nil {
 			_ = sqlDB.Close()
 		}
+	}
+}
+
+func loadDotEnv(path string) {
+	file, err := os.Open(path)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			log.Printf("read .env skipped: %v", err)
+		}
+		return
+	}
+	defer func() {
+		_ = file.Close()
+	}()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		name, value, found := strings.Cut(line, "=")
+		if !found {
+			continue
+		}
+		name = strings.TrimSpace(name)
+		value = strings.TrimSpace(value)
+		if name == "" || strings.TrimSpace(os.Getenv(name)) != "" {
+			continue
+		}
+		if len(value) >= 2 {
+			first := value[0]
+			last := value[len(value)-1]
+			if (first == '"' && last == '"') || (first == '\'' && last == '\'') {
+				value = value[1 : len(value)-1]
+			}
+		}
+		if err := os.Setenv(name, value); err != nil {
+			log.Printf("set .env value %s skipped: %v", name, err)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("scan .env skipped: %v", err)
 	}
 }
 
