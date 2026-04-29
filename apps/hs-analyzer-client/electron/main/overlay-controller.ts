@@ -10,6 +10,7 @@ export interface ManagedWindow {
 
 export interface GameWindowState {
   detected: boolean;
+  active: boolean;
   supportedMode: "windowed" | "borderless" | "unsupported";
   bounds: OverlayBounds | null;
   reason: string;
@@ -38,8 +39,8 @@ export class OverlayWindowController {
 
   async syncBounds(): Promise<OverlayDiagnostics> {
     const gameState = await this.locator.locate();
-    const supported = gameState.detected && gameState.supportedMode !== "unsupported" && gameState.bounds !== null;
-    const previewBounds = !supported ? this.previewBoundsProvider?.() ?? null : null;
+    const supported =
+      gameState.detected && gameState.active && gameState.supportedMode !== "unsupported" && gameState.bounds !== null;
 
     this.diagnostics = {
       attached: supported,
@@ -47,18 +48,11 @@ export class OverlayWindowController {
       gameDetected: gameState.detected,
       reason: gameState.reason,
       hearthstoneMode: gameState.supportedMode,
-      bounds: supported ? gameState.bounds : previewBounds,
+      bounds: supported ? gameState.bounds : null,
     };
 
     if (supported && gameState.bounds) {
       this.overlayWindow.setBounds(gameState.bounds);
-      this.overlayWindow.showInactive();
-      this.applyMode();
-      return this.diagnostics;
-    }
-
-    if (previewBounds) {
-      this.overlayWindow.setBounds(previewBounds);
       this.overlayWindow.showInactive();
       this.applyMode();
       return this.diagnostics;

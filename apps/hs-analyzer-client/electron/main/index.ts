@@ -17,6 +17,7 @@ const execFileAsync = promisify(execFile);
 
 interface PowerShellWindowResult {
   detected: boolean;
+  active?: boolean;
   title?: string;
   reason: string;
   bounds: OverlayBounds | null;
@@ -56,8 +57,11 @@ public static class HsAnalyzerUser32 {
   public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int processId);
   [DllImport("user32.dll")]
   public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+  [DllImport("user32.dll")]
+  public static extern IntPtr GetForegroundWindow();
 }
 "@
+$foregroundWindow = [HsAnalyzerUser32]::GetForegroundWindow()
 $allProcesses = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like 'Hearthstone*' })
 if ($allProcesses.Count -eq 0) {
   $windowCandidates = New-Object System.Collections.Generic.List[object]
@@ -93,6 +97,7 @@ if ($allProcesses.Count -eq 0) {
       width = $width
       height = $height
       area = $width * $height
+      is_foreground = $hWnd -eq $foregroundWindow
     }) | Out-Null
     return $true
   }
@@ -105,7 +110,8 @@ if ($allProcesses.Count -eq 0) {
   $payload = [ordered]@{
     detected = $true
     title = $window.title
-    reason = "Hearthstone window detected by title match"
+    active = [bool]$window.is_foreground
+    reason = if ($window.is_foreground) { "Hearthstone window detected by title match" } else { "Hearthstone window detected by title match but is not active" }
     bounds = @{
       x = $window.x
       y = $window.y
@@ -155,6 +161,7 @@ $enumWindows = [HsAnalyzerUser32+EnumWindowsProc]{
     width = $width
     height = $height
     area = $width * $height
+    is_foreground = $hWnd -eq $foregroundWindow
   }) | Out-Null
   return $true
 }
@@ -167,7 +174,8 @@ $window = $windowCandidates | Sort-Object area -Descending | Select-Object -Firs
 $payload = [ordered]@{
   detected = $true
   title = $window.title
-  reason = "Hearthstone window detected"
+  active = [bool]$window.is_foreground
+  reason = if ($window.is_foreground) { "Hearthstone window detected" } else { "Hearthstone window detected but is not active" }
   bounds = @{
     x = $window.x
     y = $window.y
@@ -187,6 +195,7 @@ $payload | ConvertTo-Json -Compress
       }
       return {
         detected: true,
+        active: parsed.active === true,
         supportedMode: classifyWindowMode(parsed.bounds),
         bounds: parsed.bounds,
         reason: parsed.reason || parsed.title || "Hearthstone window detected",
@@ -272,6 +281,7 @@ function classifyWindowMode(bounds: OverlayBounds) {
 function unsupportedWindowState(reason: string) {
 	return {
 		detected: false,
+    active: false,
     supportedMode: "unsupported" as const,
     bounds: null,
     reason,
@@ -281,6 +291,7 @@ function unsupportedWindowState(reason: string) {
 function detectedButUnsupportedWindowState(reason: string) {
   return {
     detected: true,
+    active: false,
     supportedMode: "unsupported" as const,
     bounds: null,
     reason,
@@ -305,6 +316,8 @@ function buildPreviewBounds(): OverlayBounds {
 }
 
 function configureOverlayWindow(window: BrowserWindow) {
+  window.setTitle("");
+  window.setMenuBarVisibility(false);
   window.setAlwaysOnTop(true, "screen-saver", 1);
   window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   window.setSkipTaskbar(true);

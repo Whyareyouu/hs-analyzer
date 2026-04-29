@@ -221,6 +221,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 
 	projectorRestored := canRestoreLiveCardStats
 	overlayRestored := canRestoreOverlay
+	sideCorrector := newLiveEventSideCorrector()
 
 	eventCh := make(chan game.Event, 256)
 	checkpointCh := make(chan monitorReaderUpdate, 64)
@@ -281,7 +282,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 			return fmt.Errorf("prime deck parser state: %w", err)
 		}
 		if !hasMatchingReaderCheckpoint(runtimeState, "deck", deckLogPath) {
-			if err := bootstrapCurrentDeckSelection(runCtx, deckLogPath, deckParser, projector, overlayProjector); err != nil {
+			if err := bootstrapCurrentDeckSelection(runCtx, deckLogPath, deckParser, sideCorrector, projector, overlayProjector); err != nil {
 				return err
 			}
 		}
@@ -394,6 +395,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	for {
 		select {
 		case event := <-eventCh:
+			event = sideCorrector.Correct(event)
 			before := projector.Snapshot()
 			if err := projector.Process(event); err != nil {
 				cancelRun()
@@ -544,6 +546,7 @@ func bootstrapCurrentDeckSelection(
 	ctx context.Context,
 	deckLogPath string,
 	deckParser *parser.DeckParser,
+	sideCorrector *liveEventSideCorrector,
 	projector *monitor.LiveCardStatsProjector,
 	overlayProjector *monitor.OverlaySnapshotProjector,
 ) error {
@@ -567,6 +570,7 @@ func bootstrapCurrentDeckSelection(
 		if event == nil {
 			continue
 		}
+		event = sideCorrector.Correct(event)
 		if err := projector.Process(event); err != nil {
 			return fmt.Errorf("bootstrap selected deck for live card stats: %w", err)
 		}

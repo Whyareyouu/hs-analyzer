@@ -14,6 +14,10 @@ describe("window config", () => {
 
     expect(overlayWindow.transparent).toBe(true);
     expect(overlayWindow.frame).toBe(false);
+    expect(overlayWindow.title).toBe("");
+    expect(overlayWindow.titleBarStyle).toBe("hidden");
+    expect(overlayWindow.titleBarOverlay).toBe(false);
+    expect(overlayWindow.autoHideMenuBar).toBe(true);
     expect(overlayWindow.alwaysOnTop).toBe(true);
   });
 });

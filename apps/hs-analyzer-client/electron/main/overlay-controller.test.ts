@@ -17,6 +17,7 @@ describe("OverlayWindowController", () => {
     const locator: GameWindowLocator = {
       locate: vi.fn(async () => ({
         detected: true,
+        active: true,
         supportedMode: "windowed",
         bounds: { x: 10, y: 20, width: 1440, height: 900 },
         reason: "ok",
@@ -36,6 +37,7 @@ describe("OverlayWindowController", () => {
     const controller = new OverlayWindowController(windowMock, {
       locate: async () => ({
         detected: true,
+        active: true,
         supportedMode: "borderless",
         bounds: { x: 0, y: 0, width: 100, height: 100 },
         reason: "ok",
@@ -51,6 +53,7 @@ describe("OverlayWindowController", () => {
     const controller = new OverlayWindowController(windowMock, {
       locate: async () => ({
         detected: false,
+        active: false,
         supportedMode: "unsupported",
         bounds: null,
         reason: "exclusive fullscreen is not supported",
@@ -62,13 +65,14 @@ describe("OverlayWindowController", () => {
     expect(windowMock.hide).toHaveBeenCalled();
   });
 
-  it("shows detached preview when Hearthstone is detected but no attachable window is available", async () => {
+  it("hides overlay when Hearthstone is detected but no attachable window is available", async () => {
     const windowMock = createWindowMock();
     const controller = new OverlayWindowController(
       windowMock,
       {
         locate: async () => ({
           detected: true,
+          active: false,
           supportedMode: "unsupported",
           bounds: null,
           reason: "Hearthstone process exists but does not expose a desktop window",
@@ -79,17 +83,18 @@ describe("OverlayWindowController", () => {
 
     const diagnostics = await controller.syncBounds();
     expect(diagnostics.attached).toBe(false);
-    expect(diagnostics.bounds).toEqual({ x: 20, y: 20, width: 680, height: 900 });
-    expect(windowMock.showInactive).toHaveBeenCalled();
+    expect(diagnostics.bounds).toBeNull();
+    expect(windowMock.hide).toHaveBeenCalled();
   });
 
-  it("keeps fullscreen fallback visible when Hearthstone detection fails completely", async () => {
+  it("hides overlay when Hearthstone detection fails completely", async () => {
     const windowMock = createWindowMock();
     const controller = new OverlayWindowController(
       windowMock,
       {
         locate: async () => ({
           detected: false,
+          active: false,
           supportedMode: "unsupported",
           bounds: null,
           reason: "Hearthstone process not found",
@@ -101,7 +106,26 @@ describe("OverlayWindowController", () => {
     const diagnostics = await controller.syncBounds();
     expect(diagnostics.attached).toBe(false);
     expect(diagnostics.degraded).toBe(true);
-    expect(diagnostics.bounds).toEqual({ x: 0, y: 0, width: 1920, height: 1080 });
-    expect(windowMock.showInactive).toHaveBeenCalled();
+    expect(diagnostics.bounds).toBeNull();
+    expect(windowMock.hide).toHaveBeenCalled();
+  });
+
+  it("hides overlay when Hearthstone is visible but not the active foreground window", async () => {
+    const windowMock = createWindowMock();
+    const controller = new OverlayWindowController(windowMock, {
+      locate: async () => ({
+        detected: true,
+        active: false,
+        supportedMode: "windowed",
+        bounds: { x: 10, y: 20, width: 1440, height: 900 },
+        reason: "Hearthstone window detected but is not active",
+      }),
+    });
+
+    const diagnostics = await controller.syncBounds();
+    expect(diagnostics.attached).toBe(false);
+    expect(diagnostics.gameDetected).toBe(true);
+    expect(windowMock.hide).toHaveBeenCalled();
+    expect(windowMock.showInactive).not.toHaveBeenCalled();
   });
 });

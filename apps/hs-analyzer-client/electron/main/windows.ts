@@ -5,6 +5,9 @@ export interface BrowserWindowConfig {
   minHeight?: number;
   transparent?: boolean;
   frame?: boolean;
+  titleBarStyle?: "default" | "hidden" | "hiddenInset" | "customButtonsOnHover";
+  titleBarOverlay?: boolean;
+  autoHideMenuBar?: boolean;
   alwaysOnTop?: boolean;
   skipTaskbar?: boolean;
   resizable?: boolean;
@@ -42,6 +45,10 @@ export function createOverlayWindowConfig(preloadPath: string): BrowserWindowCon
     height: 900,
     transparent: true,
     frame: false,
+    title: "",
+    titleBarStyle: "hidden",
+    titleBarOverlay: false,
+    autoHideMenuBar: true,
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
