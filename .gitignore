@@ -27,7 +27,7 @@ go.work
 *.swp
 *.swo
 *~
-
+./output
 # OS
 .DS_Store
 Thumbs.db

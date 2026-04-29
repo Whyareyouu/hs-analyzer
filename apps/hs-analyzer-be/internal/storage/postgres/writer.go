@@ -33,8 +33,8 @@ func (w *Writer) SaveMatch(ctx context.Context, payload matchupload.Payload, ide
 	}
 
 	if _, err := w.db.ExecContext(ctx, `
-INSERT INTO matches (match_id, idempotency_key, payload_hash, schema_version, completion_status, completion_reason)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO matches (match_id, idempotency_key, payload_hash, schema_version, completion_status, completion_reason, payload)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 ON CONFLICT (match_id) DO NOTHING`,
 		payload.MatchID,
 		idempotencyKey,
@@ -42,6 +42,7 @@ ON CONFLICT (match_id) DO NOTHING`,
 		payload.SchemaVersion,
 		payload.CompletionStatus,
 		payload.CompletionReason,
+		mustMarshalPayload(payload),
 	); err != nil {
 		return fmt.Errorf("insert match: %w", err)
 	}
@@ -70,4 +71,12 @@ ON CONFLICT (match_id, event_index) DO NOTHING`,
 	}
 
 	return nil
+}
+
+func mustMarshalPayload(payload matchupload.Payload) string {
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return "{}"
+	}
+	return string(raw)
 }

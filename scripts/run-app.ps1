@@ -3,6 +3,7 @@ param(
     [string]$CardsDbPath = "data/cards.json",
     [string]$BackendAddr = "127.0.0.1:8080",
     [string]$LiveApiAddr = "127.0.0.1:8765",
+    [string]$DatabaseUrl = "",
     [switch]$RebuildGo,
     [switch]$RebuildClient
 )
@@ -299,6 +300,9 @@ try {
         if ($backendLogsPath) {
             $backendEnvironment["HS_ANALYZER_LOGS_PATH"] = $backendLogsPath
             $backendEnvironment["HS_ANALYZER_CARDS_DB_PATH"] = $cardsDbFullPath
+        }
+        if (-not [string]::IsNullOrWhiteSpace($DatabaseUrl)) {
+            $backendEnvironment["HS_ANALYZER_DATABASE_URL"] = $DatabaseUrl
         }
 
         $processes += Start-BackgroundProcess "backend" $backendBinary @() $repoRoot $backendEnvironment

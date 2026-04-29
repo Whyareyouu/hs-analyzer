@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -46,6 +47,10 @@ func TestPostgresWriterStoresMatchAndEventsInStableOrder(t *testing.T) {
 	}
 	if !strings.Contains(executor.queries[0], "INSERT INTO matches") {
 		t.Fatalf("expected first query to insert match: %s", executor.queries[0])
+	}
+	rawPayload, ok := executor.args[0][6].(string)
+	if !ok || !json.Valid([]byte(rawPayload)) {
+		t.Fatalf("expected full match payload json in match insert args: %#v", executor.args[0])
 	}
 	if !strings.Contains(executor.queries[1], "INSERT INTO match_events") || !strings.Contains(executor.queries[2], "INSERT INTO match_events") {
 		t.Fatalf("expected event insert queries: %#v", executor.queries)

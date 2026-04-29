@@ -10,6 +10,7 @@ Options:
   --cards-db-path PATH    Path to cards.json (default: data/cards.json).
   --backend-addr ADDR     Backend listen address (default: 127.0.0.1:8080).
   --live-api-addr ADDR    Live API listen address (default: 127.0.0.1:8765).
+  --database-url URL      PostgreSQL URL for backend storage.
   --rebuild-go            Force rebuild of Go binaries before launch.
   --rebuild-client        Force rebuild of the Electron client before launch.
   -h, --help              Show this help message.
@@ -25,6 +26,7 @@ cards_db_path="data/cards.json"
 logs_path=""
 backend_addr="127.0.0.1:8080"
 live_api_addr="127.0.0.1:8765"
+database_url="${HS_ANALYZER_DATABASE_URL:-}"
 rebuild_go=0
 rebuild_client=0
 
@@ -44,6 +46,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --live-api-addr)
       live_api_addr="${2:-}"
+      shift 2
+      ;;
+    --database-url)
+      database_url="${2:-}"
       shift 2
       ;;
     --rebuild-go)
@@ -220,6 +226,9 @@ backend_logs_path="$(resolve_deck_catalog_logs_path "$logs_full")"
   if [[ -n "$backend_logs_path" ]]; then
     export HS_ANALYZER_LOGS_PATH="$backend_logs_path"
     export HS_ANALYZER_CARDS_DB_PATH="$cards_db_full"
+  fi
+  if [[ -n "$database_url" ]]; then
+    export HS_ANALYZER_DATABASE_URL="$database_url"
   fi
   "$backend_binary" >"$run_dir/backend.stdout.log" 2>"$run_dir/backend.stderr.log"
 ) &
