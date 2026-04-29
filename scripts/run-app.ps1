@@ -3,7 +3,7 @@ param(
     [string]$CardsDbPath = "data/cards.json",
     [string]$BackendAddr = "127.0.0.1:8080",
     [string]$LiveApiAddr = "127.0.0.1:8765",
-    [string]$DatabaseUrl = "",
+    [string]$DatabaseUrl = $env:HS_ANALYZER_DATABASE_URL,
     [switch]$RebuildGo,
     [switch]$RebuildClient
 )
@@ -223,6 +223,10 @@ $npmCommand = Resolve-CommandPath "npm" "npm.cmd" -PreferWindowsFallback
 
 if (-not (Test-Path -LiteralPath $clientDir)) {
     throw "Electron client directory was not found: $clientDir"
+}
+
+if ([string]::IsNullOrWhiteSpace($DatabaseUrl)) {
+    $DatabaseUrl = "postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
 }
 
 if (-not (Test-Path -LiteralPath (Join-Path $clientDir "node_modules"))) {

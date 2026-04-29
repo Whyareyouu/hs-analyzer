@@ -77,7 +77,8 @@ func (s *FileDeckCatalogSource) LoadDeckCatalog() ([]DashboardDeckCatalogDeck, e
 		return nil, fmt.Errorf("parse deck catalog: %w", err)
 	}
 
-	result := make([]DashboardDeckCatalogDeck, 0, len(entries))
+	uniqueByKey := make(map[string]DashboardDeckCatalogDeck, len(entries))
+	order := make([]string, 0, len(entries))
 	for _, entry := range entries {
 		deckID := strings.TrimSpace(entry.DeckID)
 		name := strings.TrimSpace(entry.Name)
@@ -92,15 +93,28 @@ func (s *FileDeckCatalogSource) LoadDeckCatalog() ([]DashboardDeckCatalogDeck, e
 		}
 
 		className := fallbackDeckClass(deriveDeckClassFromCards(entry.Cards))
-		result = append(result, DashboardDeckCatalogDeck{
+		deck := DashboardDeckCatalogDeck{
 			DeckID: deckID,
 			Name:   name,
 			Class:  className,
 			Icon:   deckIcon(className),
 			Cards:  buildDeckCardsFromCards(entry.Cards),
-		})
+		}
+
+		uniqueKey := strings.TrimSpace(entry.Code)
+		if uniqueKey == "" {
+			uniqueKey = deckID
+		}
+		if _, exists := uniqueByKey[uniqueKey]; !exists {
+			order = append(order, uniqueKey)
+		}
+		uniqueByKey[uniqueKey] = deck
 	}
 
+	result := make([]DashboardDeckCatalogDeck, 0, len(order))
+	for _, key := range order {
+		result = append(result, uniqueByKey[key])
+	}
 	sort.SliceStable(result, func(i, j int) bool {
 		return result[i].Name < result[j].Name
 	})

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -46,6 +47,40 @@ func TestFileDeckCatalogSourceLoadsRealDecksLog(t *testing.T) {
 	}
 	if selectedDeck.Class == "UNKNOWN" {
 		t.Fatalf("expected resolved deck class")
+	}
+}
+
+func TestFileDeckCatalogSourceDeduplicatesDecksByCode(t *testing.T) {
+	t.Parallel()
+
+	tempDir := t.TempDir()
+	const deckCode = "AAECAZ6rBAaEnQe3rQePsQfQvwfOyQeb1AcM4+YGqvwGq/wG94MH6IcH0pcH0LIH7LIHhL0HtcAHr8EHoMUHAAA="
+	deckLog := []byte(
+		"I 00:00:00.0000000 ### First Name\n" +
+			"I 00:00:00.0000000 # Deck ID: 1\n" +
+			"I 00:00:00.0000000 " + deckCode + "\n" +
+			"I 00:00:01.0000000 ### Latest Name\n" +
+			"I 00:00:01.0000000 # Deck ID: 2\n" +
+			"I 00:00:01.0000000 " + deckCode + "\n",
+	)
+	if err := os.WriteFile(filepath.Join(tempDir, "Decks.log"), deckLog, 0o644); err != nil {
+		t.Fatalf("write Decks.log: %v", err)
+	}
+
+	source, err := NewFileDeckCatalogSource(tempDir, filepath.Join("..", "..", "..", "..", "data", "cards.json"))
+	if err != nil {
+		t.Fatalf("create source: %v", err)
+	}
+
+	decks, err := source.LoadDeckCatalog()
+	if err != nil {
+		t.Fatalf("load catalog: %v", err)
+	}
+	if len(decks) != 1 {
+		t.Fatalf("expected one unique deck, got %d", len(decks))
+	}
+	if decks[0].DeckID != "2" || decks[0].Name != "Latest Name" {
+		t.Fatalf("expected latest duplicate deck metadata, got %#v", decks[0])
 	}
 }
 

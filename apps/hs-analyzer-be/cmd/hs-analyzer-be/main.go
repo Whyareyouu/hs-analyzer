@@ -12,15 +12,18 @@ import (
 	"time"
 
 	"hsanalyzer/apps/hs-analyzer-be/internal/api"
-	"hsanalyzer/apps/hs-analyzer-be/internal/storage/postgres"
+	pgstore "hsanalyzer/apps/hs-analyzer-be/internal/storage/postgres"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	gormpostgres "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
-	envLogsPath    = "HS_ANALYZER_LOGS_PATH"
-	envCardsDBPath = "HS_ANALYZER_CARDS_DB_PATH"
-	envDatabaseURL = "HS_ANALYZER_DATABASE_URL"
+	envLogsPath        = "HS_ANALYZER_LOGS_PATH"
+	envCardsDBPath     = "HS_ANALYZER_CARDS_DB_PATH"
+	envDatabaseURL     = "HS_ANALYZER_DATABASE_URL"
+	defaultDatabaseURL = "postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
 )
 
 func main() {
@@ -53,20 +56,34 @@ func main() {
 func openMatchStore() (api.MatchStore, func()) {
 	databaseURL := strings.TrimSpace(os.Getenv(envDatabaseURL))
 	if databaseURL == "" {
-		log.Printf("%s is not set; using in-memory match store", envDatabaseURL)
-		return api.NewMemoryStore(), func() {}
+		databaseURL = defaultDatabaseURL
+		log.Printf("%s is not set; using default local postgres %s", envDatabaseURL, redactDatabaseURL(databaseURL))
 	}
 
 	db, err := openPostgres(databaseURL)
 	if err != nil {
 		log.Fatalf("open postgres store: %v", err)
 	}
-	return postgres.NewStore(db), func() {
-		_ = db.Close()
+	return pgstore.NewStore(db), func() {
+		sqlDB, err := db.DB()
+		if err == nil {
+			_ = sqlDB.Close()
+		}
 	}
 }
 
-func openPostgres(databaseURL string) (*sql.DB, error) {
+func redactDatabaseURL(rawURL string) string {
+	parsed, err := url.Parse(rawURL)
+	if err != nil || parsed.User == nil {
+		return rawURL
+	}
+	if username := parsed.User.Username(); username != "" {
+		parsed.User = url.UserPassword(username, "xxxxx")
+	}
+	return parsed.String()
+}
+
+func openPostgres(databaseURL string) (*gorm.DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -74,16 +91,20 @@ func openPostgres(databaseURL string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	db, err := sql.Open("pgx", databaseURL)
+	db, err := gorm.Open(gormpostgres.Open(databaseURL), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	if err := db.PingContext(ctx); err != nil {
-		_ = db.Close()
+	sqlDB, err := db.DB()
+	if err != nil {
 		return nil, err
 	}
-	if err := postgres.ApplyMigrations(ctx, db); err != nil {
-		_ = db.Close()
+	if err := sqlDB.PingContext(ctx); err != nil {
+		_ = sqlDB.Close()
+		return nil, err
+	}
+	if err := pgstore.ApplyMigrations(ctx, db); err != nil {
+		_ = sqlDB.Close()
 		return nil, err
 	}
 	log.Printf("postgres match store enabled")

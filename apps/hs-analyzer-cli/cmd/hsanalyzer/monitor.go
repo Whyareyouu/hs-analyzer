@@ -281,10 +281,8 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 		if err := primeIncrementalParserState(deckLogPath, deckStartOffset, deckParser.ParseLine); err != nil {
 			return fmt.Errorf("prime deck parser state: %w", err)
 		}
-		if !hasMatchingReaderCheckpoint(runtimeState, "deck", deckLogPath) {
-			if err := bootstrapCurrentDeckSelection(runCtx, deckLogPath, deckParser, sideCorrector, projector, overlayProjector); err != nil {
-				return err
-			}
+		if err := bootstrapCurrentDeckSelection(runCtx, deckLogPath, deckParser, sideCorrector, projector, overlayProjector); err != nil {
+			return err
 		}
 	}
 	if !projectorRestored {

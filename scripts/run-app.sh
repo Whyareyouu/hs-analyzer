@@ -169,6 +169,10 @@ if [[ ! -d "$client_dir" ]]; then
   exit 1
 fi
 
+if [[ -z "$database_url" ]]; then
+  database_url="postgres://postgres:postgres@127.0.0.1:5432/hs_analyzer?sslmode=disable"
+fi
+
 if [[ ! -d "$client_dir/node_modules" ]]; then
   echo "Client dependencies are missing. Run 'npm install' in $client_dir first." >&2
   exit 1
