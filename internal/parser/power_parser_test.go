@@ -155,6 +155,36 @@ func TestPowerParserParseCardPlayedFromRealLogFragments(t *testing.T) {
 	}
 }
 
+func TestPowerParserParsesSpellPlayedWhenResolvedIntoGraveyard(t *testing.T) {
+	t.Parallel()
+
+	input := strings.Join([]string{
+		"D 00:00:00.0000000 GameState.DebugPrintGame() - PlayerID=1, PlayerName=UNKNOWN HUMAN PLAYER",
+		"D 00:00:01.0000000 GameState.DebugPrintPower() - BLOCK_START BlockType=PLAY Entity=[entityName=Кошмарное топливо id=49 zone=HAND zonePos=5 cardId=EDR_528 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1",
+		"D 00:00:01.0000000 PowerTaskList.DebugPrintPower() - BLOCK_START BlockType=POWER Entity=[entityName=Кошмарное топливо id=49 zone=GRAVEYARD zonePos=0 cardId=EDR_528 player=2] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1",
+	}, "\n")
+
+	parser := NewPowerParser()
+	events, err := parser.Parse(context.Background(), strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("parse power log: %v", err)
+	}
+	if len(events) != 1 {
+		t.Fatalf("unexpected events count: %d", len(events))
+	}
+
+	cardPlayed, ok := events[0].(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected event type: %T", events[0])
+	}
+	if cardPlayed.Player != types.PlayerTypeOpponent {
+		t.Fatalf("unexpected player: %s", cardPlayed.Player)
+	}
+	if cardPlayed.Card == nil || cardPlayed.Card.ID != "EDR_528" {
+		t.Fatalf("unexpected spell card: %#v", cardPlayed.Card)
+	}
+}
+
 func TestPowerParserParseAttackDamageAndDeathFromRealLogFragments(t *testing.T) {
 	t.Parallel()
 

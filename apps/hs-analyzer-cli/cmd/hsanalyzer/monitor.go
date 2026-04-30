@@ -100,12 +100,15 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	}
 
 	powerLogPath, loadingLogPath := resolveLiveLogPaths(cfg)
+	zoneLogPath := resolveZoneLogPath(cfg)
 	deckLogPath := resolveDeckLogPath(cfg)
 	deckLogAvailable := liveOptionalLogExists(deckLogPath)
+	zoneLogAvailable := liveOptionalLogExists(zoneLogPath)
 	fmt.Fprintf(
 		cmd.OutOrStdout(),
-		"monitoring started: power=%s loading=%s deck=%s\n",
+		"monitoring started: power=%s zone=%s loading=%s deck=%s\n",
 		powerLogPath,
+		formatOptionalLiveLogPath(zoneLogPath, zoneLogAvailable),
 		loadingLogPath,
 		formatOptionalLiveLogPath(deckLogPath, deckLogAvailable),
 	)
@@ -187,7 +190,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	})
 	canRestoreLiveCardStats := runtimeState.LiveCardStats != nil &&
 		runtimeState.LiveCardStats.Match.Status != monitor.LiveCardStatsMatchStatusFinalized &&
-		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, powerLogPath, optionalRestorePath(deckLogAvailable, deckLogPath))
+		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(zoneLogAvailable, zoneLogPath), optionalRestorePath(deckLogAvailable, deckLogPath))
 	if canRestoreLiveCardStats {
 		if err := projector.Restore(*runtimeState.LiveCardStats); err != nil {
 			return fmt.Errorf("restore live card stats projector: %w", err)
@@ -212,7 +215,7 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	})
 	canRestoreOverlay := runtimeState.Overlay != nil &&
 		runtimeState.Overlay.Match.Status != overlay.MatchStatusFinalized &&
-		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, powerLogPath, optionalRestorePath(deckLogAvailable, deckLogPath))
+		canRestoreRuntimeSnapshots(runtimeState, powerLogPath, loadingLogPath, optionalRestorePath(zoneLogAvailable, zoneLogPath), optionalRestorePath(deckLogAvailable, deckLogPath))
 	if canRestoreOverlay {
 		if err := overlayProjector.Restore(*runtimeState.Overlay); err != nil {
 			return fmt.Errorf("restore overlay projector: %w", err)
@@ -265,12 +268,15 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	if err := primeIncrementalParserState(loadingLogPath, loadingStartOffset, loadingParser.ParseLine); err != nil {
 		return fmt.Errorf("prime loading parser state: %w", err)
 	}
-	powerZoneStartOffset, err := resolveLiveReaderStartOffset(runtimeState, "power_zone", powerLogPath)
-	if err != nil {
-		return err
-	}
-	if err := primeIncrementalParserState(powerLogPath, powerZoneStartOffset, zoneParser.ParseLine); err != nil {
-		return fmt.Errorf("prime power zone parser state: %w", err)
+	powerZoneStartOffset := int64(0)
+	if zoneLogAvailable {
+		powerZoneStartOffset, err = resolveLiveReaderStartOffset(runtimeState, "power_zone", zoneLogPath)
+		if err != nil {
+			return err
+		}
+		if err := primeIncrementalParserState(zoneLogPath, powerZoneStartOffset, zoneParser.ParseLine); err != nil {
+			return fmt.Errorf("prime zone parser state: %w", err)
+		}
 	}
 	deckStartOffset := int64(0)
 	if deckLogAvailable {
@@ -300,7 +306,9 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 	}
 	recordInitialReaderCheckpoint(runtimeState.Readers, "power", powerLogPath, powerStartOffset)
 	recordInitialReaderCheckpoint(runtimeState.Readers, "loading_screen", loadingLogPath, loadingStartOffset)
-	recordInitialReaderCheckpoint(runtimeState.Readers, "power_zone", powerLogPath, powerZoneStartOffset)
+	if zoneLogAvailable {
+		recordInitialReaderCheckpoint(runtimeState.Readers, "power_zone", zoneLogPath, powerZoneStartOffset)
+	}
 	if deckLogAvailable {
 		recordInitialReaderCheckpoint(runtimeState.Readers, "deck", deckLogPath, deckStartOffset)
 	}
@@ -378,7 +386,9 @@ func runMonitor(parentCtx context.Context, cmd *cobra.Command, options monitorOp
 
 	startLiveReader(powerLogPath, "power", powerParser.ParseLine, powerStartOffset)
 	startLiveReader(loadingLogPath, "loading_screen", loadingParser.ParseLine, loadingStartOffset)
-	startLiveReader(powerLogPath, "power_zone", zoneParser.ParseLine, powerZoneStartOffset)
+	if zoneLogAvailable {
+		startLiveReader(zoneLogPath, "power_zone", zoneParser.ParseLine, powerZoneStartOffset)
+	}
 	if deckLogAvailable {
 		startLiveReader(deckLogPath, "deck", deckParser.ParseLine, deckStartOffset)
 	}
@@ -679,6 +689,13 @@ func resolveDeckLogPath(cfg *config.Config) string {
 		return ""
 	}
 	return filepath.Join(cfg.LogsPath, "Decks.log")
+}
+
+func resolveZoneLogPath(cfg *config.Config) string {
+	if cfg == nil {
+		return ""
+	}
+	return filepath.Join(cfg.LogsPath, "Zone.log")
 }
 
 func resolveLiveCardStatsPath(path string) (string, error) {

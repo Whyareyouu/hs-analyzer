@@ -499,7 +499,7 @@ func (p *PowerParser) parseBlockStart(line, blockType string) ([]game.Event, err
 		return nil, nil
 	case hslog.BlockTypePower:
 		pending, exists := p.pendingPlays[entity.entityID]
-		if !exists || entity.zone != card.ZonePlay {
+		if !exists || (entity.zone != card.ZonePlay && entity.zone != card.ZoneGraveyard) {
 			return nil, nil
 		}
 		if _, emitted := p.emittedPlays[entity.entityID]; emitted {

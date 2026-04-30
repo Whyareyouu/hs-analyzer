@@ -124,6 +124,41 @@ func TestOverlaySnapshotAggregatesOpponentRepeatsAndResetsOnNewMatch(t *testing.
 	}
 }
 
+func TestOverlaySnapshotKeepsOpponentCardsInFirstPlayChronology(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{
+		Now: fixedTimeSequence(
+			time.Unix(100, 0),
+			time.Unix(101, 0),
+			time.Unix(102, 0),
+			time.Unix(103, 0),
+		),
+		CardDB: &stubLiveCardStatsCardDB{
+			cards: map[string]*carddb.CardInfo{
+				"LATE":  {ID: "LATE", Name: "Поздняя карта", Cost: 1},
+				"EARLY": {ID: "EARLY", Name: "Ранняя карта", Cost: 9},
+			},
+		},
+	})
+
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("LATE", 1, types.PlayerTypeOpponent), 0))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("EARLY", 2, types.PlayerTypeOpponent), 0))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("LATE", 3, types.PlayerTypeOpponent), 0))
+
+	snapshot := projector.Snapshot()
+	if len(snapshot.OpponentPlayedCards) != 2 {
+		t.Fatalf("unexpected opponent card count: %#v", snapshot.OpponentPlayedCards)
+	}
+	if snapshot.OpponentPlayedCards[0].CardID != "LATE" {
+		t.Fatalf("expected first-play chronology to keep LATE first, got %#v", snapshot.OpponentPlayedCards)
+	}
+	if snapshot.OpponentPlayedCards[1].CardID != "EARLY" {
+		t.Fatalf("expected EARLY second, got %#v", snapshot.OpponentPlayedCards)
+	}
+}
+
 func TestOverlaySnapshotRestorePreservesCounts(t *testing.T) {
 	t.Parallel()
 

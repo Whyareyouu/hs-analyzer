@@ -470,13 +470,13 @@ func (p *OverlaySnapshotProjector) rebuildOpponentSnapshot() {
 	}
 	slices.SortFunc(cards, func(left, right overlay.OpponentPlayedCard) int {
 		switch {
-		case left.ManaCost < right.ManaCost:
+		case left.FirstPlayedAt < right.FirstPlayedAt:
 			return -1
-		case left.ManaCost > right.ManaCost:
+		case left.FirstPlayedAt > right.FirstPlayedAt:
 			return 1
-		case left.Name < right.Name:
+		case left.LastPlayedAt < right.LastPlayedAt:
 			return -1
-		case left.Name > right.Name:
+		case left.LastPlayedAt > right.LastPlayedAt:
 			return 1
 		case left.CardID < right.CardID:
 			return -1
