@@ -75,12 +75,44 @@ describe("PlayerDeckPanel", () => {
     expect(screen.getByText("Still In Deck")).toBeInTheDocument();
     expect(screen.getAllByText("Held Card")).toHaveLength(2);
     expect(screen.getByText("Already Played")).toBeInTheDocument();
+    expect(screen.getAllByLabelText("1 copies")).toHaveLength(4);
     expect(screen.getByLabelText("2 copies")).toHaveTextContent("2");
-    expect(screen.getByLabelText("legendary card")).toHaveTextContent("*");
+    expect(screen.getAllByLabelText("1 copies")[0]).toHaveTextContent("1");
   });
 
   it("shows explicit waiting state when deck cards are not available yet", () => {
     render(<PlayerDeckPanel inspectMode={false} onInspect={vi.fn()} cards={[]} />);
     expect(screen.getByText(/Ждём выбранную колоду/i)).toBeInTheDocument();
+  });
+
+  it("anchors card art to the top of a taller row when image is available", () => {
+    render(
+      <PlayerDeckPanel
+        inspectMode={false}
+        onInspect={vi.fn()}
+        cards={[
+          {
+            cardId: "ART_CARD",
+            name: "Art Card",
+            description: "",
+            image: "https://example.com/card.png",
+            manaCost: 5,
+            rarity: "RARE",
+            cardType: "MINION",
+            isLegendary: false,
+            initialCopies: 1,
+            remainingCopies: 1,
+            drawnCopies: 0,
+            playedCopies: 0,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /Art Card/i })).toHaveStyle({
+      backgroundPosition: "center 25%",
+      backgroundSize: "cover",
+      minHeight: "var(--overlay-card-row-height)",
+    });
   });
 });

@@ -23,18 +23,18 @@ const SECTION_TITLES: Record<PlayerDeckSectionKey, string> = {
 };
 
 const RARITY_BACKGROUNDS: Record<string, string> = {
-  LEGENDARY: "linear-gradient(90deg, rgba(123, 59, 9, 0.96), rgba(202, 138, 4, 0.62))",
-  EPIC: "linear-gradient(90deg, rgba(76, 29, 149, 0.96), rgba(168, 85, 247, 0.56))",
-  RARE: "linear-gradient(90deg, rgba(7, 89, 133, 0.96), rgba(59, 130, 246, 0.5))",
-  COMMON: "linear-gradient(90deg, rgba(30, 41, 59, 0.96), rgba(71, 85, 105, 0.58))",
-  FREE: "linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(51, 65, 85, 0.6))",
-  UNKNOWN: "linear-gradient(90deg, rgba(12, 18, 31, 0.96), rgba(30, 41, 59, 0.62))",
+  LEGENDARY: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(36, 23, 14, 0.96) 58%, rgba(201, 133, 35, 0.92) 100%)",
+  EPIC: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(32, 20, 49, 0.96) 58%, rgba(124, 73, 214, 0.9) 100%)",
+  RARE: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(17, 31, 56, 0.96) 58%, rgba(33, 115, 216, 0.92) 100%)",
+  COMMON: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(26, 33, 49, 0.96) 58%, rgba(101, 111, 131, 0.86) 100%)",
+  FREE: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(24, 31, 46, 0.96) 58%, rgba(79, 92, 115, 0.84) 100%)",
+  UNKNOWN: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(24, 31, 46, 0.96) 58%, rgba(66, 77, 100, 0.84) 100%)",
 };
 
 const TYPE_BACKGROUNDS: Record<string, string> = {
-  SPELL: "linear-gradient(90deg, rgba(14, 116, 144, 0.94), rgba(56, 189, 248, 0.42))",
-  WEAPON: "linear-gradient(90deg, rgba(88, 28, 135, 0.94), rgba(192, 132, 252, 0.42))",
-  LOCATION: "linear-gradient(90deg, rgba(4, 120, 87, 0.94), rgba(52, 211, 153, 0.38))",
+  SPELL: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(17, 44, 62, 0.96) 58%, rgba(46, 150, 195, 0.9) 100%)",
+  WEAPON: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(48, 29, 18, 0.96) 58%, rgba(168, 97, 48, 0.88) 100%)",
+  LOCATION: "linear-gradient(90deg, rgba(14, 18, 31, 0.98) 0%, rgba(19, 49, 39, 0.96) 58%, rgba(42, 149, 112, 0.88) 100%)",
 };
 
 export function PlayerDeckPanel({
@@ -101,33 +101,33 @@ function PlayerDeckCardRow({
       onFocus={() => inspectMode && onInspect(card)}
       onBlur={() => onInspect(null)}
       className={cn(
-        "grid w-[var(--overlay-card-row-width)] grid-cols-[34px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border text-left shadow-panel transition-[filter,opacity,transform] duration-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent/60",
-        sectionKey === "hand" ? "border-amber-200/50 brightness-110" : "border-app-border/60",
-        sectionKey === "other" ? "border-slate-700/70 opacity-70 grayscale" : "opacity-100",
+        "grid w-[var(--overlay-card-row-width)] grid-cols-[42px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border text-left shadow-panel transition-[filter,opacity,transform] duration-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent/60",
+        sectionKey === "hand" ? "border-amber-500/75 brightness-110 shadow-[0_0_0_1px_rgba(245,158,11,0.22)]" : "border-slate-800/80",
+        sectionKey === "other" ? "border-slate-900/90 opacity-70 grayscale" : "opacity-100",
       )}
       style={{
         minHeight: "var(--overlay-card-row-height)",
         backgroundImage: buildRowBackground(card, sectionKey),
-        backgroundPosition: "center",
-        backgroundSize: "cover",
+        backgroundPosition: buildRowBackgroundPosition(card),
+        backgroundSize: buildRowBackgroundSize(card),
       }}
     >
       <span
         className={cn(
-          "grid h-full place-items-center bg-black/40 text-xs font-bold",
+          "grid h-full place-items-center bg-black/55 text-xs font-bold",
           sectionKey === "hand" ? "text-amber-100" : "text-app-accent",
           sectionKey === "other" ? "text-slate-400" : "",
         )}
       >
         {card.manaCost}
       </span>
-      <span className={cn("truncate px-2 text-xs font-semibold", sectionKey === "other" ? "text-slate-300" : "text-app-text")}>
+      <span className={cn("truncate px-3 text-xs font-semibold drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]", sectionKey === "other" ? "text-slate-300" : "text-app-text")}>
         {card.name}
       </span>
       <span
         aria-label={buildCopiesLabel(card, copies)}
         className={cn(
-          "grid h-full place-items-center bg-black/35 text-[11px] font-black",
+          "grid h-full place-items-center bg-black/55 text-[11px] font-black",
           sectionKey === "hand" ? "text-amber-100" : "text-app-text",
           sectionKey === "other" ? "text-slate-400" : "",
         )}
@@ -174,12 +174,12 @@ function buildRowBackground(card: OverlayDeckCard, sectionKey: PlayerDeckSection
   const image = card.image ? `url(${card.image})` : "";
 
   if (sectionKey === "hand") {
-    const highlight = "linear-gradient(90deg, rgba(251, 191, 36, 0.48), rgba(217, 119, 6, 0.18))";
+    const highlight = "linear-gradient(90deg, rgba(58, 34, 10, 0.88), rgba(208, 134, 24, 0.44) 82%, rgba(255, 205, 96, 0.62) 100%)";
     return image ? `${highlight}, ${getCardImageTint(card)}, ${image}` : `${highlight}, ${base}`;
   }
 
   if (sectionKey === "other") {
-    const disabled = "linear-gradient(90deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.86))";
+    const disabled = "linear-gradient(90deg, rgba(4, 7, 15, 0.98), rgba(15, 23, 42, 0.92))";
     return image ? `${disabled}, linear-gradient(90deg, rgba(2, 6, 23, 0.82), rgba(2, 6, 23, 0.72)), ${image}` : disabled;
   }
 
@@ -199,26 +199,34 @@ function getCardImageTint(card: OverlayDeckCard): string {
 
   switch (rarity) {
     case "LEGENDARY":
-      return "linear-gradient(90deg, rgba(120, 53, 15, 0.9), rgba(251, 191, 36, 0.24))";
+      return "linear-gradient(90deg, rgba(5, 8, 17, 0.86), rgba(24, 17, 12, 0.72) 58%, rgba(255, 183, 55, 0.32) 100%)";
     case "EPIC":
-      return "linear-gradient(90deg, rgba(76, 29, 149, 0.9), rgba(192, 132, 252, 0.22))";
+      return "linear-gradient(90deg, rgba(5, 8, 17, 0.86), rgba(20, 14, 37, 0.72) 58%, rgba(156, 104, 255, 0.3) 100%)";
     case "RARE":
-      return "linear-gradient(90deg, rgba(14, 116, 144, 0.9), rgba(96, 165, 250, 0.2))";
+      return "linear-gradient(90deg, rgba(5, 8, 17, 0.86), rgba(13, 26, 51, 0.72) 58%, rgba(68, 154, 255, 0.3) 100%)";
     default:
       if (cardType === "SPELL") {
-        return "linear-gradient(90deg, rgba(14, 116, 144, 0.86), rgba(56, 189, 248, 0.18))";
+        return "linear-gradient(90deg, rgba(5, 8, 17, 0.86), rgba(11, 33, 46, 0.72) 58%, rgba(73, 188, 233, 0.28) 100%)";
       }
-      return "linear-gradient(90deg, rgba(3, 7, 18, 0.82), rgba(3, 7, 18, 0.28))";
+      if (cardType === "WEAPON") {
+        return "linear-gradient(90deg, rgba(5, 8, 17, 0.86), rgba(36, 22, 14, 0.72) 58%, rgba(195, 116, 58, 0.24) 100%)";
+      }
+      return "linear-gradient(90deg, rgba(5, 8, 17, 0.88), rgba(14, 19, 31, 0.76) 58%, rgba(117, 133, 161, 0.2) 100%)";
   }
 }
 
-function formatCopies(card: OverlayDeckCard, copies: number): string {
-  if (card.isLegendary) {
-    return "*";
-  }
-  return copies > 1 ? String(copies) : "";
+function formatCopies(_card: OverlayDeckCard, copies: number): string {
+  return String(copies);
 }
 
-function buildCopiesLabel(card: OverlayDeckCard, copies: number): string {
-  return card.isLegendary ? "legendary card" : `${copies} copies`;
+function buildCopiesLabel(_card: OverlayDeckCard, copies: number): string {
+  return `${copies} copies`;
+}
+
+function buildRowBackgroundPosition(card: OverlayDeckCard): string {
+  return card.image ? "center 25%" : "center";
+}
+
+function buildRowBackgroundSize(card: OverlayDeckCard): string {
+  return card.image ? "cover" : "cover";
 }

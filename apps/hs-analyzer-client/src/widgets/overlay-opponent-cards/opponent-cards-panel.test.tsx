@@ -31,4 +31,31 @@ describe("OpponentCardsPanel", () => {
     render(<OpponentCardsPanel inspectMode={false} onInspect={vi.fn()} cards={[]} />);
     expect(screen.getByText(/Оппонент пока ничего не разыграл/i)).toBeInTheDocument();
   });
+
+  it("uses the top of the card art as the row background when image is available", () => {
+    render(
+      <OpponentCardsPanel
+        inspectMode={false}
+        onInspect={vi.fn()}
+        cards={[
+          {
+            cardId: "CARD_3",
+            name: "Frostbolt",
+            description: "",
+            image: "https://example.com/frostbolt.png",
+            manaCost: 2,
+            playCount: 1,
+            firstPlayedAt: "",
+            lastPlayedAt: "",
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /Frostbolt/i })).toHaveStyle({
+      backgroundPosition: "center 25%",
+      backgroundSize: "cover",
+      minHeight: "var(--overlay-card-row-height)",
+    });
+  });
 });
