@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/entity"
 	"hsanalyzer/internal/state"
 	"hsanalyzer/internal/types"
@@ -107,6 +108,58 @@ func TestCardEventsApply(t *testing.T) {
 	}
 	if player.Hand.Count() != 1 {
 		t.Fatalf("expected one card in hand after draw")
+	}
+}
+
+func TestCardPlayedEventApplyMovesSpellToGraveyard(t *testing.T) {
+	s := state.New("game-id", state.GameModeStandard)
+	player := s.GetPlayer(types.PlayerTypePlayer)
+
+	spell := card.New("SPELL_1", 102, types.PlayerTypePlayer)
+	spell.Info = &carddb.CardInfo{ID: "SPELL_1", Type: carddb.CardTypeSpell}
+	spell.Zone = card.ZoneHand
+	player.Hand.AddCard(spell)
+
+	playEvent := NewCardPlayedEvent(types.PlayerTypePlayer, spell, 0)
+	if err := playEvent.Apply(s); err != nil {
+		t.Fatalf("spell played apply failed: %v", err)
+	}
+	if player.Hand.Count() != 0 {
+		t.Fatalf("expected empty hand after spell play")
+	}
+	if player.Board.Count() != 0 {
+		t.Fatalf("expected spell to stay off the board")
+	}
+	if player.Graveyard.Count() != 1 {
+		t.Fatalf("expected spell to land in graveyard")
+	}
+}
+
+func TestCardPlayedEventApplyDoesNotFailWhenBoardIsFull(t *testing.T) {
+	s := state.New("game-id", state.GameModeStandard)
+	player := s.GetPlayer(types.PlayerTypePlayer)
+
+	for i := 0; i < 7; i++ {
+		minion := card.New("MINION_FILL", 200+i, types.PlayerTypePlayer)
+		minion.Info = &carddb.CardInfo{ID: "MINION_FILL", Type: carddb.CardTypeMinion}
+		minion.Zone = card.ZonePlay
+		player.Board.AddCard(minion)
+	}
+
+	played := card.New("MINION_OVERFLOW", 300, types.PlayerTypePlayer)
+	played.Info = &carddb.CardInfo{ID: "MINION_OVERFLOW", Type: carddb.CardTypeMinion}
+	played.Zone = card.ZoneHand
+	player.Hand.AddCard(played)
+
+	playEvent := NewCardPlayedEvent(types.PlayerTypePlayer, played, 0)
+	if err := playEvent.Apply(s); err != nil {
+		t.Fatalf("overflow play should not fail: %v", err)
+	}
+	if player.Hand.Count() != 0 {
+		t.Fatalf("expected card to leave hand after overflow play")
+	}
+	if player.Graveyard.Count() != 1 {
+		t.Fatalf("expected fallback graveyard placement when board is full")
 	}
 }
 

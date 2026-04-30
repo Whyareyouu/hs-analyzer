@@ -356,6 +356,27 @@ function Test-ArtifactOutdated([string[]]$SourcePaths, [string[]]$ArtifactPaths)
     return $latestSource -gt $latestArtifact
 }
 
+function Wait-HttpEndpoint(
+    [string]$Url,
+    [string]$Name,
+    [int]$TimeoutSeconds = 15
+) {
+    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $deadline) {
+        try {
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 2
+            if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
+                return
+            }
+        }
+        catch {
+        }
+        Start-Sleep -Milliseconds 250
+    }
+
+    throw ("{0} did not become ready at {1} within {2}s." -f $Name, $Url, $TimeoutSeconds)
+}
+
 function Start-BackgroundProcess(
     [string]$Name,
     [string]$FilePath,
@@ -502,6 +523,7 @@ try {
         }
 
         $processes += Start-BackgroundProcess "backend" $backendBinary @() $repoRoot $backendEnvironment
+        Wait-HttpEndpoint "$backendUrl/api/v1/matches" "backend API"
 
         $monitorArgs = @(
             "monitor",
@@ -514,6 +536,7 @@ try {
         }
 
         $processes += Start-BackgroundProcess "monitor" $cliBinary $monitorArgs $repoRoot
+        Wait-HttpEndpoint ("http://{0}/api/v1/live/overlay-snapshot" -f $LiveApiAddr) "live overlay API"
 
         Write-Host ""
         Write-Host "Local services are ready:"

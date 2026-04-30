@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -108,5 +109,22 @@ func TestResolveReaderStartOffset(t *testing.T) {
 	mismatch := resolveReaderStartOffset(state, "power", filepath.Clean("D:\\logs\\Power_old.log"))
 	if mismatch != 0 {
 		t.Fatalf("expected zero offset for path mismatch, got: %d", mismatch)
+	}
+}
+
+func TestResolveLiveReaderStartOffsetStartsFromBeginningWithoutCheckpoint(t *testing.T) {
+	t.Parallel()
+
+	logPath := filepath.Join(t.TempDir(), "Power.log")
+	if err := os.WriteFile(logPath, []byte("power"), 0o600); err != nil {
+		t.Fatalf("write log file: %v", err)
+	}
+
+	offset, err := resolveLiveReaderStartOffset(monitorRuntimeState{}, "power", logPath)
+	if err != nil {
+		t.Fatalf("resolve live reader offset: %v", err)
+	}
+	if offset != 0 {
+		t.Fatalf("expected bootstrap offset 0, got %d", offset)
 	}
 }

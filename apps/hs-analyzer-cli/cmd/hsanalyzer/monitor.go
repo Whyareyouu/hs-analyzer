@@ -595,7 +595,7 @@ func resolveLiveReaderStartOffset(state monitorRuntimeState, source, path string
 	if info.IsDir() {
 		return 0, fmt.Errorf("live log path is a directory: %s", path)
 	}
-	return info.Size(), nil
+	return 0, nil
 }
 
 func hasMatchingReaderCheckpoint(state monitorRuntimeState, source, path string) bool {

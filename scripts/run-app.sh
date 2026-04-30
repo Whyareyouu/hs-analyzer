@@ -222,6 +222,31 @@ test_database_tcp_endpoint() {
   fi
 }
 
+wait_http_endpoint() {
+  local url="$1"
+  local name="$2"
+  local timeout_seconds="${3:-15}"
+  local deadline=$((SECONDS + timeout_seconds))
+
+  while (( SECONDS < deadline )); do
+    if command -v curl >/dev/null 2>&1; then
+      local status
+      status="$(curl -s -o /dev/null -w '%{http_code}' "$url" || printf '000')"
+      if [[ "$status" =~ ^[234][0-9][0-9]$ ]]; then
+        return 0
+      fi
+    elif command -v powershell.exe >/dev/null 2>&1; then
+      if powershell.exe -NoProfile -Command "try { \$r = Invoke-WebRequest -UseBasicParsing '$url' -TimeoutSec 2; if (\$r.StatusCode -ge 200 -and \$r.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 }" >/dev/null 2>&1; then
+        return 0
+      fi
+    fi
+    sleep 0.25
+  done
+
+  echo "$name did not become ready at $url within ${timeout_seconds}s." >&2
+  exit 1
+}
+
 load_dotenv() {
   local file="$1"
   [[ -f "$file" ]] || return 0
@@ -354,6 +379,7 @@ if ! kill -0 "$backend_pid" 2>/dev/null; then
   echo "Backend exited early. Check logs in $run_dir." >&2
   exit 1
 fi
+wait_http_endpoint "http://$backend_addr/api/v1/matches" "backend API"
 
 monitor_args=(
   monitor
@@ -373,6 +399,7 @@ if ! kill -0 "$monitor_pid" 2>/dev/null; then
   echo "Monitor exited early. Check logs in $run_dir." >&2
   exit 1
 fi
+wait_http_endpoint "http://$live_api_addr/api/v1/live/overlay-snapshot" "live overlay API"
 
 echo
 echo "Local services are ready:"

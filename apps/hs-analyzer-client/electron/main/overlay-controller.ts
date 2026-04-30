@@ -6,6 +6,7 @@ export interface ManagedWindow {
   setBounds(bounds: OverlayBounds): void;
   setIgnoreMouseEvents(ignore: boolean, options?: { forward: boolean }): void;
   isVisible(): boolean;
+  moveTop?(): void;
 }
 
 export interface GameWindowState {
@@ -54,6 +55,7 @@ export class OverlayWindowController {
     if (supported && gameState.bounds) {
       this.overlayWindow.setBounds(gameState.bounds);
       this.overlayWindow.showInactive();
+      this.overlayWindow.moveTop?.();
       this.applyMode();
       return this.diagnostics;
     }

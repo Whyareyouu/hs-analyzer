@@ -8,6 +8,7 @@ function createWindowMock(): ManagedWindow {
     setBounds: vi.fn(),
     setIgnoreMouseEvents: vi.fn(),
     isVisible: vi.fn(() => true),
+    moveTop: vi.fn(),
   };
 }
 
@@ -29,6 +30,7 @@ describe("OverlayWindowController", () => {
 
     expect(diagnostics.attached).toBe(true);
     expect(windowMock.setBounds).toHaveBeenCalledWith({ x: 10, y: 20, width: 1440, height: 900 });
+    expect(windowMock.moveTop).toHaveBeenCalled();
     expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(true, { forward: true });
   });
 

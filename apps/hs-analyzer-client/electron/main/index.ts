@@ -68,6 +68,10 @@ public static class HsAnalyzerUser32 {
 }
 "@
 $foregroundWindow = [HsAnalyzerUser32]::GetForegroundWindow()
+$foregroundProcessId = 0
+if ($foregroundWindow -ne [IntPtr]::Zero) {
+  [void][HsAnalyzerUser32]::GetWindowThreadProcessId($foregroundWindow, [ref]$foregroundProcessId)
+}
 $allProcesses = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like 'Hearthstone*' })
 if ($allProcesses.Count -eq 0) {
   $windowCandidates = New-Object System.Collections.Generic.List[object]
@@ -98,12 +102,14 @@ if ($allProcesses.Count -eq 0) {
     $windowCandidates.Add([pscustomobject]@{
       title = $title
       process_name = ''
+      process_id = 0
       x = $rect.Left
       y = $rect.Top
       width = $width
       height = $height
       area = $width * $height
       is_foreground = $hWnd -eq $foregroundWindow
+      is_active_process = $false
     }) | Out-Null
     return $true
   }
@@ -112,7 +118,10 @@ if ($allProcesses.Count -eq 0) {
   [Console]::Out.Write('{"detected":false,"reason":"Hearthstone process not found","bounds":null}')
   exit 0
 }
-  $window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+  $window = ($windowCandidates | Where-Object { $_.is_foreground } | Select-Object -First 1)
+  if ($null -eq $window) {
+    $window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+  }
   $payload = [ordered]@{
     detected = $true
     title = $window.title
@@ -138,9 +147,9 @@ $enumWindows = [HsAnalyzerUser32+EnumWindowsProc]{
   if (-not [HsAnalyzerUser32]::IsWindowVisible($hWnd)) {
     return $true
   }
-  $pid = 0
-  [void][HsAnalyzerUser32]::GetWindowThreadProcessId($hWnd, [ref]$pid)
-  $belongsToProcess = $processById.ContainsKey([int]$pid)
+  $windowPid = 0
+  [void][HsAnalyzerUser32]::GetWindowThreadProcessId($hWnd, [ref]$windowPid)
+  $belongsToProcess = $processById.ContainsKey([int]$windowPid)
   $length = [HsAnalyzerUser32]::GetWindowTextLength($hWnd)
   $builder = New-Object System.Text.StringBuilder ($length + 1)
   [void][HsAnalyzerUser32]::GetWindowText($hWnd, $builder, $builder.Capacity)
@@ -158,16 +167,18 @@ $enumWindows = [HsAnalyzerUser32+EnumWindowsProc]{
   if ($width -lt 200 -or $height -lt 200) {
     return $true
   }
-  $processName = if ($belongsToProcess) { $processById[[int]$pid].ProcessName } else { '' }
+  $processName = if ($belongsToProcess) { $processById[[int]$windowPid].ProcessName } else { '' }
   $windowCandidates.Add([pscustomobject]@{
     title = $title
     process_name = $processName
+    process_id = [int]$windowPid
     x = $rect.Left
     y = $rect.Top
     width = $width
     height = $height
     area = $width * $height
     is_foreground = $hWnd -eq $foregroundWindow
+    is_active_process = [int]$windowPid -eq [int]$foregroundProcessId
   }) | Out-Null
   return $true
 }
@@ -176,12 +187,16 @@ if ($windowCandidates.Count -eq 0) {
   [Console]::Out.Write('{"detected":true,"reason":"Hearthstone process found, but no visible top-level window was detected","bounds":null}')
   exit 0
 }
-$window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+$window = ($windowCandidates | Where-Object { $_.is_foreground -or $_.is_active_process } | Sort-Object area -Descending | Select-Object -First 1)
+if ($null -eq $window) {
+  $window = $windowCandidates | Sort-Object area -Descending | Select-Object -First 1
+}
+$isActive = [bool]($window.is_foreground -or $window.is_active_process)
 $payload = [ordered]@{
   detected = $true
   title = $window.title
-  active = [bool]$window.is_foreground
-  reason = if ($window.is_foreground) { "Hearthstone window detected" } else { "Hearthstone window detected but is not active" }
+  active = $isActive
+  reason = if ($isActive) { "Hearthstone window detected" } else { "Hearthstone window detected but is not active" }
   bounds = @{
     x = $window.x
     y = $window.y

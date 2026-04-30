@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"hsanalyzer/internal/card"
+	"hsanalyzer/internal/carddb"
 	"hsanalyzer/internal/state"
 	"hsanalyzer/internal/types"
 )
@@ -204,21 +205,72 @@ func (e *CardPlayedEvent) Apply(gameState *state.State) error {
 		return fmt.Errorf("player not found: %s", e.Player)
 	}
 
+	destinationZone := resolvePlayedCardDestinationZone(e.Card)
+
 	// Если карта уже была восстановлена в руке, используем обычный переход между зонами.
 	if player.Hand.GetCard(e.Card.EntityID) != nil {
-		e.Card.Zone = card.ZonePlay
+		e.Card.Zone = destinationZone
 		if !player.PlayCard(e.Card, e.Position) {
-			return fmt.Errorf("failed to play card with entity id %d", e.Card.EntityID)
+			// Реальные live-логи иногда дают неполный или рассинхронизированный набор зон.
+			// В таком случае сохраняем сам факт розыгрыша без фатального падения финализации матча.
+			if destinationZone == card.ZonePlay {
+				if player.Board.GetCard(e.Card.EntityID) == nil {
+					if player.Board.IsFull() {
+						player.Graveyard.AddCard(e.Card)
+					} else {
+						player.Board.AddCardAt(e.Card, e.Position)
+					}
+				}
+			} else if player.Graveyard.GetCard(e.Card.EntityID) == nil {
+				player.Graveyard.AddCard(e.Card)
+			}
 		}
-	} else if player.Board.GetCard(e.Card.EntityID) == nil {
+	} else if destinationZone == card.ZonePlay && player.Board.GetCard(e.Card.EntityID) == nil {
 		// В реальных логах часть карт/сущностей появляется без полного восстановления руки.
 		// В таком случае регистрируем сам факт появления на доске и продолжаем анализ.
 		e.Card.Zone = card.ZonePlay
 		player.Board.AddCardAt(e.Card, e.Position)
+	} else if destinationZone == card.ZoneGraveyard && player.Graveyard.GetCard(e.Card.EntityID) == nil {
+		e.Card.Zone = card.ZoneGraveyard
+		player.Graveyard.AddCard(e.Card)
 	}
 
 	gameState.TrackCardEntity(e.Card)
 	return nil
+}
+
+func resolvePlayedCardDestinationZone(current *card.Card) card.ZoneType {
+	if current == nil {
+		return card.ZonePlay
+	}
+
+	info := resolvePlayedCardInfo(current)
+	if info == nil {
+		return card.ZonePlay
+	}
+
+	switch info.Type {
+	case carddb.CardTypeMinion, carddb.CardTypeLocation:
+		return card.ZonePlay
+	default:
+		return card.ZoneGraveyard
+	}
+}
+
+func resolvePlayedCardInfo(current *card.Card) *carddb.CardInfo {
+	if current == nil {
+		return nil
+	}
+
+	switch info := current.Info.(type) {
+	case *carddb.CardInfo:
+		return info
+	case carddb.CardInfo:
+		resolved := info
+		return &resolved
+	default:
+		return nil
+	}
 }
 
 // CardDrawnEvent обозначает взятие карты.
