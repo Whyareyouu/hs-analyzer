@@ -101,6 +101,7 @@ func TestDeckDashboardEndpointsReturnTypedPayloads(t *testing.T) {
 		"/api/v1/decks/deck-spell-dh/overview",
 		"/api/v1/decks/deck-spell-dh/cards",
 		"/api/v1/decks/deck-spell-dh/matchups",
+		"/api/v1/decks/deck-spell-dh/history",
 	} {
 		req := httptest.NewRequest(http.MethodGet, path, nil)
 		resp := httptest.NewRecorder()
@@ -159,10 +160,11 @@ func backendDashboardPayload() matchupload.Payload {
 	payload.MatchID = "game:1"
 	payload.EndedAt = "2026-04-29T10:15:03.000000000Z"
 	_ = payload.SetDashboardSummary(matchupload.DashboardSummary{
-		DeckID:      "deck-spell-dh",
-		DeckName:    "Spell Demon Hunter",
-		PlayerClass: "DEMONHUNTER",
-		Result:      matchupload.DashboardResultWin,
+		DeckID:        "deck-spell-dh",
+		DeckName:      "Spell Demon Hunter",
+		PlayerClass:   "DEMONHUNTER",
+		OpponentClass: "WARRIOR",
+		Result:        matchupload.DashboardResultWin,
 		DeckCards: []matchupload.DashboardDeckCard{
 			{CardID: "CARD_1", Name: "Taste of Chaos", ManaCost: 1, Copies: 2, Rarity: "COMMON"},
 		},

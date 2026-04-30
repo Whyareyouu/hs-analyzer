@@ -5,6 +5,7 @@ import (
 
 	"hsanalyzer/internal/card"
 	"hsanalyzer/internal/carddb"
+	"hsanalyzer/internal/entity"
 	"hsanalyzer/internal/game"
 	"hsanalyzer/internal/monitor"
 	"hsanalyzer/internal/state"
@@ -91,6 +92,7 @@ func TestBuildMatchUploadPayloadAddsDashboardSummaryFromDeckList(t *testing.T) {
 	gameState := state.New("game-2", state.GameModeStandard)
 	winner := types.PlayerTypePlayer
 	gameState.Winner = &winner
+	gameState.Opponent.Hero = entity.New(900, "HERO_01", types.PlayerTypeOpponent)
 
 	first := card.New("CARD_001", 1, types.PlayerTypePlayer)
 	first.Info = &carddb.CardInfo{
@@ -139,6 +141,9 @@ func TestBuildMatchUploadPayloadAddsDashboardSummaryFromDeckList(t *testing.T) {
 	}
 	if summary.PlayerClass != "DEMONHUNTER" {
 		t.Fatalf("unexpected player class: %s", summary.PlayerClass)
+	}
+	if summary.OpponentClass != "WARRIOR" {
+		t.Fatalf("unexpected opponent class: %s", summary.OpponentClass)
 	}
 	if summary.Result != matchupload.DashboardResultWin {
 		t.Fatalf("unexpected result: %s", summary.Result)

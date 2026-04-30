@@ -133,11 +133,12 @@ func buildDashboardSummary(match monitor.PersistedMatch) (matchupload.DashboardS
 	}
 
 	summary := matchupload.DashboardSummary{
-		DeckID:      strings.TrimSpace(deckEvent.DeckID),
-		DeckName:    resolveDeckName(match, deckEvent),
-		PlayerClass: deriveDeckClass(deckEvent.Cards),
-		Result:      resolveDashboardResult(match),
-		DeckCards:   buildDashboardDeckCards(deckEvent.Cards),
+		DeckID:        strings.TrimSpace(deckEvent.DeckID),
+		DeckName:      resolveDeckName(match, deckEvent),
+		PlayerClass:   deriveDeckClass(deckEvent.Cards),
+		OpponentClass: resolveOpponentClass(match),
+		Result:        resolveDashboardResult(match),
+		DeckCards:     buildDashboardDeckCards(deckEvent.Cards),
 	}
 	if summary.DeckID == "" {
 		summary.DeckID = summary.DeckName
@@ -197,6 +198,43 @@ func deriveDeckClass(cards []*card.Card) string {
 		}
 	}
 	return ""
+}
+
+func resolveOpponentClass(match monitor.PersistedMatch) string {
+	if match.State == nil || match.State.Opponent == nil || match.State.Opponent.Hero == nil {
+		return string(carddb.CardClassUnknown)
+	}
+	return heroCardIDToClass(match.State.Opponent.Hero.CardID)
+}
+
+func heroCardIDToClass(cardID string) string {
+	cardID = strings.ToUpper(strings.TrimSpace(cardID))
+	switch {
+	case strings.HasPrefix(cardID, "HERO_01"):
+		return string(carddb.CardClassWarrior)
+	case strings.HasPrefix(cardID, "HERO_02"):
+		return string(carddb.CardClassShaman)
+	case strings.HasPrefix(cardID, "HERO_03"):
+		return string(carddb.CardClassRogue)
+	case strings.HasPrefix(cardID, "HERO_04"):
+		return string(carddb.CardClassPaladin)
+	case strings.HasPrefix(cardID, "HERO_05"):
+		return string(carddb.CardClassHunter)
+	case strings.HasPrefix(cardID, "HERO_06"):
+		return string(carddb.CardClassDruid)
+	case strings.HasPrefix(cardID, "HERO_07"):
+		return string(carddb.CardClassWarlock)
+	case strings.HasPrefix(cardID, "HERO_08"):
+		return string(carddb.CardClassMage)
+	case strings.HasPrefix(cardID, "HERO_09"):
+		return string(carddb.CardClassPriest)
+	case strings.HasPrefix(cardID, "HERO_10"):
+		return string(carddb.CardClassDemonHunter)
+	case strings.HasPrefix(cardID, "HERO_11"):
+		return string(carddb.CardClassDeathKnight)
+	default:
+		return string(carddb.CardClassUnknown)
+	}
 }
 
 func buildDashboardDeckCards(cards []*card.Card) []matchupload.DashboardDeckCard {

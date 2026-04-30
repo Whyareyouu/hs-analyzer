@@ -171,6 +171,13 @@ func (s *Server) handleDeckDetails(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, http.StatusOK, matchups)
+	case "history":
+		history, ok := s.dashboardStore.GetDeckHistory(deckID)
+		if !ok {
+			writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck history not found")
+			return
+		}
+		writeJSON(w, http.StatusOK, history)
 	default:
 		writeError(w, http.StatusNotFound, matchupload.ErrorValidationFailed, "deck endpoint not found")
 	}

@@ -40,9 +40,17 @@ export interface DeckCard {
   image: string;
 }
 
+export interface DeckHistoryEntry {
+  matchId: string;
+  opponentClass: string;
+  result: string;
+  playedAt: string;
+}
+
 export interface DashboardBundle {
   overview: DeckOverview;
   cards: DeckCard[];
   matchups: MatchupEntry[];
+  history: DeckHistoryEntry[];
   stale: boolean;
 }

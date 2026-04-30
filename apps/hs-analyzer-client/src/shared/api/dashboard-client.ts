@@ -1,5 +1,5 @@
-import type { DashboardBundle, DeckCard, DeckListItem, DeckOverview, MatchupEntry } from "@/shared/model/dashboard";
-import { parseDeckCards, parseDeckList, parseDeckOverview, parseMatchups } from "./decoders";
+import type { DashboardBundle, DeckCard, DeckHistoryEntry, DeckListItem, DeckOverview, MatchupEntry } from "@/shared/model/dashboard";
+import { parseDeckCards, parseDeckHistory, parseDeckList, parseDeckOverview, parseMatchups } from "./decoders";
 
 export class DashboardClient {
   private readonly cache = new Map<string, unknown>();
@@ -12,17 +12,19 @@ export class DashboardClient {
 
   async loadDeckBundle(deckId: string): Promise<DashboardBundle> {
     const encodedDeckId = encodeURIComponent(deckId);
-    const [overview, cards, matchups] = await Promise.all([
+    const [overview, cards, matchups, history] = await Promise.all([
       this.fetchCached<DeckOverview>(`/api/v1/decks/${encodedDeckId}/overview`, parseDeckOverview),
       this.fetchCached<DeckCard[]>(`/api/v1/decks/${encodedDeckId}/cards`, parseDeckCards),
       this.fetchCached<MatchupEntry[]>(`/api/v1/decks/${encodedDeckId}/matchups`, parseMatchups),
+      this.fetchCached<DeckHistoryEntry[]>(`/api/v1/decks/${encodedDeckId}/history`, parseDeckHistory),
     ]);
 
     return {
       overview: overview.data,
       cards: cards.data,
       matchups: matchups.data,
-      stale: overview.stale || cards.stale || matchups.stale,
+      history: history.data,
+      stale: overview.stale || cards.stale || matchups.stale || history.stale,
     };
   }
 

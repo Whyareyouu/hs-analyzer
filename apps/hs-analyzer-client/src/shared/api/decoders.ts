@@ -1,4 +1,4 @@
-import type { DeckCard, DeckListItem, DeckOverview, MatchupEntry } from "@/shared/model/dashboard";
+import type { DeckCard, DeckHistoryEntry, DeckListItem, DeckOverview, MatchupEntry } from "@/shared/model/dashboard";
 import type { OverlayEnvelope, OverlaySnapshot } from "@/shared/model/overlay";
 
 type UnknownRecord = Record<string, unknown>;
@@ -164,4 +164,16 @@ export function parseDeckCards(value: unknown): DeckCard[] {
 
 export function parseMatchups(value: unknown): MatchupEntry[] {
   return ensureArray(value, "matchups").map(parseMatchupEntry);
+}
+
+export function parseDeckHistory(value: unknown): DeckHistoryEntry[] {
+  return ensureArray(value, "deck history").map((item) => {
+    const record = ensureRecord(item, "deck history entry");
+    return {
+      matchId: ensureString(record.match_id, "history match id"),
+      opponentClass: optionalString(record.opponent_class),
+      result: optionalString(record.result),
+      playedAt: optionalString(record.played_at),
+    };
+  });
 }

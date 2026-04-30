@@ -1,5 +1,6 @@
 import { useDeckSelection } from "@/features/select-deck/model";
 import { DeckCardsGrid } from "@/widgets/deck-cards-grid/deck-cards-grid";
+import { DeckMatchHistory } from "@/widgets/deck-match-history/deck-match-history";
 import { DeckSidebar } from "@/widgets/deck-sidebar/deck-sidebar";
 import { DeckSummary } from "@/widgets/deck-summary/deck-summary";
 import { MatchupBreakdown } from "@/widgets/matchup-breakdown/matchup-breakdown";
@@ -19,6 +20,7 @@ export function DeckOverviewPage() {
         ) : bundle ? (
           <>
             <DeckSummary overview={bundle.overview} stale={stale || bundle.stale} />
+            <DeckMatchHistory history={bundle.history} />
             <MatchupBreakdown matchups={bundle.matchups} />
             <DeckCardsGrid cards={bundle.cards} loading={status === "loading"} />
           </>

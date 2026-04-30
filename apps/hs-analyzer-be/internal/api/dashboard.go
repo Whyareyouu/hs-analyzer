@@ -49,11 +49,19 @@ type DeckCard struct {
 	Image       string `json:"image,omitempty"`
 }
 
+type DeckHistoryEntry struct {
+	MatchID       string `json:"match_id"`
+	OpponentClass string `json:"opponent_class,omitempty"`
+	Result        string `json:"result,omitempty"`
+	PlayedAt      string `json:"played_at,omitempty"`
+}
+
 type DashboardStore interface {
 	ListDecks() []DeckListItem
 	GetDeckOverview(deckID string) (DeckOverview, bool)
 	GetDeckCards(deckID string) ([]DeckCard, bool)
 	GetDeckMatchups(deckID string) ([]MatchupEntry, bool)
+	GetDeckHistory(deckID string) ([]DeckHistoryEntry, bool)
 }
 
 type MatchDashboardStore struct {
@@ -74,6 +82,7 @@ type dashboardDeckAggregate struct {
 	overview   DeckOverview
 	cards      []DeckCard
 	matchups   map[string]*MatchupEntry
+	history    []DeckHistoryEntry
 	lastPlayed string
 }
 
@@ -137,6 +146,25 @@ func (s *MatchDashboardStore) GetDeckMatchups(deckID string) ([]MatchupEntry, bo
 		return nil, false
 	}
 	result, _ := buildMatchupSlices(current.matchups)
+	return result, true
+}
+
+func (s *MatchDashboardStore) GetDeckHistory(deckID string) ([]DeckHistoryEntry, bool) {
+	current, ok := s.buildSnapshot().decks[strings.TrimSpace(deckID)]
+	if !ok {
+		return nil, false
+	}
+	result := append([]DeckHistoryEntry(nil), current.history...)
+	sort.Slice(result, func(i, j int) bool {
+		switch {
+		case result[i].PlayedAt > result[j].PlayedAt:
+			return true
+		case result[i].PlayedAt < result[j].PlayedAt:
+			return false
+		default:
+			return result[i].MatchID > result[j].MatchID
+		}
+	})
 	return result, true
 }
 
@@ -247,6 +275,13 @@ func (s *MatchDashboardStore) buildSnapshot() dashboardSnapshot {
 				}
 				entry.Winrate = ratio(entry.Wins, entry.Matches)
 			}
+
+			current.history = append(current.history, DeckHistoryEntry{
+				MatchID:       strings.TrimSpace(stored.Payload.MatchID),
+				OpponentClass: fallbackDeckClass(summary.OpponentClass),
+				Result:        strings.TrimSpace(summary.Result),
+				PlayedAt:      playedAt,
+			})
 		}
 	}
 

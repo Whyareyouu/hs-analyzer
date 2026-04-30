@@ -73,6 +73,19 @@ describe("DeckOverviewPage", () => {
           ],
         };
       }
+      if (url.endsWith("/history")) {
+        return {
+          ok: true,
+          json: async () => [
+            {
+              match_id: "game:1",
+              opponent_class: "WARRIOR",
+              result: "win",
+              played_at: "2026-04-27T16:30:00Z",
+            },
+          ],
+        };
+      }
       return {
         ok: true,
         json: async () => [{ opponent_class: "WARRIOR", wins: 6, losses: 2, winrate: 0.75, matches: 8 }],
@@ -89,6 +102,9 @@ describe("DeckOverviewPage", () => {
     await waitFor(() => expect(screen.getByText("Карты в колоде")).toBeInTheDocument());
     expect(screen.getAllByText("Spell Demon Hunter")).toHaveLength(2);
     expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
+    expect(screen.getByText("История матчей")).toBeInTheDocument();
+    expect(screen.getAllByText("Против WARRIOR").length).toBeGreaterThan(0);
+    expect(screen.getByText("Победа")).toBeInTheDocument();
   });
 
   it("renders empty-state instead of demo decks", async () => {
