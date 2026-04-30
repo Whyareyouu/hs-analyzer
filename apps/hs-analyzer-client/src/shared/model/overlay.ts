@@ -23,9 +23,13 @@ export interface OverlayDeckCard {
   description: string;
   image: string;
   manaCost: number;
+  rarity: string;
+  cardType: string;
+  isLegendary: boolean;
   initialCopies: number;
   remainingCopies: number;
   drawnCopies: number;
+  playedCopies: number;
 }
 
 export interface OpponentPlayedCard {

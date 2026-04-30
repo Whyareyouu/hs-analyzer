@@ -17,9 +17,12 @@ func TestSnapshotValidateAcceptsOverlaySnapshotV1(t *testing.T) {
 			CardID:          "CARD_1",
 			Name:            "Карта 1",
 			ManaCost:        2,
+			Rarity:          "RARE",
+			CardType:        "SPELL",
 			InitialCopies:   2,
 			RemainingCopies: 1,
 			DrawnCopies:     1,
+			PlayedCopies:    1,
 		},
 	}
 	snapshot.OpponentPlayedCards = []OpponentPlayedCard{
@@ -57,6 +60,18 @@ func TestSnapshotValidateRejectsInvalidPayload(t *testing.T) {
 	}
 	if err := snapshot.Validate(); err == nil {
 		t.Fatalf("expected invalid deck counts")
+	}
+
+	snapshot = NewSnapshot()
+	snapshot.PlayerDeckRemaining = []PlayerDeckCard{
+		{
+			CardID:        "CARD_1",
+			InitialCopies: 1,
+			PlayedCopies:  2,
+		},
+	}
+	if err := snapshot.Validate(); err == nil {
+		t.Fatalf("expected invalid played counts")
 	}
 }
 

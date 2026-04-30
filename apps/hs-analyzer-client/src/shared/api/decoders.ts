@@ -24,6 +24,10 @@ function ensureNumber(value: unknown, label: string): number {
   return value;
 }
 
+function optionalNumber(value: unknown): number {
+  return typeof value === "number" && !Number.isNaN(value) ? value : 0;
+}
+
 function ensureArray(value: unknown, label: string): unknown[] {
   if (!Array.isArray(value)) {
     throw new Error(`${label} must be an array`);
@@ -71,9 +75,13 @@ export function parseOverlaySnapshot(value: unknown): OverlaySnapshot {
         description: optionalString(current.description),
         image: optionalString(current.image),
         manaCost: ensureNumber(current.mana_cost, "player deck card mana cost"),
+        rarity: optionalString(current.rarity),
+        cardType: optionalString(current.card_type),
+        isLegendary: Boolean(current.is_legendary),
         initialCopies: ensureNumber(current.initial_copies, "player deck initial copies"),
         remainingCopies: ensureNumber(current.remaining_copies, "player deck remaining copies"),
         drawnCopies: ensureNumber(current.drawn_copies, "player deck drawn copies"),
+        playedCopies: optionalNumber(current.played_copies),
       };
     }),
     opponentPlayedCards: ensureArray(record.opponent_played_cards, "opponent played cards").map((item) => {

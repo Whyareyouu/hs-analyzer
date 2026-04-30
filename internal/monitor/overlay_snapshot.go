@@ -173,9 +173,14 @@ func (p *OverlaySnapshotProjector) Restore(snapshot overlay.Snapshot) error {
 	for _, current := range snapshot.PlayerDeckRemaining {
 		card := current
 		p.activeDeck[current.CardID] = &card
-		outOfDeckCopies := current.InitialCopies - current.RemainingCopies
-		if outOfDeckCopies > 0 {
-			p.selfPlayed[current.CardID] = minInt(outOfDeckCopies, current.DrawnCopies)
+		switch {
+		case current.PlayedCopies > 0:
+			p.selfPlayed[current.CardID] = current.PlayedCopies
+		default:
+			outOfDeckCopies := current.InitialCopies - current.RemainingCopies
+			if outOfDeckCopies > 0 {
+				p.selfPlayed[current.CardID] = minInt(outOfDeckCopies, current.DrawnCopies)
+			}
 		}
 	}
 	p.opponentCards = make(map[string]*overlay.OpponentPlayedCard, len(snapshot.OpponentPlayedCards))
@@ -324,9 +329,10 @@ func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent
 		if playedCopies >= current.DrawnCopies && current.RemainingCopies > 0 {
 			current.RemainingCopies--
 			current.DrawnCopies++
-			p.rebuildPlayerDeckSnapshot()
 		}
 		p.selfPlayed[cardID] = playedCopies + 1
+		current.PlayedCopies = minInt(p.selfPlayed[cardID], current.InitialCopies)
+		p.rebuildPlayerDeckSnapshot()
 		return p.publish()
 	}
 	if event.Player != types.PlayerTypeOpponent {
@@ -360,15 +366,28 @@ func (p *OverlaySnapshotProjector) processGameEnd(*game.GameEndEvent) error {
 
 func (p *OverlaySnapshotProjector) buildPlayerDeckCard(current *card.Card, info *carddb.CardInfo) overlay.PlayerDeckCard {
 	name, description, image, manaCost := p.resolveCardPresentation(current, info)
+	rarity := ""
+	cardType := ""
+	isLegendary := false
+	if info != nil {
+		rarity = string(info.Rarity)
+		cardType = string(info.Type)
+		isLegendary = info.Rarity == carddb.RarityLegendary
+	}
+
 	return overlay.PlayerDeckCard{
 		CardID:          strings.TrimSpace(current.ID),
 		Name:            name,
 		Description:     description,
 		Image:           image,
 		ManaCost:        manaCost,
+		Rarity:          rarity,
+		CardType:        cardType,
+		IsLegendary:     isLegendary,
 		InitialCopies:   0,
 		RemainingCopies: 0,
 		DrawnCopies:     0,
+		PlayedCopies:    0,
 	}
 }
 
@@ -443,6 +462,7 @@ func (p *OverlaySnapshotProjector) resetActiveDeckFromTemplate() {
 		card := current
 		card.RemainingCopies = card.InitialCopies
 		card.DrawnCopies = 0
+		card.PlayedCopies = 0
 		p.activeDeck[current.CardID] = &card
 	}
 	p.rebuildPlayerDeckSnapshot()

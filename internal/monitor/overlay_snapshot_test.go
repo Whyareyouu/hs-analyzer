@@ -31,7 +31,7 @@ func TestOverlaySnapshotTracksDeckRemainingAndOpponentCardsSeparately(t *testing
 	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{
 		CardDB: &stubLiveCardStatsCardDB{
 			cards: map[string]*carddb.CardInfo{
-				"DECK_1": {ID: "DECK_1", Name: "Моя карта", Cost: 2, Text: "[x]Описание"},
+				"DECK_1": {ID: "DECK_1", Name: "Моя карта", Cost: 2, Text: "[x]Описание", Type: carddb.CardTypeSpell, Rarity: carddb.RarityEpic},
 				"OPP_1":  {ID: "OPP_1", Name: "Карта оппонента", Cost: 3},
 			},
 		},
@@ -44,6 +44,7 @@ func TestOverlaySnapshotTracksDeckRemainingAndOpponentCardsSeparately(t *testing
 	}, "Spell DH", "deck-1", ""))
 	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
 	mustOverlayProject(t, projector, game.NewCardDrawnEvent(types.PlayerTypePlayer, card.New("DECK_1", 3, types.PlayerTypePlayer)))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("DECK_1", 4, types.PlayerTypePlayer), 0))
 	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("OPP_1", 4, types.PlayerTypeOpponent), 0))
 
 	snapshot := projector.Snapshot()
@@ -56,8 +57,11 @@ func TestOverlaySnapshotTracksDeckRemainingAndOpponentCardsSeparately(t *testing
 	if len(snapshot.OpponentPlayedCards) != 1 {
 		t.Fatalf("unexpected opponent entries: %#v", snapshot.OpponentPlayedCards)
 	}
-	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 {
+	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 || snapshot.PlayerDeckRemaining[0].PlayedCopies != 1 {
 		t.Fatalf("unexpected player deck counters: %#v", snapshot.PlayerDeckRemaining[0])
+	}
+	if snapshot.PlayerDeckRemaining[0].Rarity != string(carddb.RarityEpic) || snapshot.PlayerDeckRemaining[0].CardType != string(carddb.CardTypeSpell) {
+		t.Fatalf("unexpected player deck metadata: %#v", snapshot.PlayerDeckRemaining[0])
 	}
 	if snapshot.OpponentPlayedCards[0].PlayCount != 1 {
 		t.Fatalf("unexpected opponent play count: %#v", snapshot.OpponentPlayedCards[0])
@@ -92,7 +96,7 @@ func TestOverlaySnapshotBackfillsRemainingDeckWhenSelfPlayArrivesWithoutDrawEven
 	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("DECK_1", 3, types.PlayerTypePlayer), 0))
 
 	snapshot := projector.Snapshot()
-	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 {
+	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 || snapshot.PlayerDeckRemaining[0].PlayedCopies != 1 {
 		t.Fatalf("unexpected deck counters after self play fallback: %#v", snapshot.PlayerDeckRemaining[0])
 	}
 }
@@ -169,6 +173,7 @@ func TestOverlaySnapshotRestorePreservesCounts(t *testing.T) {
 	}, "Deck", "deck-1", ""))
 	mustOverlayProject(t, original, game.NewGameStartEvent("game-1", state.GameModeStandard))
 	mustOverlayProject(t, original, game.NewCardDrawnEvent(types.PlayerTypePlayer, card.New("DECK_1", 3, types.PlayerTypePlayer)))
+	mustOverlayProject(t, original, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("DECK_1", 4, types.PlayerTypePlayer), 0))
 
 	persisted := original.PersistenceSnapshot()
 	if persisted == nil {
@@ -182,7 +187,7 @@ func TestOverlaySnapshotRestorePreservesCounts(t *testing.T) {
 	}
 
 	snapshot := resumed.Snapshot()
-	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 {
+	if snapshot.PlayerDeckRemaining[0].RemainingCopies != 1 || snapshot.PlayerDeckRemaining[0].DrawnCopies != 1 || snapshot.PlayerDeckRemaining[0].PlayedCopies != 1 {
 		t.Fatalf("unexpected restored counters: %#v", snapshot.PlayerDeckRemaining[0])
 	}
 	if len(sink.snapshots) != 1 {

@@ -15,9 +15,13 @@ vi.mock("@/features/reconnect-live-transport/model", () => ({
           description: "",
           image: "",
           manaCost: 1,
+          rarity: "COMMON",
+          cardType: "MINION",
+          isLegendary: false,
           initialCopies: 2,
           remainingCopies: 2,
           drawnCopies: 0,
+          playedCopies: 0,
         },
       ],
       opponentPlayedCards: [
@@ -43,7 +47,7 @@ describe("LiveOverlayWindowPage", () => {
 
     expect(screen.queryByText(/overlay transport/i)).not.toBeInTheDocument();
     expect(screen.getByText("Оппонент сыграл")).toBeInTheDocument();
-    expect(screen.getByText("Моя колода")).toBeInTheDocument();
+    expect(screen.getByText("In deck (2)")).toBeInTheDocument();
 
     const panels = container.querySelectorAll(".absolute");
     expect(panels).toHaveLength(2);

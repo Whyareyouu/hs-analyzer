@@ -30,9 +30,13 @@ const snapshotPayload = {
       description: "Card text",
       image: "",
       mana_cost: 1,
+      rarity: "COMMON",
+      card_type: "SPELL",
+      is_legendary: false,
       initial_copies: 2,
       remaining_copies: 1,
       drawn_copies: 1,
+      played_copies: 0,
     },
   ],
   opponent_played_cards: [
@@ -69,7 +73,9 @@ describe("LiveOverlayControlPage", () => {
       </AppProviders>,
     );
 
-    await waitFor(() => expect(screen.getByText("Taste of Chaos")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByText("Taste of Chaos")).toHaveLength(2));
+    expect(screen.getByText("In deck (1)")).toBeInTheDocument();
+    expect(screen.getByText("In hand (1)")).toBeInTheDocument();
     expect(screen.getByText("Fireball")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalled();
   });

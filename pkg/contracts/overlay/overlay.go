@@ -57,9 +57,13 @@ type PlayerDeckCard struct {
 	Description     string `json:"description,omitempty"`
 	Image           string `json:"image,omitempty"`
 	ManaCost        int    `json:"mana_cost"`
+	Rarity          string `json:"rarity,omitempty"`
+	CardType        string `json:"card_type,omitempty"`
+	IsLegendary     bool   `json:"is_legendary,omitempty"`
 	InitialCopies   int    `json:"initial_copies"`
 	RemainingCopies int    `json:"remaining_copies"`
 	DrawnCopies     int    `json:"drawn_copies"`
+	PlayedCopies    int    `json:"played_copies"`
 }
 
 type OpponentPlayedCard struct {
@@ -206,7 +210,7 @@ func validatePlayerDeckCard(card PlayerDeckCard) error {
 	if strings.TrimSpace(card.CardID) == "" {
 		return fmt.Errorf("player deck card id is empty")
 	}
-	if card.InitialCopies < 0 || card.RemainingCopies < 0 || card.DrawnCopies < 0 {
+	if card.InitialCopies < 0 || card.RemainingCopies < 0 || card.DrawnCopies < 0 || card.PlayedCopies < 0 {
 		return fmt.Errorf("player deck copies must be non-negative")
 	}
 	if card.RemainingCopies > card.InitialCopies {
@@ -214,6 +218,9 @@ func validatePlayerDeckCard(card PlayerDeckCard) error {
 	}
 	if card.DrawnCopies > card.InitialCopies {
 		return fmt.Errorf("drawn copies exceed initial copies for %s", card.CardID)
+	}
+	if card.PlayedCopies > card.InitialCopies {
+		return fmt.Errorf("played copies exceed initial copies for %s", card.CardID)
 	}
 	return nil
 }

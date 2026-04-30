@@ -3,29 +3,80 @@ import { describe, expect, it, vi } from "vitest";
 import { PlayerDeckPanel } from "./player-deck-panel";
 
 describe("PlayerDeckPanel", () => {
-  it("renders overlay rows with tokenized layout and zero-count state", () => {
-    const { container } = render(
+  it("splits the player deck into deck, hand, and played sections", () => {
+    render(
       <PlayerDeckPanel
         inspectMode
         onInspect={vi.fn()}
         cards={[
           {
-            cardId: "CARD_1",
-            name: "Taste of Chaos",
+            cardId: "DECK_CARD",
+            name: "Still In Deck",
             description: "",
             image: "",
             manaCost: 1,
+            rarity: "RARE",
+            cardType: "SPELL",
+            isLegendary: false,
+            initialCopies: 2,
+            remainingCopies: 1,
+            drawnCopies: 0,
+            playedCopies: 0,
+          },
+          {
+            cardId: "HAND_CARD",
+            name: "Held Card",
+            description: "",
+            image: "",
+            manaCost: 2,
+            rarity: "COMMON",
+            cardType: "MINION",
+            isLegendary: false,
+            initialCopies: 2,
+            remainingCopies: 1,
+            drawnCopies: 1,
+            playedCopies: 0,
+          },
+          {
+            cardId: "PLAYED_CARD",
+            name: "Already Played",
+            description: "",
+            image: "",
+            manaCost: 3,
+            rarity: "EPIC",
+            cardType: "WEAPON",
+            isLegendary: false,
             initialCopies: 2,
             remainingCopies: 0,
             drawnCopies: 2,
+            playedCopies: 2,
+          },
+          {
+            cardId: "LEGENDARY_CARD",
+            name: "Big Legend",
+            description: "",
+            image: "",
+            manaCost: 7,
+            rarity: "LEGENDARY",
+            cardType: "MINION",
+            isLegendary: true,
+            initialCopies: 1,
+            remainingCopies: 1,
+            drawnCopies: 0,
+            playedCopies: 0,
           },
         ]}
       />,
     );
 
-    expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
-    expect(screen.getByText("0/2")).toBeInTheDocument();
-    expect(container.firstChild).toMatchSnapshot();
+    expect(screen.getByText("In deck (3)")).toBeInTheDocument();
+    expect(screen.getByText("In hand (1)")).toBeInTheDocument();
+    expect(screen.getByText("Other (2)")).toBeInTheDocument();
+    expect(screen.getByText("Still In Deck")).toBeInTheDocument();
+    expect(screen.getAllByText("Held Card")).toHaveLength(2);
+    expect(screen.getByText("Already Played")).toBeInTheDocument();
+    expect(screen.getByLabelText("2 copies")).toHaveTextContent("2");
+    expect(screen.getByLabelText("legendary card")).toHaveTextContent("*");
   });
 
   it("shows explicit waiting state when deck cards are not available yet", () => {
