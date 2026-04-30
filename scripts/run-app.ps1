@@ -3,7 +3,7 @@ param(
     [string]$CardsDbPath = "data/cards.json",
     [string]$BackendAddr = "127.0.0.1:8080",
     [string]$LiveApiAddr = "127.0.0.1:8765",
-    [string]$DatabaseUrl = $env:HS_ANALYZER_DATABASE_URL,
+    [string]$DatabaseUrl = "",
     [switch]$RebuildGo,
     [switch]$RebuildClient
 )
@@ -121,6 +121,75 @@ function Format-DatabaseUrlForDisplay([string]$Value) {
     return ($Value -replace '(postgres(?:ql)?://[^:/@]+):([^@]+)@', '$1:xxxxx@')
 }
 
+function Resolve-PostgresTool([string]$Name) {
+    $command = Get-Command $Name -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $command -and -not [string]::IsNullOrWhiteSpace($command.Path)) {
+        return $command.Path
+    }
+
+    $candidates = @(
+        (Join-Path $env:ProgramFiles "PostgreSQL\18\bin\$Name"),
+        (Join-Path $env:ProgramFiles "PostgreSQL\17\bin\$Name"),
+        (Join-Path ${env:ProgramFiles(x86)} "PostgreSQL\18\bin\$Name"),
+        (Join-Path ${env:ProgramFiles(x86)} "PostgreSQL\17\bin\$Name")
+    )
+    foreach ($candidate in $candidates) {
+        if (-not [string]::IsNullOrWhiteSpace($candidate) -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+            return $candidate
+        }
+    }
+
+    return ""
+}
+
+function Get-DatabasePassword([System.Uri]$Uri) {
+    if ($null -eq $Uri -or [string]::IsNullOrWhiteSpace($Uri.UserInfo)) {
+        return ""
+    }
+
+    $parts = $Uri.UserInfo.Split(":", 2)
+    if ($parts.Count -lt 2) {
+        return ""
+    }
+    return [System.Uri]::UnescapeDataString($parts[1])
+}
+
+function Start-WorkspacePostgres([System.Uri]$Uri, [int]$Port) {
+    $hostName = $Uri.Host
+    if ($hostName -notin @("127.0.0.1", "localhost", "::1")) {
+        return $false
+    }
+
+    $pgCtl = Resolve-PostgresTool "pg_ctl.exe"
+    $initDb = Resolve-PostgresTool "initdb.exe"
+    if ([string]::IsNullOrWhiteSpace($pgCtl) -or [string]::IsNullOrWhiteSpace($initDb)) {
+        return $false
+    }
+
+    $dataDir = Join-Path $repoRoot ".tmp/postgres-data"
+    $logPath = Join-Path $runDir "postgres.log"
+    $passwordPath = Join-Path $repoRoot ".tmp/postgres-password.txt"
+    New-Item -ItemType Directory -Force -Path $runDir | Out-Null
+    New-Item -ItemType Directory -Force -Path (Split-Path $passwordPath) | Out-Null
+
+    if (-not (Test-Path -LiteralPath (Join-Path $dataDir "PG_VERSION") -PathType Leaf)) {
+        $password = Get-DatabasePassword $Uri
+        if ([string]::IsNullOrWhiteSpace($password)) {
+            $password = "postgres"
+        }
+        Set-Content -LiteralPath $passwordPath -Value $password -NoNewline -Encoding ascii
+        & $initDb -D $dataDir -U postgres --pwfile=$passwordPath -A scram-sha-256 --encoding=UTF8 | Out-Host
+        if ($LASTEXITCODE -ne 0) {
+            return $false
+        }
+    }
+
+    Write-Host ("Starting workspace PostgreSQL on {0}:{1}..." -f $hostName, $Port)
+    & $pgCtl -D $dataDir -l $logPath -o "-h $hostName -p $Port" start | Out-Host
+    Start-Sleep -Seconds 2
+    return $true
+}
+
 function Test-DatabaseTcpEndpoint([string]$DatabaseUrlValue) {
     if ([string]::IsNullOrWhiteSpace($DatabaseUrlValue)) {
         return
@@ -146,6 +215,14 @@ function Test-DatabaseTcpEndpoint([string]$DatabaseUrlValue) {
     try {
         $connectTask = $client.ConnectAsync($hostName, $port)
         if (-not $connectTask.Wait(1500) -or -not $client.Connected) {
+            $client.Dispose()
+            if (Start-WorkspacePostgres $uri $port) {
+                $client = [System.Net.Sockets.TcpClient]::new()
+                $retryTask = $client.ConnectAsync($hostName, $port)
+                if ($retryTask.Wait(3000) -and $client.Connected) {
+                    return
+                }
+            }
             throw "PostgreSQL is not reachable at ${hostName}:${port}. Start PostgreSQL or update HS_ANALYZER_DATABASE_URL in .env."
         }
     }
@@ -181,9 +258,7 @@ function Import-DotEnv([string]$PathValue) {
         if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
             $value = $value.Substring(1, $value.Length - 2)
         }
-        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
-            [Environment]::SetEnvironmentVariable($name, $value)
-        }
+        [Environment]::SetEnvironmentVariable($name, $value)
     }
 }
 

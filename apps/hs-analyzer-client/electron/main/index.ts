@@ -1,5 +1,6 @@
 import { app, BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import { execFile } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -12,8 +13,13 @@ import { BRIDGE_CHANNELS } from "../preload/bridge.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..", "..");
+const electronDataRoot = path.join(projectRoot, ".tmp", "electron");
 const preloadPath = path.join(__dirname, "..", "preload", "index.js");
 const execFileAsync = promisify(execFile);
+
+fs.mkdirSync(electronDataRoot, { recursive: true });
+app.setPath("userData", path.join(electronDataRoot, "user-data"));
+app.setPath("sessionData", path.join(electronDataRoot, "session-data"));
 
 interface PowerShellWindowResult {
   detected: boolean;
