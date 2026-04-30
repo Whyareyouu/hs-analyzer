@@ -158,3 +158,44 @@ func TestBuildMatchUploadPayloadAddsDashboardSummaryFromDeckList(t *testing.T) {
 		t.Fatalf("expected second card to be legendary")
 	}
 }
+
+func TestBuildMatchUploadPayloadDerivesOpponentClassFromEventsWhenHeroStateMissing(t *testing.T) {
+	t.Parallel()
+
+	gameState := state.New("game-3", state.GameModeStandard)
+	winner := types.PlayerTypePlayer
+	gameState.Winner = &winner
+
+	deckCard := card.New("CARD_001", 1, types.PlayerTypePlayer)
+	deckCard.Info = &carddb.CardInfo{
+		ID:     "CARD_001",
+		Name:   "Taste of Chaos",
+		Cost:   1,
+		Rarity: carddb.RarityCommon,
+		Class:  carddb.CardClassDemonHunter,
+	}
+
+	match := monitor.PersistedMatch{
+		Key: "game:game-3",
+		Events: []game.Event{
+			game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{deckCard}, "Spell Demon Hunter", "deck-spell-dh", "code"),
+			game.NewDetailedAttackEvent(1, "HERO_10", "Illidan", 2, "HERO_03A", "Maiev"),
+			game.NewGameEndEvent(types.PlayerTypePlayer),
+		},
+		State:    gameState,
+		Complete: true,
+		Reason:   monitor.CompletionReasonGameEnd,
+	}
+
+	payload := BuildMatchUploadPayload(match, "test")
+	summary, ok, err := payload.GetDashboardSummary()
+	if err != nil {
+		t.Fatalf("decode dashboard summary: %v", err)
+	}
+	if !ok {
+		t.Fatalf("expected dashboard summary")
+	}
+	if summary.OpponentClass != "ROGUE" {
+		t.Fatalf("unexpected opponent class from event fallback: %s", summary.OpponentClass)
+	}
+}

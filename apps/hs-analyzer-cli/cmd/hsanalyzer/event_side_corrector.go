@@ -9,14 +9,21 @@ import (
 )
 
 type liveEventSideCorrector struct {
-	playerDeckCardIDs map[string]struct{}
-	parserLocalSide   types.PlayerType
+	playerDeckCardIDs   map[string]struct{}
+	parserLocalSide     types.PlayerType
+	currentTurnPlayer   types.PlayerType
+	seenDeckCardsBySide map[types.PlayerType]map[string]struct{}
 }
 
 func newLiveEventSideCorrector() *liveEventSideCorrector {
 	return &liveEventSideCorrector{
 		playerDeckCardIDs: make(map[string]struct{}),
 		parserLocalSide:   types.PlayerTypeUnknown,
+		currentTurnPlayer: types.PlayerTypeUnknown,
+		seenDeckCardsBySide: map[types.PlayerType]map[string]struct{}{
+			types.PlayerTypePlayer:   make(map[string]struct{}),
+			types.PlayerTypeOpponent: make(map[string]struct{}),
+		},
 	}
 }
 
@@ -26,20 +33,26 @@ func (c *liveEventSideCorrector) Correct(event game.Event) game.Event {
 	}
 
 	switch current := event.(type) {
+	case *game.GameStartEvent:
+		c.currentTurnPlayer = types.PlayerTypeUnknown
+		return current
 	case *game.DeckListEvent:
 		c.trackPlayerDeck(current)
 		return current
 	case *game.CardDrawnEvent:
+		c.registerDeckCardEvidence(current.Player, current.Card)
 		current.Player = c.correctPlayer(current.Player)
 		c.correctCardOwner(current.Card)
 		return current
 	case *game.CardPlayedEvent:
 		c.learnLocalSideFromKnownDeckCard(current.Player, current.Card)
+		c.registerDeckCardEvidence(current.Player, current.Card)
 		current.Player = c.correctPlayer(current.Player)
 		c.correctCardOwner(current.Card)
 		return current
 	case *game.TurnStartEvent:
 		current.Player = c.correctPlayer(current.Player)
+		c.currentTurnPlayer = current.Player
 		return current
 	case *game.GameEndEvent:
 		current.Winner = c.correctPlayer(current.Winner)
@@ -63,10 +76,18 @@ func (c *liveEventSideCorrector) trackPlayerDeck(event *game.DeckListEvent) {
 		c.playerDeckCardIDs[cardID] = struct{}{}
 	}
 	c.parserLocalSide = types.PlayerTypeUnknown
+	c.currentTurnPlayer = types.PlayerTypeUnknown
+	c.seenDeckCardsBySide = map[types.PlayerType]map[string]struct{}{
+		types.PlayerTypePlayer:   make(map[string]struct{}),
+		types.PlayerTypeOpponent: make(map[string]struct{}),
+	}
 }
 
 func (c *liveEventSideCorrector) learnLocalSideFromKnownDeckCard(player types.PlayerType, current *card.Card) {
 	if c.parserLocalSide != types.PlayerTypeUnknown {
+		return
+	}
+	if c.currentTurnPlayer != types.PlayerTypePlayer {
 		return
 	}
 	if player != types.PlayerTypePlayer && player != types.PlayerTypeOpponent {
@@ -80,6 +101,38 @@ func (c *liveEventSideCorrector) learnLocalSideFromKnownDeckCard(player types.Pl
 		return
 	}
 	c.parserLocalSide = player
+}
+
+func (c *liveEventSideCorrector) registerDeckCardEvidence(player types.PlayerType, current *card.Card) {
+	if c == nil || c.parserLocalSide != types.PlayerTypeUnknown {
+		return
+	}
+	if player != types.PlayerTypePlayer && player != types.PlayerTypeOpponent {
+		return
+	}
+	cardID := cardIDFromCard(current)
+	if cardID == "" {
+		return
+	}
+	if _, ok := c.playerDeckCardIDs[cardID]; !ok {
+		return
+	}
+
+	sideEvidence, ok := c.seenDeckCardsBySide[player]
+	if !ok {
+		sideEvidence = make(map[string]struct{})
+		c.seenDeckCardsBySide[player] = sideEvidence
+	}
+	sideEvidence[cardID] = struct{}{}
+
+	playerCount := len(c.seenDeckCardsBySide[types.PlayerTypePlayer])
+	opponentCount := len(c.seenDeckCardsBySide[types.PlayerTypeOpponent])
+	switch {
+	case playerCount >= 2 && opponentCount == 0:
+		c.parserLocalSide = types.PlayerTypePlayer
+	case opponentCount >= 2 && playerCount == 0:
+		c.parserLocalSide = types.PlayerTypeOpponent
+	}
 }
 
 func (c *liveEventSideCorrector) correctPlayer(player types.PlayerType) types.PlayerType {

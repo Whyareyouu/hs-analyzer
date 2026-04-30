@@ -201,10 +201,25 @@ func deriveDeckClass(cards []*card.Card) string {
 }
 
 func resolveOpponentClass(match monitor.PersistedMatch) string {
-	if match.State == nil || match.State.Opponent == nil || match.State.Opponent.Hero == nil {
-		return string(carddb.CardClassUnknown)
+	if match.State != nil && match.State.Opponent != nil && match.State.Opponent.Hero != nil {
+		if resolved := heroCardIDToClass(match.State.Opponent.Hero.CardID); resolved != string(carddb.CardClassUnknown) {
+			return resolved
+		}
 	}
-	return heroCardIDToClass(match.State.Opponent.Hero.CardID)
+
+	playerClass := string(carddb.CardClassUnknown)
+	if match.State != nil && match.State.Player != nil && match.State.Player.Hero != nil {
+		playerClass = heroCardIDToClass(match.State.Player.Hero.CardID)
+	}
+	if playerClass == string(carddb.CardClassUnknown) {
+		if deckEvent := findPlayerDeckListEvent(match.Events); deckEvent != nil {
+			if derived := deriveDeckClass(deckEvent.Cards); derived != "" {
+				playerClass = derived
+			}
+		}
+	}
+
+	return resolveOpponentClassFromEvents(match.Events, playerClass)
 }
 
 func heroCardIDToClass(cardID string) string {
@@ -234,6 +249,69 @@ func heroCardIDToClass(cardID string) string {
 		return string(carddb.CardClassDeathKnight)
 	default:
 		return string(carddb.CardClassUnknown)
+	}
+}
+
+func resolveOpponentClassFromEvents(events []game.Event, playerClass string) string {
+	counts := make(map[string]int)
+	for _, current := range events {
+		for _, cardID := range heroCardIDsFromEvent(current) {
+			className := heroCardIDToClass(cardID)
+			if className == string(carddb.CardClassUnknown) {
+				continue
+			}
+			counts[className]++
+		}
+	}
+	if len(counts) == 0 {
+		return string(carddb.CardClassUnknown)
+	}
+
+	playerClass = strings.TrimSpace(playerClass)
+	bestClass := ""
+	bestCount := 0
+	for className, count := range counts {
+		if className == playerClass {
+			continue
+		}
+		if count > bestCount || (count == bestCount && className < bestClass) {
+			bestClass = className
+			bestCount = count
+		}
+	}
+	if bestClass != "" {
+		return bestClass
+	}
+
+	for className, count := range counts {
+		if count > bestCount || (count == bestCount && className < bestClass) {
+			bestClass = className
+			bestCount = count
+		}
+	}
+	if bestClass == "" {
+		return string(carddb.CardClassUnknown)
+	}
+	return bestClass
+}
+
+func heroCardIDsFromEvent(event game.Event) []string {
+	switch current := event.(type) {
+	case *game.AttackEvent:
+		return []string{current.AttackerCardID, current.TargetCardID}
+	case *game.DamageEvent:
+		return []string{current.TargetCardID}
+	case *game.HealEvent:
+		return []string{current.TargetCardID}
+	case *game.DeathEvent:
+		return []string{current.CardID}
+	case *game.CardPlayedEvent:
+		if current.Card == nil {
+			return nil
+		}
+		return []string{current.Card.ID}
+	default:
+		return nil
 	}
 }
 

@@ -20,6 +20,7 @@ func TestLiveEventSideCorrectorInvertsSidesWhenSelectedDeckCardsAreMappedAsOppon
 	corrector.Correct(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
 		card.New("MY_DECK_CARD", 1, types.PlayerTypePlayer),
 	}, "My Deck", "deck-1", "code"))
+	corrector.Correct(game.NewTurnStartEvent(types.PlayerTypePlayer))
 
 	selfCard := card.New("MY_DECK_CARD", 10, types.PlayerTypeOpponent)
 	selfPlay := game.NewCardPlayedEvent(types.PlayerTypeOpponent, selfCard, 0)
@@ -52,6 +53,7 @@ func TestLiveEventSideCorrectorKeepsSidesWhenSelectedDeckCardsAreMappedAsPlayer(
 	corrector.Correct(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
 		card.New("MY_DECK_CARD", 1, types.PlayerTypePlayer),
 	}, "My Deck", "deck-1", "code"))
+	corrector.Correct(game.NewTurnStartEvent(types.PlayerTypePlayer))
 
 	selfPlay := game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("MY_DECK_CARD", 10, types.PlayerTypePlayer), 0)
 	correctedSelfPlay, ok := corrector.Correct(selfPlay).(*game.CardPlayedEvent)
@@ -99,6 +101,35 @@ func TestLiveEventSideCorrectorDoesNotLearnSideFromDrawnDeckCards(t *testing.T) 
 	}
 }
 
+func TestLiveEventSideCorrectorDoesNotInvertFromSharedDeckCardOnOpponentTurn(t *testing.T) {
+	t.Parallel()
+
+	corrector := newLiveEventSideCorrector()
+	corrector.Correct(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("SHARED_CARD", 1, types.PlayerTypePlayer),
+	}, "My Deck", "deck-1", "code"))
+	corrector.Correct(game.NewTurnStartEvent(types.PlayerTypeOpponent))
+
+	sharedCard := card.New("SHARED_CARD", 10, types.PlayerTypeOpponent)
+	correctedSharedPlay, ok := corrector.Correct(game.NewCardPlayedEvent(types.PlayerTypeOpponent, sharedCard, 0)).(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected corrected shared play type: %T", correctedSharedPlay)
+	}
+	if correctedSharedPlay.Player != types.PlayerTypeOpponent {
+		t.Fatalf("expected shared card on opponent turn to remain opponent, got %s", correctedSharedPlay.Player)
+	}
+
+	corrector.Correct(game.NewTurnStartEvent(types.PlayerTypePlayer))
+	selfPlay := game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("MY_OWN_CARD", 11, types.PlayerTypePlayer), 0)
+	correctedSelfPlay, ok := corrector.Correct(selfPlay).(*game.CardPlayedEvent)
+	if !ok {
+		t.Fatalf("unexpected corrected self play type: %T", correctedSelfPlay)
+	}
+	if correctedSelfPlay.Player != types.PlayerTypePlayer {
+		t.Fatalf("expected player side to remain player after shared opponent play, got %s", correctedSelfPlay.Player)
+	}
+}
+
 func TestLiveEventSideCorrectorUsesRealDeckLogToFixPowerLogSideInversion(t *testing.T) {
 	t.Parallel()
 
@@ -139,6 +170,7 @@ func TestLiveEventSideCorrectorUsesRealDeckLogToFixPowerLogSideInversion(t *test
 	}
 
 	knownDeckCardsSeen := 0
+	correctedKnownDeckCardsSeen := 0
 	for _, event := range powerEvents {
 		played, ok := corrector.Correct(event).(*game.CardPlayedEvent)
 		if !ok || played.Card == nil {
@@ -148,11 +180,17 @@ func TestLiveEventSideCorrectorUsesRealDeckLogToFixPowerLogSideInversion(t *test
 			continue
 		}
 		knownDeckCardsSeen++
-		if played.Player != types.PlayerTypePlayer {
-			t.Fatalf("expected real selected-deck card %s to be corrected to player, got %s", played.Card.ID, played.Player)
+		if played.Player == types.PlayerTypePlayer {
+			correctedKnownDeckCardsSeen++
 		}
 	}
 	if knownDeckCardsSeen == 0 {
 		t.Fatalf("expected to see selected deck cards in real Power.log")
+	}
+	if correctedKnownDeckCardsSeen == 0 {
+		t.Fatalf("expected at least one real selected-deck card to be corrected to player")
+	}
+	if corrector.parserLocalSide != types.PlayerTypeOpponent {
+		t.Fatalf("expected real Power.log evidence to establish parser local side inversion, got %s", corrector.parserLocalSide)
 	}
 }
