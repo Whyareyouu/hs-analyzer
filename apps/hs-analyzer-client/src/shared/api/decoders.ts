@@ -84,6 +84,19 @@ export function parseOverlaySnapshot(value: unknown): OverlaySnapshot {
         playedCopies: optionalNumber(current.played_copies),
       };
     }),
+    playerOtherPlayedCards: ensureArray(record.player_other_played_cards ?? [], "player other played cards").map((item) => {
+      const current = ensureRecord(item, "player other played card");
+      return {
+        cardId: ensureString(current.card_id, "player other played card id"),
+        name: ensureString(current.name, "player other played card name"),
+        description: optionalString(current.description),
+        image: optionalString(current.image),
+        manaCost: ensureNumber(current.mana_cost, "player other played card mana cost"),
+        playCount: ensureNumber(current.play_count, "player other played card count"),
+        firstPlayedAt: optionalString(current.first_played_at),
+        lastPlayedAt: optionalString(current.last_played_at),
+      };
+    }),
     opponentPlayedCards: ensureArray(record.opponent_played_cards, "opponent played cards").map((item) => {
       const current = ensureRecord(item, "opponent played card");
       return {
@@ -116,6 +129,7 @@ export function parseOverlayEnvelope(value: unknown): OverlayEnvelope {
           schema_version: "overlay_snapshot/v1",
           match: { status: "idle" },
           player_deck_remaining: [],
+          player_other_played_cards: [],
           opponent_played_cards: [],
           health: record.health,
         }).health

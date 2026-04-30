@@ -18,12 +18,21 @@ describe("decoders", () => {
           drawn_copies: 1,
         },
       ],
+      player_other_played_cards: [
+        {
+          card_id: "OTHER_1",
+          name: "Generated Card",
+          mana_cost: 4,
+          play_count: 2,
+        },
+      ],
       opponent_played_cards: [],
       health: { monitor: "healthy", transport: "healthy" },
     });
 
     expect(snapshot.match.deckId).toBe("deck-1");
     expect(snapshot.playerDeckRemaining[0].remainingCopies).toBe(1);
+    expect(snapshot.playerOtherPlayedCards[0].playCount).toBe(2);
   });
 
   it("rejects invalid dashboard payload", () => {

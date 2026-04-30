@@ -50,7 +50,7 @@ export function LiveOverlayControlPage() {
       </div>
       <div className="grid gap-6 xl:grid-cols-[1fr_auto]">
         <div className="flex items-start justify-between gap-[var(--overlay-panel-gap)]">
-          <PlayerDeckPanel cards={snapshot?.playerDeckRemaining ?? []} inspectMode={inspectMode} onInspect={inspectCard} />
+          <PlayerDeckPanel cards={snapshot?.playerDeckRemaining ?? []} otherCards={snapshot?.playerOtherPlayedCards ?? []} inspectMode={inspectMode} onInspect={inspectCard} />
           <OpponentCardsPanel cards={snapshot?.opponentPlayedCards ?? []} inspectMode={inspectMode} onInspect={inspectCard} />
         </div>
         <div className="sticky top-6">

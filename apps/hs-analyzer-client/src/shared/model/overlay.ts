@@ -10,6 +10,7 @@ export interface OverlaySnapshot {
     deckName: string;
   };
   playerDeckRemaining: OverlayDeckCard[];
+  playerOtherPlayedCards: OpponentPlayedCard[];
   opponentPlayedCards: OpponentPlayedCard[];
   health: {
     monitor: "healthy" | "degraded";

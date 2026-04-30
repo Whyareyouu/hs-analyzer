@@ -23,6 +23,7 @@ export interface GameWindowLocator {
 
 export class OverlayWindowController {
   private mode: OverlayMode = "inspect";
+  private inspectInteractivityActive = false;
   private diagnostics: OverlayDiagnostics = {
     attached: false,
     degraded: true,
@@ -66,8 +67,16 @@ export class OverlayWindowController {
 
   setMode(mode: OverlayMode): OverlayMode {
     this.mode = mode;
+    if (mode !== "inspect") {
+      this.inspectInteractivityActive = false;
+    }
     this.applyMode();
     return this.mode;
+  }
+
+  setInspectInteractivity(active: boolean): void {
+    this.inspectInteractivityActive = active;
+    this.applyMode();
   }
 
   getMode(): OverlayMode {
@@ -88,6 +97,6 @@ export class OverlayWindowController {
       return;
     }
 
-    this.overlayWindow.setIgnoreMouseEvents(false);
+    this.overlayWindow.setIgnoreMouseEvents(!this.inspectInteractivityActive, { forward: true });
   }
 }

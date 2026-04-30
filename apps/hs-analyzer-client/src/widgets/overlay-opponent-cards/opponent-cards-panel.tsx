@@ -8,20 +8,20 @@ export function OpponentCardsPanel({
 }: {
   cards: OpponentPlayedCard[];
   inspectMode: boolean;
-  onInspect(card: OpponentPlayedCard | null): void;
+  onInspect(card: OpponentPlayedCard | null, anchorRect?: DOMRect): void;
 }) {
   return (
-    <Panel className="w-[var(--overlay-panel-width)] p-3">
+    <Panel className="flex w-[var(--overlay-panel-width)] flex-col p-3" style={{ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" }}>
       <div className="mb-3 text-xs uppercase tracking-[0.2em] text-app-muted">Оппонент сыграл</div>
-      <div className="space-y-2">
+      <div className="min-h-0 space-y-2 overflow-y-auto pr-1">
         {cards.length === 0 ? <div className="text-xs text-app-muted">Оппонент пока ничего не разыграл.</div> : null}
         {cards.map((card) => (
           <button
             key={card.cardId}
             type="button"
-            onMouseEnter={() => inspectMode && onInspect(card)}
+            onMouseEnter={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
             onMouseLeave={() => onInspect(null)}
-            onFocus={() => inspectMode && onInspect(card)}
+            onFocus={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
             onBlur={() => onInspect(null)}
             className="grid w-[var(--overlay-card-row-width)] grid-cols-[42px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border border-slate-900/90 text-left shadow-panel"
             style={{

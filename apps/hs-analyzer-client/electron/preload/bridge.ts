@@ -9,6 +9,7 @@ export const BRIDGE_CHANNELS = {
   getConfig: "client:get-config",
   getOverlayMode: "overlay:get-mode",
   setOverlayMode: "overlay:set-mode",
+  setOverlayInspectInteractivity: "overlay:set-inspect-interactivity",
   getOverlayDiagnostics: "overlay:get-diagnostics",
   onOverlayDiagnostics: "overlay:diagnostics",
 } as const;
@@ -23,6 +24,9 @@ export function createNativeBridge(deps: BridgeDeps): NativeBridge {
     },
     setOverlayMode(mode: OverlayMode): Promise<OverlayMode> {
       return deps.invoke<OverlayMode>(BRIDGE_CHANNELS.setOverlayMode, mode);
+    },
+    setOverlayInspectInteractivity(active: boolean): Promise<void> {
+      return deps.invoke<void>(BRIDGE_CHANNELS.setOverlayInspectInteractivity, active);
     },
     getOverlayDiagnostics(): Promise<OverlayDiagnostics> {
       return deps.invoke<OverlayDiagnostics>(BRIDGE_CHANNELS.getOverlayDiagnostics);

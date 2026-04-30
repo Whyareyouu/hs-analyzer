@@ -6,6 +6,18 @@ describe("PlayerDeckPanel", () => {
   it("splits the player deck into deck, hand, and played sections", () => {
     render(
       <PlayerDeckPanel
+        otherCards={[
+          {
+            cardId: "OTHER_CARD",
+            name: "Generated Spell",
+            description: "",
+            image: "",
+            manaCost: 4,
+            playCount: 2,
+            firstPlayedAt: "",
+            lastPlayedAt: "",
+          },
+        ]}
         inspectMode
         onInspect={vi.fn()}
         cards={[
@@ -38,20 +50,6 @@ describe("PlayerDeckPanel", () => {
             playedCopies: 0,
           },
           {
-            cardId: "PLAYED_CARD",
-            name: "Already Played",
-            description: "",
-            image: "",
-            manaCost: 3,
-            rarity: "EPIC",
-            cardType: "WEAPON",
-            isLegendary: false,
-            initialCopies: 2,
-            remainingCopies: 0,
-            drawnCopies: 2,
-            playedCopies: 2,
-          },
-          {
             cardId: "LEGENDARY_CARD",
             name: "Big Legend",
             description: "",
@@ -74,20 +72,21 @@ describe("PlayerDeckPanel", () => {
     expect(screen.getByText("Other (2)")).toBeInTheDocument();
     expect(screen.getByText("Still In Deck")).toBeInTheDocument();
     expect(screen.getAllByText("Held Card")).toHaveLength(2);
-    expect(screen.getByText("Already Played")).toBeInTheDocument();
+    expect(screen.getByText("Generated Spell")).toBeInTheDocument();
     expect(screen.getAllByLabelText("1 copies")).toHaveLength(4);
     expect(screen.getByLabelText("2 copies")).toHaveTextContent("2");
     expect(screen.getAllByLabelText("1 copies")[0]).toHaveTextContent("1");
   });
 
   it("shows explicit waiting state when deck cards are not available yet", () => {
-    render(<PlayerDeckPanel inspectMode={false} onInspect={vi.fn()} cards={[]} />);
+    render(<PlayerDeckPanel inspectMode={false} onInspect={vi.fn()} cards={[]} otherCards={[]} />);
     expect(screen.getByText(/Ждём выбранную колоду/i)).toBeInTheDocument();
   });
 
   it("anchors card art to the top of a taller row when image is available", () => {
     render(
       <PlayerDeckPanel
+        otherCards={[]}
         inspectMode={false}
         onInspect={vi.fn()}
         cards={[
@@ -114,5 +113,28 @@ describe("PlayerDeckPanel", () => {
       backgroundSize: "cover",
       minHeight: "var(--overlay-card-row-height)",
     });
+  });
+
+  it("keeps long player lists scrollable inside the panel", () => {
+    const cards = Array.from({ length: 16 }, (_, index) => ({
+      cardId: `CARD_${index}`,
+      name: `Deck Card ${index}`,
+      description: "",
+      image: "",
+      manaCost: index,
+      rarity: "COMMON",
+      cardType: "MINION",
+      isLegendary: false,
+      initialCopies: 1,
+      remainingCopies: 1,
+      drawnCopies: 0,
+      playedCopies: 0,
+    }));
+
+    const { container } = render(<PlayerDeckPanel inspectMode={false} onInspect={vi.fn()} cards={cards} otherCards={[]} />);
+
+    const panel = container.firstElementChild;
+    expect(panel).toHaveStyle({ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" });
+    expect(panel?.firstElementChild).toHaveClass("overflow-y-auto");
   });
 });

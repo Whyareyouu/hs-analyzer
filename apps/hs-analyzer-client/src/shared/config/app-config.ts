@@ -15,6 +15,9 @@ const fallbackBridge: NativeBridge = {
   async setOverlayMode(mode) {
     return mode;
   },
+  async setOverlayInspectInteractivity() {
+    return undefined;
+  },
   async getOverlayDiagnostics() {
     return {
       attached: false,

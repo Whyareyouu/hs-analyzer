@@ -58,4 +58,23 @@ describe("OpponentCardsPanel", () => {
       minHeight: "var(--overlay-card-row-height)",
     });
   });
+
+  it("keeps long opponent lists scrollable inside the panel", () => {
+    const cards = Array.from({ length: 18 }, (_, index) => ({
+      cardId: `CARD_${index}`,
+      name: `Card ${index}`,
+      description: "",
+      image: "",
+      manaCost: index,
+      playCount: 1,
+      firstPlayedAt: "",
+      lastPlayedAt: "",
+    }));
+
+    const { container } = render(<OpponentCardsPanel inspectMode={false} onInspect={vi.fn()} cards={cards} />);
+
+    const panel = container.firstElementChild;
+    expect(panel).toHaveStyle({ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" });
+    expect(panel?.lastElementChild).toHaveClass("overflow-y-auto");
+  });
 });

@@ -151,6 +151,83 @@ func TestOverlaySnapshotBackfillsRemainingDeckWhenSelfPlayArrivesWithoutDrawEven
 	}
 }
 
+func TestOverlaySnapshotStoresNonDeckSelfPlaysInOtherSection(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{
+		Now: fixedTimeSequence(time.Unix(100, 0), time.Unix(101, 0)),
+	})
+
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewTurnStartEvent(types.PlayerTypePlayer))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("GENERATED_1", 3, types.PlayerTypePlayer), 0))
+
+	snapshot := projector.Snapshot()
+	if len(snapshot.PlayerOtherPlayedCards) != 1 {
+		t.Fatalf("expected generated self play in other section: %#v", snapshot.PlayerOtherPlayedCards)
+	}
+	if snapshot.PlayerOtherPlayedCards[0].CardID != "GENERATED_1" || snapshot.PlayerOtherPlayedCards[0].PlayCount != 1 {
+		t.Fatalf("unexpected generated self play payload: %#v", snapshot.PlayerOtherPlayedCards[0])
+	}
+}
+
+func TestOverlaySnapshotDoesNotTreatOpponentTurnDrawAsMyDeckDraw(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{})
+	mustOverlayProject(t, projector, game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("DECK_1", 1, types.PlayerTypePlayer),
+		card.New("DECK_1", 2, types.PlayerTypePlayer),
+	}, "Deck", "deck-1", ""))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewTurnStartEvent(types.PlayerTypeOpponent))
+	mustOverlayProject(t, projector, game.NewCardDrawnEvent(types.PlayerTypeOpponent, card.New("DECK_1", 3, types.PlayerTypeOpponent)))
+
+	cardState := requireOverlayDeckCard(t, projector.Snapshot(), "DECK_1")
+	if cardState.RemainingCopies != 2 || cardState.DrawnCopies != 0 {
+		t.Fatalf("expected opponent-turn draw not to touch my deck counters: %#v", cardState)
+	}
+}
+
+func TestOverlaySnapshotTreatsDeckCardPlayFromHandAsSelfEvenWhenRawSideIsWrong(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{})
+	mustOverlayProject(t, projector, game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("DECK_1", 1, types.PlayerTypePlayer),
+		card.New("DECK_1", 2, types.PlayerTypePlayer),
+	}, "Deck", "deck-1", ""))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewCardDrawnEvent(types.PlayerTypePlayer, card.New("DECK_1", 3, types.PlayerTypePlayer)))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("DECK_1", 4, types.PlayerTypeOpponent), 0))
+
+	cardState := requireOverlayDeckCard(t, projector.Snapshot(), "DECK_1")
+	if cardState.RemainingCopies != 1 || cardState.DrawnCopies != 1 || cardState.PlayedCopies != 1 {
+		t.Fatalf("expected drawn deck card to become self-play even after wrong raw side: %#v", cardState)
+	}
+	if len(projector.Snapshot().OpponentPlayedCards) != 0 {
+		t.Fatalf("expected wrong-side self play not to leak into opponent cards: %#v", projector.Snapshot().OpponentPlayedCards)
+	}
+}
+
+func TestOverlaySnapshotTreatsWrongSideDeckPlayOnMyTurnAsSelfPlay(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{})
+	mustOverlayProject(t, projector, game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("DECK_1", 1, types.PlayerTypePlayer),
+		card.New("DECK_1", 2, types.PlayerTypePlayer),
+	}, "Deck", "deck-1", ""))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+	mustOverlayProject(t, projector, game.NewTurnStartEvent(types.PlayerTypePlayer))
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("DECK_1", 4, types.PlayerTypeOpponent), 0))
+
+	cardState := requireOverlayDeckCard(t, projector.Snapshot(), "DECK_1")
+	if cardState.RemainingCopies != 1 || cardState.DrawnCopies != 1 || cardState.PlayedCopies != 1 {
+		t.Fatalf("expected wrong-side self turn play to stay in deck projection: %#v", cardState)
+	}
+}
+
 func TestOverlaySnapshotAggregatesOpponentRepeatsAndResetsOnNewMatch(t *testing.T) {
 	t.Parallel()
 

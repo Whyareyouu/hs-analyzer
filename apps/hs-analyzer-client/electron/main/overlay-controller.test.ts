@@ -13,7 +13,7 @@ function createWindowMock(): ManagedWindow {
 }
 
 describe("OverlayWindowController", () => {
-  it("keeps overlay inspectable by default and follows supported Hearthstone bounds", async () => {
+  it("keeps overlay click-through until the cursor reaches interactive overlay controls", async () => {
     const windowMock = createWindowMock();
     const locator: GameWindowLocator = {
       locate: vi.fn(async () => ({
@@ -32,10 +32,10 @@ describe("OverlayWindowController", () => {
     expect(windowMock.setBounds).toHaveBeenCalledWith({ x: 10, y: 20, width: 1440, height: 900 });
     expect(windowMock.moveTop).toHaveBeenCalled();
     expect(controller.getMode()).toBe("inspect");
-    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(false);
+    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(true, { forward: true });
   });
 
-  it("switches between passive and inspect modes", () => {
+  it("enables mouse capture only for interactive inspect hotspots", () => {
     const windowMock = createWindowMock();
     const controller = new OverlayWindowController(windowMock, {
       locate: async () => ({
@@ -47,13 +47,19 @@ describe("OverlayWindowController", () => {
       }),
     });
 
+    controller.setInspectInteractivity(true);
+    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(false, { forward: true });
+
+    controller.setInspectInteractivity(false);
+    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(true, { forward: true });
+
     controller.setMode("passive");
     expect(controller.getMode()).toBe("passive");
     expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(true, { forward: true });
 
     controller.setMode("inspect");
     expect(controller.getMode()).toBe("inspect");
-    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(false);
+    expect(windowMock.setIgnoreMouseEvents).toHaveBeenCalledWith(true, { forward: true });
   });
 
   it("hides overlay for unsupported fullscreen mode", async () => {

@@ -1,4 +1,4 @@
-import type { OverlayDeckCard } from "@/shared/model/overlay";
+import type { OpponentPlayedCard, OverlayDeckCard } from "@/shared/model/overlay";
 import { cn } from "@/shared/lib/cn";
 import { Panel } from "@/shared/ui/panel";
 
@@ -13,6 +13,11 @@ interface PlayerDeckSection {
 
 interface PlayerDeckSectionCard {
   card: OverlayDeckCard;
+  copies: number;
+}
+
+interface PlayerOtherSectionCard {
+  card: OpponentPlayedCard;
   copies: number;
 }
 
@@ -39,19 +44,22 @@ const TYPE_BACKGROUNDS: Record<string, string> = {
 
 export function PlayerDeckPanel({
   cards,
+  otherCards,
   inspectMode,
   onInspect,
 }: {
   cards: OverlayDeckCard[];
+  otherCards: OpponentPlayedCard[];
   inspectMode: boolean;
-  onInspect(card: OverlayDeckCard | null): void;
+  onInspect(card: OverlayDeckCard | OpponentPlayedCard | null, anchorRect?: DOMRect): void;
 }) {
   const sections = buildPlayerDeckSections(cards);
+  const otherSection = buildPlayerOtherSection(otherCards);
 
   return (
-    <Panel className="w-[var(--overlay-panel-width)] p-3">
-      <div className="space-y-3">
-        {cards.length === 0 ? <div className="text-xs text-app-muted">Ждём выбранную колоду из Decks.log.</div> : null}
+    <Panel className="flex w-[var(--overlay-panel-width)] flex-col p-3" style={{ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" }}>
+      <div className="min-h-0 space-y-3 overflow-y-auto pr-1">
+        {cards.length === 0 && otherCards.length === 0 ? <div className="text-xs text-app-muted">Ждём выбранную колоду из Decks.log.</div> : null}
         {cards.length > 0
           ? sections.map((section) => (
               <section key={section.key} aria-label={`${section.title} ${section.total}`}>
@@ -75,6 +83,18 @@ export function PlayerDeckPanel({
               </section>
             ))
           : null}
+        <section aria-label={`${otherSection.title} ${otherSection.total}`}>
+          <div className="mb-1.5 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-app-muted">
+            <span>
+              {otherSection.title} ({otherSection.total})
+            </span>
+          </div>
+          <div className="space-y-1">
+            {otherSection.cards.map(({ card, copies }) => (
+              <PlayerOtherCardRow key={`other:${card.cardId}`} card={card} copies={copies} inspectMode={inspectMode} onInspect={onInspect} />
+            ))}
+          </div>
+        </section>
       </div>
     </Panel>
   );
@@ -91,14 +111,14 @@ function PlayerDeckCardRow({
   copies: number;
   sectionKey: PlayerDeckSectionKey;
   inspectMode: boolean;
-  onInspect(card: OverlayDeckCard | null): void;
+  onInspect(card: OverlayDeckCard | OpponentPlayedCard | null, anchorRect?: DOMRect): void;
 }) {
   return (
     <button
       type="button"
-      onMouseEnter={() => inspectMode && onInspect(card)}
+      onMouseEnter={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
       onMouseLeave={() => onInspect(null)}
-      onFocus={() => inspectMode && onInspect(card)}
+      onFocus={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
       onBlur={() => onInspect(null)}
       className={cn(
         "grid w-[var(--overlay-card-row-width)] grid-cols-[42px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border text-left shadow-panel transition-[filter,opacity,transform] duration-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent/60",
@@ -138,8 +158,43 @@ function PlayerDeckCardRow({
   );
 }
 
+function PlayerOtherCardRow({
+  card,
+  copies,
+  inspectMode,
+  onInspect,
+}: {
+  card: OpponentPlayedCard;
+  copies: number;
+  inspectMode: boolean;
+  onInspect(card: OverlayDeckCard | OpponentPlayedCard | null, anchorRect?: DOMRect): void;
+}) {
+  return (
+    <button
+      type="button"
+      onMouseEnter={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
+      onMouseLeave={() => onInspect(null)}
+      onFocus={(event) => inspectMode && onInspect(card, event.currentTarget.getBoundingClientRect())}
+      onBlur={() => onInspect(null)}
+      className="grid w-[var(--overlay-card-row-width)] grid-cols-[42px_1fr_var(--overlay-card-count-width)] items-center overflow-hidden rounded-[var(--overlay-card-row-radius)] border border-slate-900/90 text-left opacity-70 shadow-panel grayscale transition-[filter,opacity,transform] duration-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-accent/60"
+      style={{
+        minHeight: "var(--overlay-card-row-height)",
+        backgroundImage: buildOtherCardBackground(card),
+        backgroundPosition: card.image ? "center 25%" : "center",
+        backgroundSize: "cover",
+      }}
+    >
+      <span className="grid h-full place-items-center bg-black/55 text-xs font-bold text-slate-400">{card.manaCost}</span>
+      <span className="truncate px-3 text-xs font-semibold text-slate-300 drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">{card.name}</span>
+      <span aria-label={`${copies} copies`} className="grid h-full place-items-center bg-black/55 text-[11px] font-black text-slate-400">
+        {copies}
+      </span>
+    </button>
+  );
+}
+
 function buildPlayerDeckSections(cards: OverlayDeckCard[]): PlayerDeckSection[] {
-  const keys: PlayerDeckSectionKey[] = ["deck", "hand", "other"];
+  const keys: PlayerDeckSectionKey[] = ["deck", "hand"];
 
   return keys.map((key) => {
     const sectionCards = cards
@@ -165,8 +220,24 @@ function getSectionCopies(card: OverlayDeckCard, sectionKey: PlayerDeckSectionKe
     case "hand":
       return Math.max(card.drawnCopies - card.playedCopies, 0);
     case "other":
-      return Math.max(card.playedCopies, 0);
+      return 0;
   }
+}
+
+function buildPlayerOtherSection(cards: OpponentPlayedCard[]) {
+  const sectionCards: PlayerOtherSectionCard[] = cards
+    .map((card) => ({
+      card,
+      copies: Math.max(card.playCount, 0),
+    }))
+    .filter(({ copies }) => copies > 0);
+
+  return {
+    key: "other" as const,
+    title: SECTION_TITLES.other,
+    cards: sectionCards,
+    total: sectionCards.reduce((sum, current) => sum + current.copies, 0),
+  };
 }
 
 function buildRowBackground(card: OverlayDeckCard, sectionKey: PlayerDeckSectionKey): string {
@@ -221,6 +292,14 @@ function formatCopies(_card: OverlayDeckCard, copies: number): string {
 
 function buildCopiesLabel(_card: OverlayDeckCard, copies: number): string {
   return `${copies} copies`;
+}
+
+function buildOtherCardBackground(card: OpponentPlayedCard): string {
+  const disabled = "linear-gradient(90deg, rgba(4, 7, 15, 0.98), rgba(15, 23, 42, 0.92))";
+  if (!card.image) {
+    return disabled;
+  }
+  return `${disabled}, linear-gradient(90deg, rgba(2, 6, 23, 0.82), rgba(2, 6, 23, 0.72)), url(${card.image})`;
 }
 
 function buildRowBackgroundPosition(card: OverlayDeckCard): string {

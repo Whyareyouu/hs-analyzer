@@ -39,6 +39,18 @@ const snapshotPayload = {
       played_copies: 0,
     },
   ],
+  player_other_played_cards: [
+    {
+      card_id: "OTHER_1",
+      name: "Generated Spell",
+      description: "Created card",
+      image: "",
+      mana_cost: 4,
+      play_count: 1,
+      first_played_at: "",
+      last_played_at: "",
+    },
+  ],
   opponent_played_cards: [
     {
       card_id: "CARD_2",
@@ -76,6 +88,7 @@ describe("LiveOverlayControlPage", () => {
     await waitFor(() => expect(screen.getAllByText("Taste of Chaos")).toHaveLength(2));
     expect(screen.getByText("In deck (1)")).toBeInTheDocument();
     expect(screen.getByText("In hand (1)")).toBeInTheDocument();
+    expect(screen.getByText("Generated Spell")).toBeInTheDocument();
     expect(screen.getByText("Fireball")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalled();
   });

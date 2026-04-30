@@ -3,11 +3,16 @@ import { describe, expect, it, vi } from "vitest";
 import { AppProviders } from "@/app/providers/app-providers";
 import { LiveOverlayWindowPage } from "./page";
 
+const bridgeState = vi.hoisted(() => ({
+  setOverlayInspectInteractivity: vi.fn(async (_active: boolean) => undefined),
+}));
+
 vi.mock("@/shared/config/app-config", () => ({
   getNativeBridge: () => ({
     getConfig: async () => ({ backendBaseUrl: "http://127.0.0.1:8080", liveBaseUrl: "http://127.0.0.1:8765" }),
     getOverlayMode: async () => "inspect",
     setOverlayMode: async (mode: "passive" | "inspect") => mode,
+    setOverlayInspectInteractivity: bridgeState.setOverlayInspectInteractivity,
     getOverlayDiagnostics: async () => ({
       attached: true,
       degraded: false,
@@ -46,12 +51,13 @@ vi.mock("@/features/reconnect-live-transport/model", () => ({
           playedCopies: 0,
         },
       ],
+      playerOtherPlayedCards: [],
       opponentPlayedCards: [
         {
           cardId: "OPP_CARD",
           name: "Opponent Card",
           description: "",
-          image: "",
+          image: "https://example.com/opponent-card.png",
           manaCost: 4,
           playCount: 1,
           firstPlayedAt: "",
@@ -65,6 +71,7 @@ vi.mock("@/features/reconnect-live-transport/model", () => ({
 
 describe("LiveOverlayWindowPage", () => {
   it("renders opponent cards and player deck with side tooltips in inspect mode", async () => {
+    bridgeState.setOverlayInspectInteractivity.mockClear();
     overlayFixture.status = "active";
 
     const { container } = render(
@@ -85,13 +92,44 @@ describe("LiveOverlayWindowPage", () => {
     expect(panels[1]).not.toHaveTextContent("Opponent Card");
 
     await waitFor(() => expect(screen.getByRole("button", { name: /Opponent Card/i })).toBeInTheDocument());
+    fireEvent.pointerMove(window, { clientX: 8, clientY: 8 });
+    await waitFor(() => expect(bridgeState.setOverlayInspectInteractivity).toHaveBeenCalledWith(false));
 
-    fireEvent.mouseEnter(screen.getByRole("button", { name: /Opponent Card/i }));
-    expect(screen.getByText("Описание карты недоступно.")).toBeInTheDocument();
+    const opponentCard = screen.getByRole("button", { name: /Opponent Card/i });
+    vi.spyOn(opponentCard, "getBoundingClientRect").mockReturnValue({
+      x: 24,
+      y: 180,
+      width: 300,
+      height: 26,
+      top: 180,
+      right: 324,
+      bottom: 206,
+      left: 24,
+      toJSON: () => undefined,
+    });
 
-    fireEvent.mouseLeave(screen.getByRole("button", { name: /Opponent Card/i }));
-    fireEvent.mouseEnter(screen.getByRole("button", { name: /My Card/i }));
-    expect(screen.getAllByText("My Card")).toHaveLength(2);
+    fireEvent.mouseEnter(opponentCard);
+    expect(screen.getByRole("img", { name: "Opponent Card" })).toBeInTheDocument();
+    expect(screen.queryByText("Описание карты недоступно.")).not.toBeInTheDocument();
+    expect(screen.getByTestId("overlay-card-tooltip")).toHaveStyle({ top: "180px" });
+
+    fireEvent.mouseLeave(opponentCard);
+
+    const myCard = screen.getByRole("button", { name: /My Card/i });
+    vi.spyOn(myCard, "getBoundingClientRect").mockReturnValue({
+      x: 900,
+      y: 220,
+      width: 300,
+      height: 26,
+      top: 220,
+      right: 1200,
+      bottom: 246,
+      left: 900,
+      toJSON: () => undefined,
+    });
+
+    fireEvent.mouseEnter(myCard);
+    expect(screen.queryByRole("img", { name: "My Card" })).not.toBeInTheDocument();
   });
 
   it("keeps the game overlay hidden until a match becomes active", () => {

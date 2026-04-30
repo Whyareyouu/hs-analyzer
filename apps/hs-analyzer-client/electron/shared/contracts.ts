@@ -26,6 +26,7 @@ export interface NativeBridge {
   getConfig(): Promise<NativeBridgeConfig>;
   getOverlayMode(): Promise<OverlayMode>;
   setOverlayMode(mode: OverlayMode): Promise<OverlayMode>;
+  setOverlayInspectInteractivity(active: boolean): Promise<void>;
   getOverlayDiagnostics(): Promise<OverlayDiagnostics>;
   onOverlayDiagnostics(listener: (value: OverlayDiagnostics) => void): () => void;
 }

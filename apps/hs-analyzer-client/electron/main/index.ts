@@ -272,6 +272,9 @@ function registerBridge() {
     overlayWindow?.webContents.send(BRIDGE_CHANNELS.onOverlayDiagnostics, overlayController?.getDiagnostics());
     return nextMode;
   });
+  ipcMain.handle(BRIDGE_CHANNELS.setOverlayInspectInteractivity, (_event, active: boolean) => {
+    overlayController?.setInspectInteractivity(active);
+  });
   ipcMain.handle(BRIDGE_CHANNELS.getOverlayDiagnostics, () => overlayController?.getDiagnostics());
 }
 

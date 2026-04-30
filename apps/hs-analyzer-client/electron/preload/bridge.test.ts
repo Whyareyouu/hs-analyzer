@@ -11,12 +11,14 @@ describe("createNativeBridge", () => {
     await bridge.getConfig();
     await bridge.getOverlayMode();
     await bridge.setOverlayMode("inspect");
+    await bridge.setOverlayInspectInteractivity(true);
     await bridge.getOverlayDiagnostics();
     bridge.onOverlayDiagnostics(() => undefined);
 
     expect(invoke).toHaveBeenCalledWith(BRIDGE_CHANNELS.getConfig);
     expect(invoke).toHaveBeenCalledWith(BRIDGE_CHANNELS.getOverlayMode);
     expect(invoke).toHaveBeenCalledWith(BRIDGE_CHANNELS.setOverlayMode, "inspect");
+    expect(invoke).toHaveBeenCalledWith(BRIDGE_CHANNELS.setOverlayInspectInteractivity, true);
     expect(invoke).toHaveBeenCalledWith(BRIDGE_CHANNELS.getOverlayDiagnostics);
     expect(subscribe).toHaveBeenCalledTimes(1);
   });

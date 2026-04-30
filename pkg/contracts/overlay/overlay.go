@@ -29,11 +29,12 @@ const (
 )
 
 type Snapshot struct {
-	SchemaVersion       string               `json:"schema_version"`
-	Match               Match                `json:"match"`
-	PlayerDeckRemaining []PlayerDeckCard     `json:"player_deck_remaining"`
-	OpponentPlayedCards []OpponentPlayedCard `json:"opponent_played_cards"`
-	Health              Health               `json:"health"`
+	SchemaVersion          string               `json:"schema_version"`
+	Match                  Match                `json:"match"`
+	PlayerDeckRemaining    []PlayerDeckCard     `json:"player_deck_remaining"`
+	PlayerOtherPlayedCards []OpponentPlayedCard `json:"player_other_played_cards"`
+	OpponentPlayedCards    []OpponentPlayedCard `json:"opponent_played_cards"`
+	Health                 Health               `json:"health"`
 }
 
 type Match struct {
@@ -88,10 +89,11 @@ type Envelope struct {
 
 func NewSnapshot() Snapshot {
 	return Snapshot{
-		SchemaVersion:       SchemaVersionV1,
-		Match:               Match{Status: MatchStatusIdle},
-		PlayerDeckRemaining: make([]PlayerDeckCard, 0),
-		OpponentPlayedCards: make([]OpponentPlayedCard, 0),
+		SchemaVersion:          SchemaVersionV1,
+		Match:                  Match{Status: MatchStatusIdle},
+		PlayerDeckRemaining:    make([]PlayerDeckCard, 0),
+		PlayerOtherPlayedCards: make([]OpponentPlayedCard, 0),
+		OpponentPlayedCards:    make([]OpponentPlayedCard, 0),
 		Health: Health{
 			Monitor:   HealthStateHealthy,
 			Transport: HealthStateHealthy,
@@ -102,6 +104,7 @@ func NewSnapshot() Snapshot {
 func (s Snapshot) Clone() Snapshot {
 	cloned := s
 	cloned.PlayerDeckRemaining = append(make([]PlayerDeckCard, 0, len(s.PlayerDeckRemaining)), s.PlayerDeckRemaining...)
+	cloned.PlayerOtherPlayedCards = append(make([]OpponentPlayedCard, 0, len(s.PlayerOtherPlayedCards)), s.PlayerOtherPlayedCards...)
 	cloned.OpponentPlayedCards = append(make([]OpponentPlayedCard, 0, len(s.OpponentPlayedCards)), s.OpponentPlayedCards...)
 	return cloned
 }
@@ -118,6 +121,9 @@ func (s *Snapshot) Normalize() {
 	}
 	if s.PlayerDeckRemaining == nil {
 		s.PlayerDeckRemaining = make([]PlayerDeckCard, 0)
+	}
+	if s.PlayerOtherPlayedCards == nil {
+		s.PlayerOtherPlayedCards = make([]OpponentPlayedCard, 0)
 	}
 	if s.OpponentPlayedCards == nil {
 		s.OpponentPlayedCards = make([]OpponentPlayedCard, 0)
@@ -144,6 +150,11 @@ func (s Snapshot) Validate() error {
 	}
 	for _, card := range s.PlayerDeckRemaining {
 		if err := validatePlayerDeckCard(card); err != nil {
+			return err
+		}
+	}
+	for _, card := range s.PlayerOtherPlayedCards {
+		if err := validateOpponentPlayedCard(card); err != nil {
 			return err
 		}
 	}

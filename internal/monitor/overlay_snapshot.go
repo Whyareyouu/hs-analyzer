@@ -44,8 +44,10 @@ type OverlaySnapshotProjector struct {
 	templateDeck      []overlay.PlayerDeckCard
 	templateDeckID    string
 	templateName      string
+	currentTurnPlayer types.PlayerType
 	activeDeck        map[string]*overlay.PlayerDeckCard
 	selfPlayed        map[string]int
+	playerOtherCards  map[string]*overlay.OpponentPlayedCard
 	opponentCards     map[string]*overlay.OpponentPlayedCard
 	preGameCardEvents []game.Event
 }
@@ -129,8 +131,10 @@ func NewOverlaySnapshotProjector(options OverlaySnapshotProjectorOptions) *Overl
 		now:               now,
 		snapshot:          snapshot,
 		templateDeck:      make([]overlay.PlayerDeckCard, 0),
+		currentTurnPlayer: types.PlayerTypeUnknown,
 		activeDeck:        make(map[string]*overlay.PlayerDeckCard),
 		selfPlayed:        make(map[string]int),
+		playerOtherCards:  make(map[string]*overlay.OpponentPlayedCard),
 		opponentCards:     make(map[string]*overlay.OpponentPlayedCard),
 		preGameCardEvents: make([]game.Event, 0),
 	}
@@ -146,6 +150,9 @@ func (p *OverlaySnapshotProjector) Process(event game.Event) error {
 		return p.processDeckList(current)
 	case *game.GameStartEvent:
 		return p.processGameStart(current)
+	case *game.TurnStartEvent:
+		p.currentTurnPlayer = current.Player
+		return nil
 	case *game.CardDrawnEvent:
 		if p.snapshot.Match.Status != overlay.MatchStatusActive {
 			p.rememberPreGameCardEvent(current)
@@ -180,7 +187,9 @@ func (p *OverlaySnapshotProjector) Restore(snapshot overlay.Snapshot) error {
 	p.templateName = snapshot.Match.DeckName
 	p.activeDeck = make(map[string]*overlay.PlayerDeckCard, len(snapshot.PlayerDeckRemaining))
 	p.selfPlayed = make(map[string]int, len(snapshot.PlayerDeckRemaining))
+	p.playerOtherCards = make(map[string]*overlay.OpponentPlayedCard, len(snapshot.PlayerOtherPlayedCards))
 	p.preGameCardEvents = p.preGameCardEvents[:0]
+	p.currentTurnPlayer = types.PlayerTypeUnknown
 	for _, current := range snapshot.PlayerDeckRemaining {
 		card := current
 		p.activeDeck[current.CardID] = &card
@@ -193,6 +202,10 @@ func (p *OverlaySnapshotProjector) Restore(snapshot overlay.Snapshot) error {
 				p.selfPlayed[current.CardID] = minInt(outOfDeckCopies, current.DrawnCopies)
 			}
 		}
+	}
+	for _, current := range snapshot.PlayerOtherPlayedCards {
+		card := current
+		p.playerOtherCards[current.CardID] = &card
 	}
 	p.opponentCards = make(map[string]*overlay.OpponentPlayedCard, len(snapshot.OpponentPlayedCards))
 	for _, current := range snapshot.OpponentPlayedCards {
@@ -291,12 +304,14 @@ func (p *OverlaySnapshotProjector) processGameStart(event *game.GameStartEvent) 
 		DeckID:   p.templateDeckID,
 		DeckName: p.templateName,
 	}
+	p.currentTurnPlayer = types.PlayerTypeUnknown
 	p.resetActiveDeckFromTemplate()
+	p.playerOtherCards = make(map[string]*overlay.OpponentPlayedCard)
 	p.opponentCards = make(map[string]*overlay.OpponentPlayedCard)
 	for _, pending := range p.drainPreGameCardEvents() {
 		switch current := pending.(type) {
 		case *game.CardDrawnEvent:
-			p.applyCardDrawn(current)
+			p.applyPreGameCardDrawn(current)
 		case *game.CardPlayedEvent:
 			p.applyCardPlayed(current)
 		}
@@ -336,8 +351,34 @@ func (p *OverlaySnapshotProjector) applyCardDrawn(event *game.CardDrawnEvent) bo
 		return false
 	}
 
-	// Early Zone.log draw events can arrive before side correction has enough
-	// evidence, but a resolved selected-deck card still belongs in our deck.
+	if event.Player != types.PlayerTypePlayer && !(event.Player == types.PlayerTypeOpponent && p.currentTurnPlayer == types.PlayerTypePlayer) {
+		return false
+	}
+
+	current.RemainingCopies--
+	current.DrawnCopies++
+	p.rebuildPlayerDeckSnapshot()
+	return true
+}
+
+func (p *OverlaySnapshotProjector) applyPreGameCardDrawn(event *game.CardDrawnEvent) bool {
+	if event == nil || event.Card == nil {
+		return false
+	}
+	if p.snapshot.Match.Status != overlay.MatchStatusActive {
+		return false
+	}
+
+	cardID := strings.TrimSpace(event.Card.ID)
+	if cardID == "" {
+		return false
+	}
+
+	current, ok := p.activeDeck[cardID]
+	if !ok || current == nil || current.RemainingCopies == 0 {
+		return false
+	}
+
 	current.RemainingCopies--
 	current.DrawnCopies++
 	p.rebuildPlayerDeckSnapshot()
@@ -357,19 +398,26 @@ func (p *OverlaySnapshotProjector) applyCardPlayed(event *game.CardPlayedEvent) 
 		return false
 	}
 
-	if event.Player == types.PlayerTypePlayer {
-		current, ok := p.activeDeck[cardID]
-		if !ok || current == nil {
-			return false
-		}
+	selfCard, belongsToActiveDeck := p.activeDeck[cardID]
+	treatAsSelfPlay := event.Player == types.PlayerTypePlayer
+	if !treatAsSelfPlay && belongsToActiveDeck && p.currentTurnPlayer == types.PlayerTypePlayer {
+		treatAsSelfPlay = true
+	}
+	if !treatAsSelfPlay && belongsToActiveDeck && selfCard != nil && selfCard.DrawnCopies > selfCard.PlayedCopies {
+		treatAsSelfPlay = true
+	}
 
+	if treatAsSelfPlay {
+		if !belongsToActiveDeck || selfCard == nil {
+			return p.recordPlayerOtherCard(event.Card)
+		}
 		playedCopies := p.selfPlayed[cardID]
-		if playedCopies >= current.DrawnCopies && current.RemainingCopies > 0 {
-			current.RemainingCopies--
-			current.DrawnCopies++
+		if playedCopies >= selfCard.DrawnCopies && selfCard.RemainingCopies > 0 {
+			selfCard.RemainingCopies--
+			selfCard.DrawnCopies++
 		}
 		p.selfPlayed[cardID] = playedCopies + 1
-		current.PlayedCopies = minInt(p.selfPlayed[cardID], current.InitialCopies)
+		selfCard.PlayedCopies = minInt(p.selfPlayed[cardID], selfCard.InitialCopies)
 		p.rebuildPlayerDeckSnapshot()
 		return true
 	}
@@ -377,19 +425,19 @@ func (p *OverlaySnapshotProjector) applyCardPlayed(event *game.CardPlayedEvent) 
 		return false
 	}
 
-	current, ok := p.opponentCards[cardID]
+	opponentCard, ok := p.opponentCards[cardID]
 	if !ok {
 		entry := p.buildOpponentPlayedCard(event.Card, p.resolveCardInfo(event.Card))
-		current = &entry
-		p.opponentCards[cardID] = current
+		opponentCard = &entry
+		p.opponentCards[cardID] = opponentCard
 	}
 
 	now := p.now().UTC().Format(time.RFC3339Nano)
-	current.PlayCount++
-	if current.FirstPlayedAt == "" {
-		current.FirstPlayedAt = now
+	opponentCard.PlayCount++
+	if opponentCard.FirstPlayedAt == "" {
+		opponentCard.FirstPlayedAt = now
 	}
-	current.LastPlayedAt = now
+	opponentCard.LastPlayedAt = now
 	p.rebuildOpponentSnapshot()
 	return true
 }
@@ -400,6 +448,32 @@ func (p *OverlaySnapshotProjector) processGameEnd(*game.GameEndEvent) error {
 	}
 	p.snapshot.Match.Status = overlay.MatchStatusFinalized
 	return p.publish()
+}
+
+func (p *OverlaySnapshotProjector) recordPlayerOtherCard(current *card.Card) bool {
+	if current == nil {
+		return false
+	}
+	cardID := strings.TrimSpace(current.ID)
+	if cardID == "" {
+		return false
+	}
+
+	entry, ok := p.playerOtherCards[cardID]
+	if !ok {
+		created := p.buildOpponentPlayedCard(current, p.resolveCardInfo(current))
+		entry = &created
+		p.playerOtherCards[cardID] = entry
+	}
+
+	now := p.now().UTC().Format(time.RFC3339Nano)
+	entry.PlayCount++
+	if entry.FirstPlayedAt == "" {
+		entry.FirstPlayedAt = now
+	}
+	entry.LastPlayedAt = now
+	p.rebuildPlayerOtherSnapshot()
+	return true
 }
 
 func (p *OverlaySnapshotProjector) rememberPreGameCardEvent(event game.Event) {
@@ -567,6 +641,35 @@ func (p *OverlaySnapshotProjector) rebuildOpponentSnapshot() {
 		}
 	})
 	p.snapshot.OpponentPlayedCards = cards
+}
+
+func (p *OverlaySnapshotProjector) rebuildPlayerOtherSnapshot() {
+	cards := make([]overlay.OpponentPlayedCard, 0, len(p.playerOtherCards))
+	for _, current := range p.playerOtherCards {
+		if current == nil {
+			continue
+		}
+		cards = append(cards, *current)
+	}
+	slices.SortFunc(cards, func(left, right overlay.OpponentPlayedCard) int {
+		switch {
+		case left.FirstPlayedAt < right.FirstPlayedAt:
+			return -1
+		case left.FirstPlayedAt > right.FirstPlayedAt:
+			return 1
+		case left.LastPlayedAt < right.LastPlayedAt:
+			return -1
+		case left.LastPlayedAt > right.LastPlayedAt:
+			return 1
+		case left.CardID < right.CardID:
+			return -1
+		case left.CardID > right.CardID:
+			return 1
+		default:
+			return 0
+		}
+	})
+	p.snapshot.PlayerOtherPlayedCards = cards
 }
 
 func (p *OverlaySnapshotProjector) publish() error {
