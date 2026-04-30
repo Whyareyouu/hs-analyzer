@@ -84,6 +84,56 @@ func TestOverlaySnapshotIgnoresGeneratedCardsForRemainingDeck(t *testing.T) {
 	}
 }
 
+func TestOverlaySnapshotReplaysPreGameOpeningHandOnGameStart(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{})
+	mustOverlayProject(t, projector, game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("OPENING_1", 1, types.PlayerTypePlayer),
+		card.New("OPENING_1", 2, types.PlayerTypePlayer),
+		card.New("OPENING_2", 3, types.PlayerTypePlayer),
+	}, "Deck", "deck-1", ""))
+
+	mustOverlayProject(t, projector, game.NewCardDrawnEvent(types.PlayerTypePlayer, card.New("OPENING_1", 10, types.PlayerTypePlayer)))
+	mustOverlayProject(t, projector, game.NewCardDrawnEvent(types.PlayerTypeOpponent, card.New("OPENING_2", 11, types.PlayerTypeOpponent)))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+
+	opening1 := requireOverlayDeckCard(t, projector.Snapshot(), "OPENING_1")
+	if opening1.RemainingCopies != 1 || opening1.DrawnCopies != 1 || opening1.PlayedCopies != 0 {
+		t.Fatalf("unexpected first opening card counters: %#v", opening1)
+	}
+
+	opening2 := requireOverlayDeckCard(t, projector.Snapshot(), "OPENING_2")
+	if opening2.RemainingCopies != 0 || opening2.DrawnCopies != 1 || opening2.PlayedCopies != 0 {
+		t.Fatalf("expected raw-side opening draw to be counted in hand: %#v", opening2)
+	}
+
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypePlayer, card.New("OPENING_2", 11, types.PlayerTypePlayer), 0))
+	opening2 = requireOverlayDeckCard(t, projector.Snapshot(), "OPENING_2")
+	if opening2.RemainingCopies != 0 || opening2.DrawnCopies != 1 || opening2.PlayedCopies != 1 {
+		t.Fatalf("expected played opening card to move from hand to other: %#v", opening2)
+	}
+}
+
+func TestOverlaySnapshotReplaysPreGameOpponentPlaysOnGameStart(t *testing.T) {
+	t.Parallel()
+
+	projector := NewOverlaySnapshotProjector(OverlaySnapshotProjectorOptions{
+		Now: fixedTimeSequence(time.Unix(100, 0), time.Unix(101, 0)),
+	})
+
+	mustOverlayProject(t, projector, game.NewCardPlayedEvent(types.PlayerTypeOpponent, card.New("OPP_EARLY", 20, types.PlayerTypeOpponent), 0))
+	mustOverlayProject(t, projector, game.NewGameStartEvent("game-1", state.GameModeStandard))
+
+	snapshot := projector.Snapshot()
+	if len(snapshot.OpponentPlayedCards) != 1 {
+		t.Fatalf("expected early opponent play to be replayed after game start: %#v", snapshot.OpponentPlayedCards)
+	}
+	if snapshot.OpponentPlayedCards[0].CardID != "OPP_EARLY" || snapshot.OpponentPlayedCards[0].PlayCount != 1 {
+		t.Fatalf("unexpected early opponent play: %#v", snapshot.OpponentPlayedCards[0])
+	}
+}
+
 func TestOverlaySnapshotBackfillsRemainingDeckWhenSelfPlayArrivesWithoutDrawEvent(t *testing.T) {
 	t.Parallel()
 
@@ -281,4 +331,15 @@ func mustOverlayProject(t *testing.T, projector *OverlaySnapshotProjector, event
 	if err := projector.Process(event); err != nil {
 		t.Fatalf("process event %T: %v", event, err)
 	}
+}
+
+func requireOverlayDeckCard(t *testing.T, snapshot overlay.Snapshot, cardID string) overlay.PlayerDeckCard {
+	t.Helper()
+	for _, current := range snapshot.PlayerDeckRemaining {
+		if current.CardID == cardID {
+			return current
+		}
+	}
+	t.Fatalf("expected player deck card %q in snapshot: %#v", cardID, snapshot.PlayerDeckRemaining)
+	return overlay.PlayerDeckCard{}
 }

@@ -265,9 +265,9 @@ async function createWindows() {
 
 function registerBridge() {
   ipcMain.handle(BRIDGE_CHANNELS.getConfig, () => bridgeConfig);
-  ipcMain.handle(BRIDGE_CHANNELS.getOverlayMode, () => overlayController?.getMode() ?? "passive");
+  ipcMain.handle(BRIDGE_CHANNELS.getOverlayMode, () => overlayController?.getMode() ?? "inspect");
   ipcMain.handle(BRIDGE_CHANNELS.setOverlayMode, (_event, mode: OverlayMode) => {
-    const nextMode = overlayController?.setMode(mode) ?? "passive";
+    const nextMode = overlayController?.setMode(mode) ?? "inspect";
     mainWindow?.webContents.send(BRIDGE_CHANNELS.onOverlayDiagnostics, overlayController?.getDiagnostics());
     overlayWindow?.webContents.send(BRIDGE_CHANNELS.onOverlayDiagnostics, overlayController?.getDiagnostics());
     return nextMode;
@@ -286,7 +286,7 @@ function broadcastOverlayDiagnostics() {
 
 function registerShortcuts() {
   globalShortcut.register("CommandOrControl+Shift+I", () => {
-    const currentMode = overlayController?.getMode() ?? "passive";
+    const currentMode = overlayController?.getMode() ?? "inspect";
     overlayController?.setMode(currentMode === "passive" ? "inspect" : "passive");
     broadcastOverlayDiagnostics();
   });

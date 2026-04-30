@@ -10,7 +10,7 @@ const fallbackBridge: NativeBridge = {
     return fallbackConfig;
   },
   async getOverlayMode() {
-    return "passive";
+    return "inspect";
   },
   async setOverlayMode(mode) {
     return mode;

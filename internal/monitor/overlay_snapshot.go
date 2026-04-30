@@ -40,13 +40,14 @@ type OverlaySnapshotProjector struct {
 	sink          OverlaySnapshotSink
 	now           func() time.Time
 
-	snapshot       overlay.Snapshot
-	templateDeck   []overlay.PlayerDeckCard
-	templateDeckID string
-	templateName   string
-	activeDeck     map[string]*overlay.PlayerDeckCard
-	selfPlayed     map[string]int
-	opponentCards  map[string]*overlay.OpponentPlayedCard
+	snapshot          overlay.Snapshot
+	templateDeck      []overlay.PlayerDeckCard
+	templateDeckID    string
+	templateName      string
+	activeDeck        map[string]*overlay.PlayerDeckCard
+	selfPlayed        map[string]int
+	opponentCards     map[string]*overlay.OpponentPlayedCard
+	preGameCardEvents []game.Event
 }
 
 type NoopOverlayCardAssetResolver struct{}
@@ -122,15 +123,16 @@ func NewOverlaySnapshotProjector(options OverlaySnapshotProjectorOptions) *Overl
 
 	snapshot := overlay.NewSnapshot()
 	return &OverlaySnapshotProjector{
-		cardDB:        options.CardDB,
-		assetResolver: resolver,
-		sink:          options.Sink,
-		now:           now,
-		snapshot:      snapshot,
-		templateDeck:  make([]overlay.PlayerDeckCard, 0),
-		activeDeck:    make(map[string]*overlay.PlayerDeckCard),
-		selfPlayed:    make(map[string]int),
-		opponentCards: make(map[string]*overlay.OpponentPlayedCard),
+		cardDB:            options.CardDB,
+		assetResolver:     resolver,
+		sink:              options.Sink,
+		now:               now,
+		snapshot:          snapshot,
+		templateDeck:      make([]overlay.PlayerDeckCard, 0),
+		activeDeck:        make(map[string]*overlay.PlayerDeckCard),
+		selfPlayed:        make(map[string]int),
+		opponentCards:     make(map[string]*overlay.OpponentPlayedCard),
+		preGameCardEvents: make([]game.Event, 0),
 	}
 }
 
@@ -145,8 +147,16 @@ func (p *OverlaySnapshotProjector) Process(event game.Event) error {
 	case *game.GameStartEvent:
 		return p.processGameStart(current)
 	case *game.CardDrawnEvent:
+		if p.snapshot.Match.Status != overlay.MatchStatusActive {
+			p.rememberPreGameCardEvent(current)
+			return nil
+		}
 		return p.processCardDrawn(current)
 	case *game.CardPlayedEvent:
+		if p.snapshot.Match.Status != overlay.MatchStatusActive {
+			p.rememberPreGameCardEvent(current)
+			return nil
+		}
 		return p.processCardPlayed(current)
 	case *game.GameEndEvent:
 		return p.processGameEnd(current)
@@ -170,6 +180,7 @@ func (p *OverlaySnapshotProjector) Restore(snapshot overlay.Snapshot) error {
 	p.templateName = snapshot.Match.DeckName
 	p.activeDeck = make(map[string]*overlay.PlayerDeckCard, len(snapshot.PlayerDeckRemaining))
 	p.selfPlayed = make(map[string]int, len(snapshot.PlayerDeckRemaining))
+	p.preGameCardEvents = p.preGameCardEvents[:0]
 	for _, current := range snapshot.PlayerDeckRemaining {
 		card := current
 		p.activeDeck[current.CardID] = &card
@@ -263,6 +274,7 @@ func (p *OverlaySnapshotProjector) processDeckList(event *game.DeckListEvent) er
 	p.snapshot.Match.DeckID = p.templateDeckID
 	p.snapshot.Match.DeckName = p.templateName
 	p.resetActiveDeckFromTemplate()
+	p.preGameCardEvents = p.preGameCardEvents[:0]
 	return p.publish()
 }
 
@@ -281,48 +293,74 @@ func (p *OverlaySnapshotProjector) processGameStart(event *game.GameStartEvent) 
 	}
 	p.resetActiveDeckFromTemplate()
 	p.opponentCards = make(map[string]*overlay.OpponentPlayedCard)
+	for _, pending := range p.drainPreGameCardEvents() {
+		switch current := pending.(type) {
+		case *game.CardDrawnEvent:
+			p.applyCardDrawn(current)
+		case *game.CardPlayedEvent:
+			p.applyCardPlayed(current)
+		}
+	}
 	return p.publish()
 }
 
 func (p *OverlaySnapshotProjector) processCardDrawn(event *game.CardDrawnEvent) error {
-	if event == nil || event.Player != types.PlayerTypePlayer {
+	if !p.applyCardDrawn(event) {
 		return nil
 	}
-	if p.snapshot.Match.Status != overlay.MatchStatusActive {
-		return nil
-	}
-	if event.Card == nil {
-		return nil
-	}
-
-	current, ok := p.activeDeck[strings.TrimSpace(event.Card.ID)]
-	if !ok || current == nil || current.RemainingCopies == 0 {
-		return nil
-	}
-
-	current.RemainingCopies--
-	current.DrawnCopies++
-	p.rebuildPlayerDeckSnapshot()
 	return p.publish()
 }
 
 func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent) error {
-	if event == nil || event.Card == nil {
+	if !p.applyCardPlayed(event) {
 		return nil
 	}
+	return p.publish()
+}
+
+func (p *OverlaySnapshotProjector) applyCardDrawn(event *game.CardDrawnEvent) bool {
+	if event == nil || event.Card == nil {
+		return false
+	}
 	if p.snapshot.Match.Status != overlay.MatchStatusActive {
-		return nil
+		return false
 	}
 
 	cardID := strings.TrimSpace(event.Card.ID)
 	if cardID == "" {
-		return nil
+		return false
+	}
+
+	current, ok := p.activeDeck[cardID]
+	if !ok || current == nil || current.RemainingCopies == 0 {
+		return false
+	}
+
+	// Early Zone.log draw events can arrive before side correction has enough
+	// evidence, but a resolved selected-deck card still belongs in our deck.
+	current.RemainingCopies--
+	current.DrawnCopies++
+	p.rebuildPlayerDeckSnapshot()
+	return true
+}
+
+func (p *OverlaySnapshotProjector) applyCardPlayed(event *game.CardPlayedEvent) bool {
+	if event == nil || event.Card == nil {
+		return false
+	}
+	if p.snapshot.Match.Status != overlay.MatchStatusActive {
+		return false
+	}
+
+	cardID := strings.TrimSpace(event.Card.ID)
+	if cardID == "" {
+		return false
 	}
 
 	if event.Player == types.PlayerTypePlayer {
 		current, ok := p.activeDeck[cardID]
 		if !ok || current == nil {
-			return nil
+			return false
 		}
 
 		playedCopies := p.selfPlayed[cardID]
@@ -333,10 +371,10 @@ func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent
 		p.selfPlayed[cardID] = playedCopies + 1
 		current.PlayedCopies = minInt(p.selfPlayed[cardID], current.InitialCopies)
 		p.rebuildPlayerDeckSnapshot()
-		return p.publish()
+		return true
 	}
 	if event.Player != types.PlayerTypeOpponent {
-		return nil
+		return false
 	}
 
 	current, ok := p.opponentCards[cardID]
@@ -353,7 +391,7 @@ func (p *OverlaySnapshotProjector) processCardPlayed(event *game.CardPlayedEvent
 	}
 	current.LastPlayedAt = now
 	p.rebuildOpponentSnapshot()
-	return p.publish()
+	return true
 }
 
 func (p *OverlaySnapshotProjector) processGameEnd(*game.GameEndEvent) error {
@@ -362,6 +400,28 @@ func (p *OverlaySnapshotProjector) processGameEnd(*game.GameEndEvent) error {
 	}
 	p.snapshot.Match.Status = overlay.MatchStatusFinalized
 	return p.publish()
+}
+
+func (p *OverlaySnapshotProjector) rememberPreGameCardEvent(event game.Event) {
+	if event == nil {
+		return
+	}
+	const maxPreGameCardEvents = 64
+	if len(p.preGameCardEvents) >= maxPreGameCardEvents {
+		copy(p.preGameCardEvents, p.preGameCardEvents[1:])
+		p.preGameCardEvents[len(p.preGameCardEvents)-1] = event
+		return
+	}
+	p.preGameCardEvents = append(p.preGameCardEvents, event)
+}
+
+func (p *OverlaySnapshotProjector) drainPreGameCardEvents() []game.Event {
+	if len(p.preGameCardEvents) == 0 {
+		return nil
+	}
+	events := append([]game.Event(nil), p.preGameCardEvents...)
+	p.preGameCardEvents = p.preGameCardEvents[:0]
+	return events
 }
 
 func (p *OverlaySnapshotProjector) buildPlayerDeckCard(current *card.Card, info *carddb.CardInfo) overlay.PlayerDeckCard {

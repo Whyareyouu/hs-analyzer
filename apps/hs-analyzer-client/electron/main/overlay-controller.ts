@@ -22,7 +22,7 @@ export interface GameWindowLocator {
 }
 
 export class OverlayWindowController {
-  private mode: OverlayMode = "passive";
+  private mode: OverlayMode = "inspect";
   private diagnostics: OverlayDiagnostics = {
     attached: false,
     degraded: true,

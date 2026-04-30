@@ -4,7 +4,7 @@ import { useServices } from "@/shared/api/services-context";
 
 export function useOverlayModeControl() {
   const { bridge } = useServices();
-  const [mode, setMode] = useState<OverlayMode>("passive");
+  const [mode, setMode] = useState<OverlayMode>("inspect");
 
   useEffect(() => {
     void bridge.getOverlayMode().then(setMode);

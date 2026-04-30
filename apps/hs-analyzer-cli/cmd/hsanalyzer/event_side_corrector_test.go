@@ -101,6 +101,35 @@ func TestLiveEventSideCorrectorDoesNotLearnSideFromDrawnDeckCards(t *testing.T) 
 	}
 }
 
+func TestLiveEventSideCorrectorBackfillsBufferedOpeningDrawsAfterSideEvidence(t *testing.T) {
+	t.Parallel()
+
+	corrector := newLiveEventSideCorrector()
+	corrector.Correct(game.NewDeckListEvent(types.PlayerTypePlayer, []*card.Card{
+		card.New("OPENING_1", 1, types.PlayerTypePlayer),
+		card.New("OPENING_2", 2, types.PlayerTypePlayer),
+	}, "My Deck", "deck-1", "code"))
+
+	firstDraw, ok := corrector.Correct(game.NewCardDrawnEvent(types.PlayerTypeOpponent, card.New("OPENING_1", 10, types.PlayerTypeOpponent))).(*game.CardDrawnEvent)
+	if !ok {
+		t.Fatalf("unexpected first draw type: %T", firstDraw)
+	}
+	if firstDraw.Player != types.PlayerTypeOpponent {
+		t.Fatalf("first draw should stay raw until enough evidence exists, got %s", firstDraw.Player)
+	}
+
+	secondDraw, ok := corrector.Correct(game.NewCardDrawnEvent(types.PlayerTypeOpponent, card.New("OPENING_2", 11, types.PlayerTypeOpponent))).(*game.CardDrawnEvent)
+	if !ok {
+		t.Fatalf("unexpected second draw type: %T", secondDraw)
+	}
+	if firstDraw.Player != types.PlayerTypePlayer || firstDraw.Card.Owner != types.PlayerTypePlayer {
+		t.Fatalf("expected buffered first draw to be corrected to player, got player=%s owner=%s", firstDraw.Player, firstDraw.Card.Owner)
+	}
+	if secondDraw.Player != types.PlayerTypePlayer || secondDraw.Card.Owner != types.PlayerTypePlayer {
+		t.Fatalf("expected second draw to be corrected to player, got player=%s owner=%s", secondDraw.Player, secondDraw.Card.Owner)
+	}
+}
+
 func TestLiveEventSideCorrectorDoesNotInvertFromSharedDeckCardOnOpponentTurn(t *testing.T) {
 	t.Parallel()
 
