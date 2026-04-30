@@ -1,19 +1,30 @@
+import { useState } from "react";
 import type { MatchupEntry } from "@/shared/model/dashboard";
 import { getMetricTone, formatWinrate } from "@/shared/lib/format";
 import { Panel } from "@/shared/ui/panel";
 import { Pill } from "@/shared/ui/pill";
 
 export function MatchupBreakdown({ matchups }: { matchups: MatchupEntry[] }) {
+  const [open, setOpen] = useState(false);
+
   return (
     <Panel className="space-y-4">
-      <div className="flex items-center justify-between">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        className="flex w-full items-center justify-between text-left"
+      >
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-app-muted">Analytics</div>
           <div className="text-xl font-semibold text-app-text">Матчапы</div>
         </div>
-        <Pill>{matchups.length}</Pill>
-      </div>
-      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <Pill>{matchups.length}</Pill>
+          <span className="text-xs uppercase tracking-[0.18em] text-app-muted">{open ? "Hide" : "Show"}</span>
+        </div>
+      </button>
+      {!open ? null : <div className="space-y-3">
         {matchups.map((matchup) => {
           const tone = getMetricTone(matchup.winrate);
           return (
@@ -28,7 +39,7 @@ export function MatchupBreakdown({ matchups }: { matchups: MatchupEntry[] }) {
             </div>
           );
         })}
-      </div>
+      </div>}
     </Panel>
   );
 }

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AppProviders } from "@/app/providers/app-providers";
 import { DeckOverviewPage } from "./page";
@@ -103,6 +103,13 @@ describe("DeckOverviewPage", () => {
     expect(screen.getAllByText("Spell Demon Hunter")).toHaveLength(2);
     expect(screen.getByText("Taste of Chaos")).toBeInTheDocument();
     expect(screen.getByText("История матчей")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /История матчей/i })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: /Матчапы/i })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("Победа")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /История матчей/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Матчапы/i }));
+
     expect(screen.getAllByText("Против WARRIOR").length).toBeGreaterThan(0);
     expect(screen.getByText("Победа")).toBeInTheDocument();
   });
