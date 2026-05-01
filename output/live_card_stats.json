@@ -1,0 +1,20 @@
+{
+  "schema_version": "live_card_stats/v1",
+  "projection_version": 0,
+  "recovery_status": "fresh",
+  "match": {
+    "status": "idle"
+  },
+  "players": {
+    "self": {
+      "total_plays": 0,
+      "unique_cards": 0,
+      "cards": []
+    },
+    "opponent": {
+      "total_plays": 0,
+      "unique_cards": 0,
+      "cards": []
+    }
+  }
+}

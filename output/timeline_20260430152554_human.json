@@ -1,0 +1,822 @@
+{
+  "match_count": 1,
+  "matches": [
+    {
+      "final_state": {
+        "current_turn": 1,
+        "current_player": "OPPONENT",
+        "players": {
+          "OPPONENT": {
+            "id": 2,
+            "mana": 1,
+            "max_mana": 1,
+            "overload": 0,
+            "hand_count": 1,
+            "deck_count": 0,
+            "board_count": 1,
+            "graveyard_count": 0,
+            "hand": [
+              {
+                "id": "EDR_528",
+                "name": "Кошмарное топливо",
+                "entity_id": 39,
+                "owner": "OPPONENT",
+                "controller": "OPPONENT",
+                "zone": "HAND",
+                "position": 0,
+                "cost": 1,
+                "info": {
+                  "id": "EDR_528",
+                  "dbf_id": 110001,
+                  "name": "Кошмарное топливо",
+                  "text": "Раскопка. Получает усиление от серии приемов.",
+                  "cost": 1,
+                  "attack": 0,
+                  "health": 0,
+                  "type": "SPELL",
+                  "rarity": "COMMON",
+                  "card_class": "ROGUE",
+                  "race": "",
+                  "set": "EMERALD_DREAM",
+                  "collectible": true
+                }
+              }
+            ],
+            "board": [
+              {
+                "id": "TLC_515",
+                "name": "Карта сектантов",
+                "entity_id": 60,
+                "owner": "OPPONENT",
+                "controller": "OPPONENT",
+                "zone": "PLAY",
+                "position": 0,
+                "cost": 2,
+                "info": {
+                  "id": "TLC_515",
+                  "dbf_id": 117697,
+                  "name": "Карта сектантов",
+                  "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                  "cost": 2,
+                  "attack": 0,
+                  "health": 0,
+                  "type": "SPELL",
+                  "rarity": "RARE",
+                  "card_class": "ROGUE",
+                  "race": "",
+                  "set": "THE_LOST_CITY",
+                  "collectible": true
+                }
+              }
+            ]
+          },
+          "PLAYER": {
+            "id": 1,
+            "mana": 0,
+            "max_mana": 0,
+            "overload": 0,
+            "hand_count": 0,
+            "deck_count": 0,
+            "board_count": 0,
+            "graveyard_count": 0
+          }
+        }
+      },
+      "game": {
+        "event_count": 7,
+        "id": "",
+        "mode": "STANDARD",
+        "turn_count": 1,
+        "winner": ""
+      },
+      "turns": [
+        {
+          "number": 1,
+          "active_player": "OPPONENT",
+          "started_at": "2026-04-30T15:25:54.9725059+03:00",
+          "event_count": 6,
+          "opening_state": {
+            "current_turn": 1,
+            "current_player": "OPPONENT",
+            "players": {
+              "OPPONENT": {
+                "id": 2,
+                "mana": 1,
+                "max_mana": 1,
+                "overload": 0,
+                "hand_count": 0,
+                "deck_count": 0,
+                "board_count": 0,
+                "graveyard_count": 0
+              },
+              "PLAYER": {
+                "id": 1,
+                "mana": 0,
+                "max_mana": 0,
+                "overload": 0,
+                "hand_count": 0,
+                "deck_count": 0,
+                "board_count": 0,
+                "graveyard_count": 0
+              }
+            }
+          },
+          "events": [
+            {
+              "action": {
+                "player": "OPPONENT",
+                "summary": "turn_start"
+              },
+              "delta": {
+                "resource_changes": {
+                  "OPPONENT": {
+                    "mana_after": 1,
+                    "mana_before": 0,
+                    "max_mana_after": 1,
+                    "max_mana_before": 0,
+                    "overload_after": 0,
+                    "overload_before": 0
+                  }
+                }
+              },
+              "global_index": 0,
+              "state_after": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "state_before": {
+                "current_turn": 0,
+                "current_player": "UNKNOWN",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 0,
+              "type": "turn_start"
+            },
+            {
+              "action": {
+                "effect_description": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+                "effect_label": "Срабатывание эффекта",
+                "effect_name": "TRIGGER_VISUAL",
+                "source": {
+                  "entity_id": 95,
+                  "card_id": "CATA_210",
+                  "name": "Сумеречное яйцо",
+                  "card": {
+                    "id": "CATA_210",
+                    "name": "Сумеречное яйцо",
+                    "info": {
+                      "id": "CATA_210",
+                      "dbf_id": 110002,
+                      "name": "Сумеречное яйцо",
+                      "text": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+                      "cost": 3,
+                      "attack": 0,
+                      "health": 3,
+                      "type": "MINION",
+                      "rarity": "COMMON",
+                      "card_class": "NEUTRAL",
+                      "race": "",
+                      "set": "CATA",
+                      "collectible": true
+                    }
+                  },
+                  "info": {
+                    "id": "CATA_210",
+                    "dbf_id": 110002,
+                    "name": "Сумеречное яйцо",
+                    "text": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+                    "cost": 3,
+                    "attack": 0,
+                    "health": 3,
+                    "type": "MINION",
+                    "rarity": "COMMON",
+                    "card_class": "NEUTRAL",
+                    "race": "",
+                    "set": "CATA",
+                    "collectible": true
+                  }
+                },
+                "summary": "effect_triggered"
+              },
+              "delta": null,
+              "global_index": 1,
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 1,
+              "type": "effect_triggered"
+            },
+            {
+              "action": {
+                "card": {
+                  "id": "TLC_515",
+                  "name": "Карта сектантов",
+                  "entity_id": 60,
+                  "owner": "OPPONENT",
+                  "controller": "OPPONENT",
+                  "zone": "PLAY",
+                  "position": 0,
+                  "cost": 2,
+                  "info": {
+                    "id": "TLC_515",
+                    "dbf_id": 117697,
+                    "name": "Карта сектантов",
+                    "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                    "cost": 2,
+                    "attack": 0,
+                    "health": 0,
+                    "type": "SPELL",
+                    "rarity": "RARE",
+                    "card_class": "ROGUE",
+                    "race": "",
+                    "set": "THE_LOST_CITY",
+                    "collectible": true
+                  }
+                },
+                "player": "OPPONENT",
+                "position": 0,
+                "summary": "card_played"
+              },
+              "delta": {
+                "zone_changes": {
+                  "OPPONENT": {
+                    "board_after": 1,
+                    "board_before": 0,
+                    "deck_after": 0,
+                    "deck_before": 0,
+                    "graveyard_after": 0,
+                    "graveyard_before": 0,
+                    "hand_after": 0,
+                    "hand_before": 0
+                  }
+                }
+              },
+              "global_index": 2,
+              "state_after": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 1,
+                    "graveyard_count": 0,
+                    "board": [
+                      {
+                        "id": "TLC_515",
+                        "name": "Карта сектантов",
+                        "entity_id": 60,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "PLAY",
+                        "position": 0,
+                        "cost": 2,
+                        "info": {
+                          "id": "TLC_515",
+                          "dbf_id": 117697,
+                          "name": "Карта сектантов",
+                          "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                          "cost": 2,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "RARE",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "THE_LOST_CITY",
+                          "collectible": true
+                        }
+                      }
+                    ]
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "state_before": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 2,
+              "type": "card_played"
+            },
+            {
+              "action": {
+                "chosen_card": {
+                  "id": "END_036",
+                  "name": "Морхи",
+                  "info": {
+                    "id": "END_036",
+                    "dbf_id": 110003,
+                    "name": "Морхи",
+                    "text": "Дракон.",
+                    "cost": 4,
+                    "attack": 4,
+                    "health": 4,
+                    "type": "MINION",
+                    "rarity": "EPIC",
+                    "card_class": "NEUTRAL",
+                    "race": "",
+                    "set": "END",
+                    "collectible": true
+                  }
+                },
+                "options": [
+                  {
+                    "id": "CATA_158",
+                    "name": "Безумный приспешник",
+                    "info": {
+                      "id": "CATA_158",
+                      "dbf_id": 110004,
+                      "name": "Безумный приспешник",
+                      "text": "Случайный эффект.",
+                      "cost": 2,
+                      "attack": 2,
+                      "health": 2,
+                      "type": "MINION",
+                      "rarity": "COMMON",
+                      "card_class": "NEUTRAL",
+                      "race": "",
+                      "set": "CATA",
+                      "collectible": true
+                    }
+                  },
+                  {
+                    "id": "END_036",
+                    "name": "Морхи",
+                    "info": {
+                      "id": "END_036",
+                      "dbf_id": 110003,
+                      "name": "Морхи",
+                      "text": "Дракон.",
+                      "cost": 4,
+                      "attack": 4,
+                      "health": 4,
+                      "type": "MINION",
+                      "rarity": "EPIC",
+                      "card_class": "NEUTRAL",
+                      "race": "",
+                      "set": "END",
+                      "collectible": true
+                    }
+                  },
+                  {
+                    "id": "CATA_154",
+                    "name": "Синестра",
+                    "info": {
+                      "id": "CATA_154",
+                      "dbf_id": 110005,
+                      "name": "Синестра",
+                      "text": "Легендарный дракон.",
+                      "cost": 9,
+                      "attack": 8,
+                      "health": 8,
+                      "type": "MINION",
+                      "rarity": "LEGENDARY",
+                      "card_class": "NEUTRAL",
+                      "race": "",
+                      "set": "CATA",
+                      "collectible": true
+                    }
+                  }
+                ],
+                "player": "OPPONENT",
+                "summary": "discover"
+              },
+              "delta": null,
+              "global_index": 3,
+              "state_after": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 1,
+                    "graveyard_count": 0,
+                    "board": [
+                      {
+                        "id": "TLC_515",
+                        "name": "Карта сектантов",
+                        "entity_id": 60,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "PLAY",
+                        "position": 0,
+                        "cost": 2,
+                        "info": {
+                          "id": "TLC_515",
+                          "dbf_id": 117697,
+                          "name": "Карта сектантов",
+                          "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                          "cost": 2,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "RARE",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "THE_LOST_CITY",
+                          "collectible": true
+                        }
+                      }
+                    ]
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "state_before": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 1,
+                    "graveyard_count": 0,
+                    "board": [
+                      {
+                        "id": "TLC_515",
+                        "name": "Карта сектантов",
+                        "entity_id": 60,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "PLAY",
+                        "position": 0,
+                        "cost": 2,
+                        "info": {
+                          "id": "TLC_515",
+                          "dbf_id": 117697,
+                          "name": "Карта сектантов",
+                          "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                          "cost": 2,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "RARE",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "THE_LOST_CITY",
+                          "collectible": true
+                        }
+                      }
+                    ]
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 3,
+              "type": "discover"
+            },
+            {
+              "action": {
+                "attacker": {
+                  "entity_id": 103,
+                  "card_id": "CATA_210",
+                  "name": "Сумеречное яйцо",
+                  "card": {
+                    "id": "CATA_210",
+                    "name": "Сумеречное яйцо",
+                    "info": {
+                      "id": "CATA_210",
+                      "dbf_id": 110002,
+                      "name": "Сумеречное яйцо",
+                      "text": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+                      "cost": 3,
+                      "attack": 0,
+                      "health": 3,
+                      "type": "MINION",
+                      "rarity": "COMMON",
+                      "card_class": "NEUTRAL",
+                      "race": "",
+                      "set": "CATA",
+                      "collectible": true
+                    }
+                  },
+                  "info": {
+                    "id": "CATA_210",
+                    "dbf_id": 110002,
+                    "name": "Сумеречное яйцо",
+                    "text": "Предсмертный хрип: призывает дракончика 2/2. (Получает +1/+1 в начале каждого вашего хода!)",
+                    "cost": 3,
+                    "attack": 0,
+                    "health": 3,
+                    "type": "MINION",
+                    "rarity": "COMMON",
+                    "card_class": "NEUTRAL",
+                    "race": "",
+                    "set": "CATA",
+                    "collectible": true
+                  }
+                },
+                "summary": "attack",
+                "target": {
+                  "entity_id": 27,
+                  "card_id": "EDR_456",
+                  "name": "Темный наездник",
+                  "card": {
+                    "id": "EDR_456",
+                    "name": "EDR_456"
+                  }
+                }
+              },
+              "delta": null,
+              "global_index": 4,
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 4,
+              "type": "attack"
+            },
+            {
+              "action": {
+                "card": {
+                  "id": "EDR_528",
+                  "name": "Кошмарное топливо",
+                  "entity_id": 39,
+                  "owner": "OPPONENT",
+                  "controller": "OPPONENT",
+                  "zone": "HAND",
+                  "position": 0,
+                  "cost": 1,
+                  "info": {
+                    "id": "EDR_528",
+                    "dbf_id": 110001,
+                    "name": "Кошмарное топливо",
+                    "text": "Раскопка. Получает усиление от серии приемов.",
+                    "cost": 1,
+                    "attack": 0,
+                    "health": 0,
+                    "type": "SPELL",
+                    "rarity": "COMMON",
+                    "card_class": "ROGUE",
+                    "race": "",
+                    "set": "EMERALD_DREAM",
+                    "collectible": true
+                  }
+                },
+                "player": "OPPONENT",
+                "summary": "card_drawn"
+              },
+              "delta": {
+                "zone_changes": {
+                  "OPPONENT": {
+                    "board_after": 1,
+                    "board_before": 1,
+                    "deck_after": 0,
+                    "deck_before": 0,
+                    "graveyard_after": 0,
+                    "graveyard_before": 0,
+                    "hand_after": 1,
+                    "hand_before": 0
+                  }
+                }
+              },
+              "global_index": 5,
+              "state_after": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 1,
+                    "deck_count": 0,
+                    "board_count": 1,
+                    "graveyard_count": 0,
+                    "hand": [
+                      {
+                        "id": "EDR_528",
+                        "name": "Кошмарное топливо",
+                        "entity_id": 39,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "HAND",
+                        "position": 0,
+                        "cost": 1,
+                        "info": {
+                          "id": "EDR_528",
+                          "dbf_id": 110001,
+                          "name": "Кошмарное топливо",
+                          "text": "Раскопка. Получает усиление от серии приемов.",
+                          "cost": 1,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "COMMON",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "EMERALD_DREAM",
+                          "collectible": true
+                        }
+                      }
+                    ],
+                    "board": [
+                      {
+                        "id": "TLC_515",
+                        "name": "Карта сектантов",
+                        "entity_id": 60,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "PLAY",
+                        "position": 0,
+                        "cost": 2,
+                        "info": {
+                          "id": "TLC_515",
+                          "dbf_id": 117697,
+                          "name": "Карта сектантов",
+                          "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                          "cost": 2,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "RARE",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "THE_LOST_CITY",
+                          "collectible": true
+                        }
+                      }
+                    ]
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "state_before": {
+                "current_turn": 1,
+                "current_player": "OPPONENT",
+                "players": {
+                  "OPPONENT": {
+                    "id": 2,
+                    "mana": 1,
+                    "max_mana": 1,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 1,
+                    "graveyard_count": 0,
+                    "board": [
+                      {
+                        "id": "TLC_515",
+                        "name": "Карта сектантов",
+                        "entity_id": 60,
+                        "owner": "OPPONENT",
+                        "controller": "OPPONENT",
+                        "zone": "PLAY",
+                        "position": 0,
+                        "cost": 2,
+                        "info": {
+                          "id": "TLC_515",
+                          "dbf_id": 117697,
+                          "name": "Карта сектантов",
+                          "text": "Вы раскапываете карту\nиз колоды. Если вы\nразыгрываете ее на этом ходу,\nвы берете еще одну\nиз предложенных карт.",
+                          "cost": 2,
+                          "attack": 0,
+                          "health": 0,
+                          "type": "SPELL",
+                          "rarity": "RARE",
+                          "card_class": "ROGUE",
+                          "race": "",
+                          "set": "THE_LOST_CITY",
+                          "collectible": true
+                        }
+                      }
+                    ]
+                  },
+                  "PLAYER": {
+                    "id": 1,
+                    "mana": 0,
+                    "max_mana": 0,
+                    "overload": 0,
+                    "hand_count": 0,
+                    "deck_count": 0,
+                    "board_count": 0,
+                    "graveyard_count": 0
+                  }
+                }
+              },
+              "timestamp": "2026-04-30T15:25:54.8515127+03:00",
+              "turn_index": 5,
+              "type": "card_drawn"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "mode": "replay",
+  "schema_version": "0.0.1"
+}

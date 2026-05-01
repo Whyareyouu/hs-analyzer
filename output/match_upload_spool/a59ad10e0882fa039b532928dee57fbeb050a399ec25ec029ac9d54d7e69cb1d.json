@@ -1,0 +1,2747 @@
+{
+  "spool_id": "a59ad10e0882fa039b532928dee57fbeb050a399ec25ec029ac9d54d7e69cb1d",
+  "match_id": "events:ed5ebd79046aedcf",
+  "idempotency_key": "events:ed5ebd79046aedcf",
+  "payload_hash": "a59ad10e0882fa039b532928dee57fbeb050a399ec25ec029ac9d54d7e69cb1d",
+  "status": "delivered",
+  "attempt_count": 1,
+  "last_attempt_at": "2026-04-30T11:52:13.6390785Z",
+  "created_at": "2026-04-30T11:52:13.6222846Z",
+  "updated_at": "2026-04-30T11:52:13.6531348Z",
+  "payload": {
+    "schema_version": "match_upload/v1",
+    "match_id": "events:ed5ebd79046aedcf",
+    "started_at": "2026-04-30T11:39:26.0393058Z",
+    "ended_at": "2026-04-30T11:52:13.6205149Z",
+    "completion_status": "complete",
+    "completion_reason": "game_end",
+    "source": {
+      "client_name": "hs-analyzer-cli",
+      "client_version": "0.0.2"
+    },
+    "metadata": {
+      "game_mode": "STANDARD"
+    },
+    "events": [
+      {
+        "index": 0,
+        "type": "deck_list",
+        "timestamp": "2026-04-30T11:39:26.0393058Z",
+        "payload": {
+          "type": "deck_list"
+        }
+      },
+      {
+        "index": 1,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:39:46.5928946Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 2,
+        "type": "game_start",
+        "timestamp": "2026-04-30T11:39:49.1096782Z",
+        "payload": {
+          "type": "game_start"
+        }
+      },
+      {
+        "index": 3,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:40:55.563097Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 4,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:40:55.563097Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 5,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:41:07.3874746Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 6,
+        "type": "death",
+        "timestamp": "2026-04-30T11:41:24.4263774Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 7,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:41:25.948327Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 8,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:41:27.4645074Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 9,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:41:27.4645074Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 10,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:41:27.4671102Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 11,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:41:30.2372875Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 12,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:41:36.0402243Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 13,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:41:38.5570951Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 14,
+        "type": "death",
+        "timestamp": "2026-04-30T11:41:38.8139445Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 15,
+        "type": "death",
+        "timestamp": "2026-04-30T11:41:38.8139445Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 16,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:41:40.8471719Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 17,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:41:45.8681805Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 18,
+        "type": "death",
+        "timestamp": "2026-04-30T11:41:46.1241175Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 19,
+        "type": "death",
+        "timestamp": "2026-04-30T11:41:46.1246415Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 20,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:41:48.4043531Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 21,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:41:48.4043531Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 22,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:42:05.7041809Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 23,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:42:07.2154536Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 24,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:42:07.4714747Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 25,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:07.4730217Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 26,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:42:08.9805168Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 27,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:08.981041Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 28,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:42:10.7509134Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 29,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:42:10.7509134Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 30,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:42:24.3011025Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 31,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:24.3027164Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 32,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:24.3032364Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 33,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:24.303757Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 34,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:42:34.0999838Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 35,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:34.1015218Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 36,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:34.1020405Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 37,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:34.1025577Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 38,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:42:34.1030795Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 39,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:35.88051Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 40,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:35.8815388Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 41,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:35.8815388Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 42,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:35.8815388Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 43,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:35.8820539Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 44,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:42:35.8820539Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 45,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:35.8825985Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 46,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:35.8836234Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 47,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:35.8836234Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 48,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:42:37.4001621Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 49,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:42:42.7046726Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 50,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:42:51.2311487Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 51,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:51.4867627Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 52,
+        "type": "death",
+        "timestamp": "2026-04-30T11:42:51.4867627Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 53,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:42:52.7642883Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 54,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:42:53.0248966Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 55,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:43:15.5661352Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 56,
+        "type": "death",
+        "timestamp": "2026-04-30T11:43:16.0770148Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 57,
+        "type": "death",
+        "timestamp": "2026-04-30T11:43:16.0770148Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 58,
+        "type": "death",
+        "timestamp": "2026-04-30T11:43:16.0775286Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 59,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:43:17.5944384Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 60,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:43:17.5944384Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 61,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:43:24.3732689Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 62,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:43:25.638154Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 63,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:44:11.971652Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 64,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:20.2497896Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 65,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:23.2679605Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 66,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:44:24.2826417Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 67,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:44:27.5573866Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 68,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:44:27.5573866Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 69,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:44:33.6131111Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 70,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:44:41.3810924Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 71,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:41.6370195Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 72,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:41.6375279Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 73,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:41.6380437Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 74,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:44:46.6767407Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 75,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:44:56.4568339Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 76,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:56.9651548Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 77,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:56.9651548Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 78,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:44:59.2442636Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 79,
+        "type": "death",
+        "timestamp": "2026-04-30T11:44:59.5063186Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 80,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:45:10.4084274Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 81,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:45:10.9216623Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 82,
+        "type": "death",
+        "timestamp": "2026-04-30T11:45:10.9216623Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 83,
+        "type": "death",
+        "timestamp": "2026-04-30T11:45:10.9222684Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 84,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:45:11.6946057Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 85,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:45:11.696704Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 86,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:45:13.213694Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 87,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:45:13.213694Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 88,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:45:29.7626532Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 89,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:45:35.0410907Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 90,
+        "type": "death",
+        "timestamp": "2026-04-30T11:45:35.0416147Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 91,
+        "type": "death",
+        "timestamp": "2026-04-30T11:45:35.0416147Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 92,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:45:36.0560123Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 93,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:45:47.101837Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 94,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:45:47.3578945Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 95,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:45:47.3589838Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 96,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:45:49.6280496Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 97,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:45:49.6280496Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 98,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:45:49.6295962Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 99,
+        "type": "death",
+        "timestamp": "2026-04-30T11:46:03.6818011Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 100,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:46:03.6828522Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 101,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:46:07.7179755Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 102,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:46:10.2399288Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 103,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:46:10.2409722Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 104,
+        "type": "death",
+        "timestamp": "2026-04-30T11:46:10.2414889Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 105,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:46:13.0321991Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 106,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:46:14.7981109Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 107,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:46:14.7981109Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 108,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:46:52.3748972Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 109,
+        "type": "death",
+        "timestamp": "2026-04-30T11:46:52.3748972Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 110,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:46:53.8843616Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 111,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:46:54.8980865Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 112,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:46:54.8996429Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 113,
+        "type": "death",
+        "timestamp": "2026-04-30T11:46:54.90016Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 114,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:46:57.4242324Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 115,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:46:58.9343119Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 116,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:46:58.9358588Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 117,
+        "type": "death",
+        "timestamp": "2026-04-30T11:46:58.9358588Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 118,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:47:01.9534743Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 119,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:01.9545311Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 120,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:01.9550606Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 121,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:01.9555794Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 122,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:01.9560949Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 123,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:47:01.9566131Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 124,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:47:01.9571311Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 125,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:47:02.7142204Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 126,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:02.7155105Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 127,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:47:04.4816557Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 128,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:47:04.4816557Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 129,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:47:04.4832306Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 130,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:47:16.0524777Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 131,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:47:18.8127643Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 132,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:19.3265284Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 133,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:19.32705Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 134,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:19.3275685Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 135,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:47:19.3275685Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 136,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:19.3291228Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 137,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:47:19.3291228Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 138,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:47:21.0959867Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 139,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:21.0965051Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 140,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:21.0970544Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 141,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:21.0975728Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 142,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:21.0980859Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 143,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:47:27.6432858Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 144,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:27.643802Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 145,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:27.644321Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 146,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:27.644321Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 147,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:47:27.6463895Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 148,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:47:38.4362966Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 149,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:38.4373445Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 150,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:47:38.9533934Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 151,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:47:38.9549734Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 152,
+        "type": "death",
+        "timestamp": "2026-04-30T11:47:45.2321641Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 153,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:47:45.2337184Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 154,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:47:46.5060969Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 155,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:47:46.5060969Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 156,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:00.5489513Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 157,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:03.0724189Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 158,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:03.0734446Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 159,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:03.0734446Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 160,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:03.0739551Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 161,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:04.8408139Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 162,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:04.8428931Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 163,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:04.8439211Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 164,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:04.8439211Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 165,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:04.8450068Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 166,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:04.8450068Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 167,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:04.8455261Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 168,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:07.1203433Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 169,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:07.1213662Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 170,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:07.1213662Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 171,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:07.1223893Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 172,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:07.1223893Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 173,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:07.1223893Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 174,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:07.3780392Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 175,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:11.6549821Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 176,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:48:11.6570641Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 177,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:48:11.6570641Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 178,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:12.4232079Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 179,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:48:22.7465318Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 180,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:48:22.7475878Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 181,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:48:22.7481009Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 182,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:22.748623Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 183,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:48:24.5273983Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 184,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:48:24.528446Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 185,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:24.5289587Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 186,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:24.5387777Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 187,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:24.5392931Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 188,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:48:24.5392931Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 189,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:24.7971584Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 190,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:48:31.8340744Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 191,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:48:33.1002505Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 192,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:48:33.1002505Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 193,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:41.1372527Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 194,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:50.4138246Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 195,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:48:55.1857693Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 196,
+        "type": "death",
+        "timestamp": "2026-04-30T11:48:55.1868125Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 197,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:48:56.1962427Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 198,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:00.4983056Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 199,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:49:14.2923099Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 200,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:14.2933356Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 201,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:49:20.5666227Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 202,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:20.5681861Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 203,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:20.5692237Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 204,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:20.5697449Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 205,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:20.5697449Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 206,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:20.5702608Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 207,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:20.5707779Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 208,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:22.0799321Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 209,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:23.5983111Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 210,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:23.6005854Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 211,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:49:24.8651656Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 212,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:24.8667459Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 213,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:25.624423Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 214,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:49:26.6326918Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 215,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:49:26.6347943Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 216,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:49:26.6347943Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 217,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:49:26.6363943Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 218,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:34.9820176Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 219,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:36.5003698Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 220,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:49:39.5174773Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 221,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:40.0336358Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 222,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:40.0341537Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 223,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:49:40.034665Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 224,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:40.0377528Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 225,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:41.0661569Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 226,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:49:41.0666733Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 227,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:49:42.0907955Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 228,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:49:47.118454Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 229,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:47.3806907Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 230,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:47.3812084Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 231,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:49:47.3812084Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 232,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:47.3838514Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 233,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:47.3911345Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 234,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:49:47.3921689Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 235,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:49:51.1995488Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 236,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:51.7135964Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 237,
+        "type": "death",
+        "timestamp": "2026-04-30T11:49:51.8128268Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 238,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:49:51.8128268Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 239,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:50:11.9478454Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 240,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:12.7124988Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 241,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:12.713018Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 242,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:50:12.713018Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 243,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:12.7145744Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 244,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:12.718667Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 245,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:50:15.0225465Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 246,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:50:15.0225465Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 247,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:50:28.8328936Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 248,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:50:30.0947944Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 249,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:50:33.3833759Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 250,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:50:33.8902892Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 251,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:50:33.8913279Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 252,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:50:53.6983869Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 253,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:50:53.6994255Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 254,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:50:53.69994Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 255,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:50:55.9712101Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 256,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:50:55.9722457Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 257,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:50:55.9727925Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 258,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:55.9733065Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 259,
+        "type": "death",
+        "timestamp": "2026-04-30T11:50:55.9738207Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 260,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:00.9947281Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 261,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:00.9958053Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 262,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:00.9963158Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 263,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:00.9973592Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 264,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:03.5152214Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 265,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:03.5157428Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 266,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:03.5163286Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 267,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:03.5173615Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 268,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:05.2850485Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 269,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:51:05.286615Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 270,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:51:05.286615Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 271,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:05.2881765Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 272,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T11:51:05.2886934Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 273,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:13.860085Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 274,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:51:13.8631857Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 275,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:51:20.1335351Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 276,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:20.8951329Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 277,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:20.8951329Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 278,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:20.8956548Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 279,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:20.9045038Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 280,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:20.9050258Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 281,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:20.9050258Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 282,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:20.9065688Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 283,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:20.9070797Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 284,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:51:33.2436389Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 285,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:51:33.2467701Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 286,
+        "type": "discover",
+        "timestamp": "2026-04-30T11:51:37.0148486Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 287,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:37.5282352Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 288,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:37.5287998Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 289,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:51:37.5298244Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 290,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:37.5298244Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 291,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:37.537697Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 292,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:37.5382148Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 293,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:46.6253005Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 294,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:46.6263333Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 295,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:46.6268463Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 296,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:46.6273573Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 297,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:47.4003196Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 298,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:47.4013463Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 299,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:48.1734215Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 300,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:48.1744605Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 301,
+        "type": "attack",
+        "timestamp": "2026-04-30T11:51:48.692126Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 302,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:48.6931996Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 303,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:51.2260812Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 304,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:52.2449211Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 305,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T11:51:52.2449211Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 306,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:55.2727498Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 307,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:55.2732684Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 308,
+        "type": "card_played",
+        "timestamp": "2026-04-30T11:51:55.2763921Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 309,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:56.5413729Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 310,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:56.5424019Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 311,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:56.5434307Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 312,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:56.5439436Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 313,
+        "type": "death",
+        "timestamp": "2026-04-30T11:51:56.5444606Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 314,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T11:51:56.5449764Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 315,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:56.545492Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 316,
+        "type": "damage",
+        "timestamp": "2026-04-30T11:51:56.5460084Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 317,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T11:51:56.5470425Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 318,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T11:51:56.5470425Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 319,
+        "type": "game_end",
+        "timestamp": "2026-04-30T11:52:13.6205149Z",
+        "payload": {
+          "type": "game_end"
+        }
+      }
+    ],
+    "extensions": {
+      "dashboard_summary": {
+        "deck_cards": [
+          {
+            "card_id": "EDR_517",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_517.png",
+            "is_legendary": true,
+            "mana_cost": 3,
+            "name": "К'онзу",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "EDR_856",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_856.png",
+            "is_legendary": true,
+            "mana_cost": 4,
+            "name": "Повелитель кошмаров Ксавий",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "FIR_911",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/FIR_911.png",
+            "mana_cost": 2,
+            "name": "Дымящаяся роща",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TLC_460",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_460.png",
+            "is_legendary": true,
+            "mana_cost": 1,
+            "name": "Запретный протокол",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "END_036",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/END_036.png",
+            "is_legendary": true,
+            "mana_cost": 4,
+            "name": "Морхи",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "CORE_SW_108",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_SW_108.png",
+            "mana_cost": 1,
+            "name": "Первый огонь",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "Core_UNG_072",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/Core_UNG_072.png",
+            "mana_cost": 3,
+            "name": "Защитник холмов",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "EDR_872",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_872.png",
+            "mana_cost": 1,
+            "name": "Искра жизни",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TLC_461",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_461.png",
+            "mana_cost": 1,
+            "name": "Расхитительница гробниц",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "TLC_365",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_365.png",
+            "mana_cost": 3,
+            "name": "Беспорядок в хранилище",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TIME_006",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_006.png",
+            "mana_cost": 1,
+            "name": "Зеркальное измерение",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "TIME_857",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_857.png",
+            "mana_cost": 4,
+            "name": "Манипуляции с временем",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TIME_EVENT_999",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_EVENT_999.png",
+            "mana_cost": 1,
+            "name": "Пески времени",
+            "rarity": "EPIC"
+          },
+          {
+            "card_id": "CATA_614",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_614.png",
+            "mana_cost": 2,
+            "name": "Темный осведомитель",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "CATA_484",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_484.png",
+            "mana_cost": 1,
+            "name": "Дракончик Зимних Ключей",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CATA_485",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_485.png",
+            "mana_cost": 1,
+            "name": "Ледяной дождь",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CORE_BAR_541",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_BAR_541.png",
+            "mana_cost": 2,
+            "name": "Руническая сфера",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CORE_EDR_004_2026",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_EDR_004_2026.png",
+            "mana_cost": 3,
+            "name": "Ящер-вестник",
+            "rarity": "EPIC"
+          }
+        ],
+        "deck_id": "2731433346",
+        "deck_name": "quest",
+        "opponent_class": "HUNTER",
+        "player_class": "MAGE",
+        "result": "win"
+      }
+    }
+  }
+}

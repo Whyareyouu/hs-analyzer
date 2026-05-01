@@ -1,0 +1,642 @@
+{
+  "spool_id": "91e239b416f6177a73b2bc40aecd49e303af8ec615032f284b80475d83d6de8c",
+  "match_id": "events:68645e424257e9e8",
+  "idempotency_key": "events:68645e424257e9e8",
+  "payload_hash": "91e239b416f6177a73b2bc40aecd49e303af8ec615032f284b80475d83d6de8c",
+  "status": "delivered",
+  "attempt_count": 1,
+  "last_attempt_at": "2026-04-30T08:32:31.3839734Z",
+  "created_at": "2026-04-30T08:32:31.3761427Z",
+  "updated_at": "2026-04-30T08:32:31.3911061Z",
+  "payload": {
+    "schema_version": "match_upload/v1",
+    "match_id": "events:68645e424257e9e8",
+    "started_at": "2026-04-30T08:29:21.8135108Z",
+    "ended_at": "2026-04-30T08:32:31.3751005Z",
+    "completion_status": "complete",
+    "completion_reason": "game_end",
+    "source": {
+      "client_name": "hs-analyzer-cli",
+      "client_version": "0.0.2"
+    },
+    "metadata": {
+      "game_mode": "STANDARD"
+    },
+    "events": [
+      {
+        "index": 0,
+        "type": "deck_list",
+        "timestamp": "2026-04-30T08:29:21.8135108Z",
+        "payload": {
+          "type": "deck_list"
+        }
+      },
+      {
+        "index": 1,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:29:49.9134775Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 2,
+        "type": "game_start",
+        "timestamp": "2026-04-30T08:29:51.8721386Z",
+        "payload": {
+          "type": "game_start"
+        }
+      },
+      {
+        "index": 3,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T08:30:14.2628668Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 4,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T08:30:16.7848593Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 5,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:30:43.1202436Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 6,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:30:43.1202436Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 7,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:30:47.9153878Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 8,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:30:47.9153878Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 9,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T08:30:47.9164528Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 10,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:00.2260185Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 11,
+        "type": "discover",
+        "timestamp": "2026-04-30T08:31:03.9965852Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 12,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:04.252665Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 13,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:04.252665Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 14,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:06.2903479Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 15,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:31:06.5490761Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 16,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:31:06.5490761Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 17,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:12.3528621Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 18,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:31:13.1112298Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 19,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:31:13.1112298Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 20,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:18.9156718Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 21,
+        "type": "discover",
+        "timestamp": "2026-04-30T08:31:21.1829581Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 22,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:21.6961124Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 23,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:21.6966251Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 24,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:25.4840031Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 25,
+        "type": "discover",
+        "timestamp": "2026-04-30T08:31:37.7618654Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 26,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:38.274462Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 27,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:38.2749783Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 28,
+        "type": "attack",
+        "timestamp": "2026-04-30T08:31:40.0493447Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 29,
+        "type": "damage",
+        "timestamp": "2026-04-30T08:31:40.0504078Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 30,
+        "type": "damage",
+        "timestamp": "2026-04-30T08:31:40.0509334Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 31,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:40.0514513Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 32,
+        "type": "death",
+        "timestamp": "2026-04-30T08:31:40.0519833Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 33,
+        "type": "effect_triggered",
+        "timestamp": "2026-04-30T08:31:40.0519833Z",
+        "payload": {
+          "type": "effect_triggered"
+        }
+      },
+      {
+        "index": 34,
+        "type": "attack",
+        "timestamp": "2026-04-30T08:31:40.5691558Z",
+        "payload": {
+          "type": "attack"
+        }
+      },
+      {
+        "index": 35,
+        "type": "damage",
+        "timestamp": "2026-04-30T08:31:40.5702052Z",
+        "payload": {
+          "type": "damage"
+        }
+      },
+      {
+        "index": 36,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:31:41.8374843Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 37,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:31:41.8374843Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 38,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T08:31:50.8926423Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 39,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:52.4035776Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 40,
+        "type": "turn_end",
+        "timestamp": "2026-04-30T08:31:54.4266438Z",
+        "payload": {
+          "type": "turn_end"
+        }
+      },
+      {
+        "index": 41,
+        "type": "turn_start",
+        "timestamp": "2026-04-30T08:31:54.4266438Z",
+        "payload": {
+          "type": "turn_start"
+        }
+      },
+      {
+        "index": 42,
+        "type": "card_drawn",
+        "timestamp": "2026-04-30T08:31:54.4277781Z",
+        "payload": {
+          "type": "card_drawn"
+        }
+      },
+      {
+        "index": 43,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:31:58.2109538Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 44,
+        "type": "discover",
+        "timestamp": "2026-04-30T08:32:02.9805144Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 45,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:03.4916168Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 46,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:03.4916168Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 47,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T08:32:03.4926972Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 48,
+        "type": "discover",
+        "timestamp": "2026-04-30T08:32:09.2719296Z",
+        "payload": {
+          "type": "discover"
+        }
+      },
+      {
+        "index": 49,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:09.5285834Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 50,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:09.5285834Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 51,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T08:32:09.5296143Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 52,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:09.530131Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 53,
+        "type": "card_cost_changed",
+        "timestamp": "2026-04-30T08:32:28.587678Z",
+        "payload": {
+          "type": "card_cost_changed"
+        }
+      },
+      {
+        "index": 54,
+        "type": "death",
+        "timestamp": "2026-04-30T08:32:28.5975162Z",
+        "payload": {
+          "type": "death"
+        }
+      },
+      {
+        "index": 55,
+        "type": "card_played",
+        "timestamp": "2026-04-30T08:32:28.5995768Z",
+        "payload": {
+          "type": "card_played"
+        }
+      },
+      {
+        "index": 56,
+        "type": "game_end",
+        "timestamp": "2026-04-30T08:32:31.3751005Z",
+        "payload": {
+          "type": "game_end"
+        }
+      }
+    ],
+    "extensions": {
+      "dashboard_summary": {
+        "deck_cards": [
+          {
+            "card_id": "EDR_517",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_517.png",
+            "is_legendary": true,
+            "mana_cost": 3,
+            "name": "К'онзу",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "EDR_856",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_856.png",
+            "is_legendary": true,
+            "mana_cost": 4,
+            "name": "Повелитель кошмаров Ксавий",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "FIR_911",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/FIR_911.png",
+            "mana_cost": 2,
+            "name": "Дымящаяся роща",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TLC_460",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_460.png",
+            "is_legendary": true,
+            "mana_cost": 1,
+            "name": "Запретный протокол",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "END_036",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/END_036.png",
+            "is_legendary": true,
+            "mana_cost": 4,
+            "name": "Морхи",
+            "rarity": "LEGENDARY"
+          },
+          {
+            "card_id": "CORE_SW_108",
+            "copies": 1,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_SW_108.png",
+            "mana_cost": 1,
+            "name": "Первый огонь",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "Core_UNG_072",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/Core_UNG_072.png",
+            "mana_cost": 3,
+            "name": "Защитник холмов",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "EDR_872",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/EDR_872.png",
+            "mana_cost": 1,
+            "name": "Искра жизни",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TLC_461",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_461.png",
+            "mana_cost": 1,
+            "name": "Расхитительница гробниц",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "TLC_365",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TLC_365.png",
+            "mana_cost": 3,
+            "name": "Беспорядок в хранилище",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TIME_006",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_006.png",
+            "mana_cost": 1,
+            "name": "Зеркальное измерение",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "TIME_857",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_857.png",
+            "mana_cost": 4,
+            "name": "Манипуляции с временем",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "TIME_EVENT_999",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/TIME_EVENT_999.png",
+            "mana_cost": 1,
+            "name": "Пески времени",
+            "rarity": "EPIC"
+          },
+          {
+            "card_id": "CATA_614",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_614.png",
+            "mana_cost": 2,
+            "name": "Темный осведомитель",
+            "rarity": "RARE"
+          },
+          {
+            "card_id": "CATA_484",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_484.png",
+            "mana_cost": 1,
+            "name": "Дракончик Зимних Ключей",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CATA_485",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CATA_485.png",
+            "mana_cost": 1,
+            "name": "Ледяной дождь",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CORE_BAR_541",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_BAR_541.png",
+            "mana_cost": 2,
+            "name": "Руническая сфера",
+            "rarity": "COMMON"
+          },
+          {
+            "card_id": "CORE_EDR_004_2026",
+            "copies": 2,
+            "image": "https://art.hearthstonejson.com/v1/render/latest/ruRU/256x/CORE_EDR_004_2026.png",
+            "mana_cost": 3,
+            "name": "Ящер-вестник",
+            "rarity": "EPIC"
+          }
+        ],
+        "deck_id": "2731433346",
+        "deck_name": "quest",
+        "player_class": "MAGE",
+        "result": "win"
+      }
+    }
+  }
+}

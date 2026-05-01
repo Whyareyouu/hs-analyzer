@@ -13,7 +13,7 @@ export function OpponentCardsPanel({
   return (
     <Panel className="flex w-[var(--overlay-panel-width)] flex-col p-3" style={{ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" }}>
       <div className="mb-3 text-xs uppercase tracking-[0.2em] text-app-muted">Оппонент сыграл</div>
-      <div className="min-h-0 space-y-2 overflow-y-auto pr-1">
+      <div className="min-h-0 space-y-2 overflow-x-hidden overflow-y-auto pr-1">
         {cards.length === 0 ? <div className="text-xs text-app-muted">Оппонент пока ничего не разыграл.</div> : null}
         {cards.map((card) => (
           <button

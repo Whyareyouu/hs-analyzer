@@ -58,7 +58,7 @@ export function PlayerDeckPanel({
 
   return (
     <Panel className="flex w-[var(--overlay-panel-width)] flex-col p-3" style={{ maxHeight: "calc(100vh - (var(--overlay-top-offset) * 2))" }}>
-      <div className="min-h-0 space-y-3 overflow-y-auto pr-1">
+      <div className="min-h-0 space-y-3 overflow-x-hidden overflow-y-auto pr-1">
         {cards.length === 0 && otherCards.length === 0 ? <div className="text-xs text-app-muted">Ждём выбранную колоду из Decks.log.</div> : null}
         {cards.length > 0
           ? sections.map((section) => (
